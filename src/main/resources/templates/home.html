@@ -127,13 +127,17 @@
                 $.ajax({
                     type:"post",
                     url:"dept/power.json",
-                    success:function (data) {
-                        if(data.code=200){
-                            var selectOpr=$("#department");
-                            selectOpr.html("");
-                            $.each(data.data,function (i, item) {
-                                selectOpr.append("<dd id='index.html' data-id='"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
-                            })
+                    success:function (result) {
+                        if(result.code=200){
+                            $("#department").html("");
+                            var data = result.data;
+                            if(data.length>1){
+                                $.each(data,function (i, item) {
+                                    $("#department").append("<dd id='index.html' data-id='"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
+                                })
+							}else{
+                                $("#department").append("<dd id='index.html' data-id='"+data.id+"'><a href='javascript:;'>"+data.deptName+"</a></dd>");
+							}
 							element.render();
                         }else{
                             alert(data.msg);

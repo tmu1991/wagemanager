@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>工资列表</title>
-		<link rel="stylesheet" th:href="@{src/css/layui.css}" media="all">
+		<link rel="stylesheet" th:href="@{layui/css/layui.css}" media="all">
 		<link rel="stylesheet" th:href="@{css/font_eolqem241z66flxr.css}" media="all"/>
 		<link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
 	</head>
@@ -32,7 +32,7 @@
 		<!-- 需要弹出的添加员工界面 -->
 		<div class="layui-row" id="test" style="display: none;">
 			<div class="layui-col-md10">
-				<table class="layui-table">
+				<table class="layui-table" align="center">
 					<thead>
 					<tr>
 						<th>序号</th>
@@ -48,17 +48,17 @@
 			</div>
 		</div>
 	</div>
-	<script th:src="@{dist/layui.js}" src="../static/dist/layui.js"></script>
+	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
 	<script th:inline="javascript">
         layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
             var form = layui.form,
-                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                layer = layui.layer,
                 laypage = layui.laypage,
                 $ = layui.jquery;
             //加载页面数据
             renderDate(1);
-
-            $("body").on("click", ".layui-icon-read", function () {
+			//查看审批进度
+            $("body").on("click", ".chakan", function () {
                 var _this = $(this);
                 $('.commentList').html('');
                 $.post('declare/comment.json',{'processInstanceId':_this.attr("data-id")},function (result) {
@@ -70,48 +70,48 @@
                                 '<tr>' +
 								'<td>'+index+'</td>' +
                                 '<td>'+item.activityName+'</td>' +
-                                '<td>'+item.startTime+'</td>' +
+                                '<td>'+item.startTime?item.startTime:''+'</td>' +
                                 '<td>'+item.endTime+'</td>' +
                                 '<td>'+item.assignUser+'</td>' +
-                                '<td>'+item.assignMsg+'</td>' +
-								'</tr>'
-							);
+                                '<td>'+item.assignMsg+'</td></tr>');
                         });
                         /* 再弹出添加界面 */
                         index = layer.open({
                             type: 1,
                             title: "审核流程",
                             skin: "myclass",
-                            area: ["50%"],
+//                            area: ["50%"],
                             content: $("#test").html()
                         });
                     } else {
                         var msg = result.msg;
                         if (msg) {
-                            lay.alert(msg);
+                            layer.alert(msg);
                         } else {
-                            lay.alert('查询数据失败');
+                            layer.alert('查询数据失败');
                         }
                     }
                 });
             });
-
-            $("body").on("click", ".layui-icon-upload-circle", function () {
+			//提交工资审批
+            $("body").on("click", ".tijiao", function () {
                 var _this = $(this);
-                $.post('declare/start.json',{'declareId':_this.attr("data-id")},function (result) {
-                    var code = result.code;
-                    if (code == 200) {
-                        lay.msg('提交成功');
-						renderDate($('.layui-laypage-curr em:last').text());
-					} else {
-                        var msg = result.msg;
-                        if (msg) {
-                            lay.alert(msg);
+                layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
+                    $.post('declare/start.json', {'declareId': _this.attr("data-id")}, function (result) {
+                        var code = result.code;
+                        if (code == 200) {
+                            lay.msg('提交成功');
+                            renderDate($('.layui-laypage-curr em:last').text());
                         } else {
-                            lay.alert('查询数据失败');
+                            var msg = result.msg;
+                            if (msg) {
+                                layer.alert(msg);
+                            } else {
+                                layer.alert('查询数据失败');
+                            }
                         }
-                    }
-                });
+                    });
+                })
 //                deleteBatch(_this.attr("data-id"));
             });
 
@@ -125,10 +125,15 @@
                         var dataHtml = '';
                         if (listData.length != 0) {
                             $.each(listData, function (i, item) {
+                                var declareDate='';
+                                if(item.declareDate){
+                                    declareDate=item.declareDate;
+								}
+                                var count=i+1;
                                 dataHtml += '<tr>'
-                                    + '<td>' + i + '</td>'
+                                    + '<td>' + count + '</td>'
                                     + '<td>' + item.declareName + '</td>'
-                                    + '<td>' + item.declareDate + '</td>'
+                                    + '<td>' + declareDate + '</td>'
                                     + '<td>' + item.user.username + '</td>';
                                 if (item.status == 0) {
                                     dataHtml += '<td>未提交</td>';
@@ -140,8 +145,8 @@
                                     dataHtml += '<td>调整中</td>';
                                 }
                                 dataHtml += '<td>'
-                                    + '<i data-id="'+item.id+'" title="提交" class="iconfont layui-icon layui-icon-upload-circle">&#xe640;</i>'
-                                    + '<i data-id="'+item.processInstanceId+'" title="查看进度" class="iconfont layui-icon-read"></i>'
+                                    + '<button data-id="'+item.id+'" title="提交" class="layui-btn layui-btn-sm tijiao"><i class="layui-icon layui-icon-upload-circle"></i></button>'
+                                    + '<button data-id="'+item.processInstanceId+'" title="查看进度" class="layui-btn layui-btn-primary layui-btn-sm chakan"><i class="layui-icon layui-icon-file-b"></i></button>'
                                     + '</td>'
                                     + '</tr>';
                             });
@@ -155,7 +160,7 @@
                             limit:page.pageSize,
                             count: page.totalCount, //数据总数
                             curr: page.currentPage,
-                            layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip'],
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
                             jump: function (obj, first) {
                                 if (!first) {
                                     renderDate(obj.curr);
@@ -165,9 +170,9 @@
                     } else {
                         var msg = result.msg;
                         if (msg) {
-                            lay.alert(msg);
+                            layer.alert(msg);
                         } else {
-                            lay.alert('查询数据失败');
+                            layer.alert('查询数据失败');
                         }
                     }
                 });

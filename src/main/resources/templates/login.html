@@ -31,7 +31,6 @@
 		<script th:src="@{js/jquery.js}" charset="utf-8"></script>
 		<script th:inline="javascript" charset="utf-8">
             $.get('dept/all.json', function (result) {
-                    console.log(result)
                     if(result.code=200){
                         var selectOpr=$("#deptList");
                         selectOpr.html('<option value="">————</option>');
@@ -74,7 +73,12 @@
                                 }
                                 window.isComplete=true;
                             },
-                            error:function (result) {
+                            error:function (data) {
+                                var result=data.responseJSON;
+                                console.log(result)
+                                if(result){
+                                    alert(result.message);
+								}
                                 window.isComplete=true;
                             }
                         });
