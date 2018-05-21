@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
+		<style>
+			table{
+				width: 100%;
+				border-collapse: collapse;
+			}
+			thead th{
+				width: auto;
+				height: 50px;
+				font-size: 18px;
+				border: 1px solid #000000;
+			}
+			tbody td{
+				width: auto;
+				height: 30px;
+				border: 1px solid #000000;
+				text-align: center;
+				
+			}
+		</style>
+	</head>
+	<body>
+		
+		<table>
+			<!--表头-->
+			<thead>
+				<th>操作员</th>
+				<th>登录时间</th>
+				<th>操作账户</th>
+				<th>操作事项</th>
+				<th>操作明细</th>
+				<th>操作时间</th>
+			</thead>
+			<!--内容-->
+			<tbody id="mainContent">
+
+			</tbody>
+			
+		</table>
+
+		<div align="center"  value="1 0"></div>
+		<div align="center" id="page" class="page_div"></div>
+
+		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
+		<script th:inline="javascript">
+			var pageSize=10;
+			toPageList(1);
+			function toPageList(num) {
+				$.ajax({
+					url:"log/list",
+					type:"post",
+					data:{"pageSize":pageSize,"curPage":num},
+					success:function (data) {
+                        var mainContent=$("#mainContent");
+                        mainContent.html("");
+                        if(data.data.totalElements>0){
+						$.each(data.data.content,function (i, item) {
+							mainContent.append("<tr><td>" + item.username + "</td><td>" + item.startTime + "</td><td>" + item.operName + "</td><td>" + item.operation +
+								"</td><td>" + item.args + "</td><td>"+item.createTime+"</td></tr>");
+						});
+
+                        $("#page").paging({
+                            pageNo: num,
+                            totalPage: data.data.totalPages,
+                            totalSize: data.data.totalElements,
+                            callback: function(num) {
+                                toPageList(num);
+                            }
+                        });
+                        if(num>=data.data.totalPages){
+                            $("#nextPage").remove();
+                            $("#lastPage").remove();
+                        }
+                        if(num<=1){
+                            $("#prePage").remove();
+                            $("#firstPage").remove();
+                        }}else{
+                            mainContent.append("暂无数据");
+						}
+                    },
+                    error: function(data){
+                        alert("获取数据失败");
+                    }
+				});
+            }
+		</script>
+	</body>
+</html>

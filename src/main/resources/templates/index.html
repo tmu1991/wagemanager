@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial=scale=1">
+		<title>动态表格</title>
+		<link th:href="@{examples/css/bootstrap.min.css}" href="../static/examples/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+		<link th:href="@{examples/css/layer.css}" href="../static/examples/css/layer.css" type="text/css" rel="stylesheet">
+		<link th:href="@{css/index.css}" type="text/css" rel="stylesheet">
+		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
+		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js"></script>
+		<script th:src="@{examples/js/cpexcel.js}" src="../static/examples/js/cpexcel.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{examples/js/jszip.js}" src="../static/examples/js/jszip.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{examples/js/shim.js}" src="../static/examples/js/shim.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{examples/js/xlsx.js}" src="../static/examples/js/xlsx.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{js/interface.js}" src='../static/js/interface.js' type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<p class="tit">交口县旺庄生铁有限责任公司工资表</p>
+		<p>
+			<span id="deptName"></span>
+			<span class="timer"></span>
+		</p>
+		<input type="file" onchange="xlsFile(this)" name="file" id="xlf" value="导入员工考勤" />
+		<table class="table table-hover table-bordered" id="mytable">
+			<thead>
+				<tr>
+					<th rowspan="2"></th>
+					<th rowspan="2">考勤编号</th>
+					<th rowspan="2">部门</th>
+					<th rowspan="2">姓名</th>
+					<th rowspan="2">基本工资</th>
+					<th class="ying" rowspan="2">系数</th>
+					<th rowspan="2">日工资</th>
+					<th colspan="4">计资天数</th>
+					<th rowspan="2">工龄工资</th>
+					<th rowspan="2">顶班天数</th>
+					<th rowspan="2">顶班工资</th>
+					<th rowspan="2">津贴</th>
+					<th rowspan="2">应发工资</th>
+					<th rowspan="2">四险</th>
+					<th rowspan="2">一金</th>
+					<th rowspan="2">个人所得税</th>
+					<th rowspan="2">奖金</th>
+					<th class="yinchang" colspan="6">罚金</th>
+					<th rowspan="2">实际工资</th>
+					<th rowspan="2">银行卡号</th>
+					<th rowspan="2">操作</th>
+				</tr>
+				<tr>
+					<th>出勤</th>
+					<th>出差</th>
+					<th>公休</th>
+					<th>合计</th>
+					<th class="ycfj">迟到/早退</th>
+					<th>其他扣款</th>
+					<th>党费</th>
+					<th>借款</th>
+					<th>其他</th>
+					<th>其他</th>
+					
+				</tr>
+				
+				<!--<tr>
+					<td><input type="checkbox" onclick="checkAll(this)" /></td>
+					<td colspan="6">
+						
+					</td>
+				</tr>-->
+			</thead>
+			<tbody id="listTable">
+
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>合计</td>
+					<td class="idhj"></td>
+					<td class="worknamehj"></td>
+					<td class="usernamehj"></td>
+					<td class="moneyhj"></td>
+					<td class="numhj"></td>
+					<td class="dayMoneyhj"></td>
+					<td class="cqhj"></td>
+					<td class="cxhj"></td>
+					<td class="gxhj"></td>
+					<td class="hjhj"></td>
+					<td class="workmoneyhj"></td>
+					<td class="toworkdayhj"></td>
+					<td class="toworkmoneyhj"></td>
+					<td class="jthj"></td>
+					<td class="getMoneyhj"></td>
+					<td class='fourhj'></td>
+					<td class="yjhj"></td>
+					<td class="gshj"></td>
+					<td class="jjhj"></td>
+					<td class="cdhj"></td>
+					<td class="qthj"></td>
+					<td class="dfhj"></td>
+					<td class="jkhj"></td>
+					<td class="qt1hj"></td>
+					<td class="qt2hj"></td>
+					<td class="sjhj"></td>
+					<td class="kahj"></td>
+					<td class="dehj">
+						<a href="javascript:;" class="btn btn-danger" role="button" onclick="delAll(this)">全部删除</a>
+						<!--<a href="javascript:;" class="btn btn-info" role="button" onclick="addTr()">新增人员</a>-->
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<table id="eg" style="display: none;">
+			<tr>
+				<td class="pkid"><input type="checkbox" name="item" /></td>
+				<td class="id"></td>
+				<td class="workname"></td>
+				<td class="username"></td>
+				<td class="money"></td>
+				<td class="num"></td>
+				<td class="dayMoney"></td>
+				<td class="cq"></td>
+				<td class="cx"></td>
+				<td class="gx"></td>
+				<td class="hj"></td>
+				<td class="workmoney"></td>
+				<td class="toworkday"></td>
+				<td class="toworkmoney"></td>
+				<td class="jt"></td>
+				<td class="getMoney"></td>
+				<td class='four'></td>
+				<td class="yj"></td>
+				<td class="gs"></td>
+				<td class="jj"></td>
+				<td class="cd"></td>
+				<td class="qt"></td>
+				<td class="df"></td>
+				<td class="jk"></td>
+				<td class="qt1"></td>
+				<td class="qt2"></td>
+				<td class="sj"></td>
+				<td class="ka"></td>
+				<td>
+					<input type="button" name="" value="删除" class="btn btn-danger" onclick="del(this)" />
+					<input type="button" name="" value="修改" class="btn btn-info" onclick="modify(this)" />
+				</td>
+			</tr>
+		</table>
+		<hr />
+		<div class="addBox">
+			<!--<h1>更新数据</h1>-->
+			<span id="close">X</span>
+			<form id="update_form">
+				<input type="hidden" name="id" id="wageId">
+				<table class="table table-hover table-bordered">
+					<tr>
+						<th>编号</th>
+						<td><input type="text" name="workNo" class="form-control" id="num" /></td>
+					</tr>
+					<tr>
+						<th>姓名</th>
+						<td><input type="text" name="username" class="form-control" id="username" /></td>
+					</tr>
+					<tr>
+						<th>系数</th>
+						<td><input type="text" name="coeff" class="form-control" id="pwd" /></td>
+					</tr>
+					<tr>
+						<th>工资</th>
+						<td><input type="text" name="base" class="form-control" id="bir" /></td>
+					</tr>
+					<tr>
+						<th>工龄工资</th>
+						<td><input type="text" name="seniority" class="form-control" id="birth" /></td>
+					</tr>
+					<tr>
+						<th>出差</th>
+						<td><input type="text" name="busTravel" class="form-control" id="ccc" /></td>
+					</tr>
+					<tr>
+						<th>顶班天数</th>
+						<td><input type="text" name="subDay" class="form-control" id="addre" /></td>
+					</tr>
+					<tr>
+						<th>津贴</th>
+						<td><input type="text" name="allowance" class="form-control" id="jtt" /></td>
+					</tr>
+					<tr>
+						<th>奖金</th>
+						<td><input type="text" name="bonus" class="form-control" id="jjj" /></td>
+					</tr>
+					<tr>
+						<th>罚金</th>
+						<td><input type="text" name="otherDebit" class="form-control" id="fjj" /></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="reset" value="重置" class="btn btn-primary" id="reset" />
+							<!--<input type="button" value="添加" class="btn btn-success" id="add" onclick="addList()" />-->
+							<input type="button" value="更新" class="btn btn-info" id="" onclick="update()" />
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+
+		<div align="center" id="page" class="page_div"></div>
+
+		<script type="text/javascript" th:inline="javascript">
+            var pageSize = 10;
+            var partenW = window.parent;
+            var deptId=partenW.document.getElementsByClassName("layui-this")[0].getAttribute("data-id");
+			toPageList(1);
+            function toPageList(num) {
+                $.ajax({
+                    url:"salary/dept.json",
+                    type:"post",
+                    data:{"deptId":deptId,"pageSize":pageSize,"curPage":num},
+                    success:function (data) {
+                        var box = $('#listTable');
+                        if(data.code===200&&data.data!==null&&data.data!==''&&data.data.size!==0){
+                            var cell = $('#eg').find('tr');
+                            var timerMsg;
+                            var page=data.page;
+                            box.empty();
+                            $.each(data.data,function (i, item) {
+                                if(!timerMsg){
+                                    timerMsg=item.year+'年'+item.month+'月';
+								}
+                                var newCell = cell.clone(true);
+                                newCell.find('.pkid').attr("data-id",item.id);
+                                newCell.find('.id').text(item.workNo);
+                                newCell.find('.workname').text(item.deptName);
+                                newCell.find('.username').text(item.username);
+                                newCell.find('.money').text(item.base);
+                                newCell.find('.num').text(item.coeff);
+                                newCell.find('.dayMoney').text(item.dailyWage);
+                                newCell.find('.cq').text(item.attendance);
+                                newCell.find('.cx').text(item.busTravel);
+                                newCell.find('.gx').text(item.holiday);
+                                newCell.find('.hj').text(item.workTotal);
+                                newCell.find('.workmoney').text(item.seniority);
+                                newCell.find('.toworkday').text(item.subDay);
+                                newCell.find('.toworkmoney').text(item.subWork);
+                                newCell.find('.jt').text(item.allowance);
+                                newCell.find('.getMoney').text(item.grossPay);
+                                newCell.find('.four').text(item.insurance);
+                                newCell.find('.yj').text(item.accuFund);
+                                newCell.find('.gs').text(item.incomeTax);
+                                newCell.find('.jj').text(item.bonus);
+                                newCell.find('.cd').text(item.late);
+                                newCell.find('.qt').text(item.otherDebit);
+                                newCell.find('.df').text(item.partyDue);
+                                newCell.find('.jk').text(item.loan);
+                                newCell.find('.qt1').text(item.other);
+                                newCell.find('.qt2').text(item.otherEl);
+                                newCell.find('.sj').text(item.payroll);
+                                newCell.find('.ka').text(item.creditCard);
+                                box.append(newCell);
+                            });
+                            //合计当前页面
+                            $('tfoot td:eq(0)').text('合计');
+                            $('.moneyhj').text(tj(box.find('.money')));
+                            $('.hjhj').text(tj(box.find('.hj')));
+                            $('.getMoneyhj').text(tj(box.find('.getMoney')));
+                            $('.gshj').text(tj(box.find('.gs')));
+                            $('.sjhj').text(tj(box.find('.sj')));
+                            $('.timer').text(timerMsg);
+                            if(page.totalCount>0){
+                                $("#page").paging({
+                                    pageNo: num,
+                                    totalPage: page.pageCount,
+                                    totalSize: page.totalCount,
+                                    callback: function(num) {
+                                        toPageList(num);
+                                    }
+                                });
+                                if(num>=page.pageCount){
+                                    $("#nextPage").remove();
+                                    $("#lastPage").remove();
+                                }
+                                if(num<=1){
+                                    $("#prePage").remove();
+                                    $("#firstPage").remove();
+                                }}
+                        }else{
+                            box.append("暂无数据");
+                        }
+                    }
+                });
+            }
+
+            function tj(arr) {
+                var num = 0;
+                for(var i = 0; i < arr.length; i++) {
+                    num += Number($(arr[i]).text());
+                }
+                num = num.toFixed(2);
+                return num
+            }
+
+            function xlsFile(obj) {
+                if(!obj.files) {
+                    return;
+                }
+                var fileObj = obj.files[0];
+                if (typeof (fileObj) === "undefined" || fileObj.size <= 0) {
+                    alert("请选择文件");
+                    return;
+                }
+                var formFile = new FormData();
+                formFile.append("action", "UploadVMKImagePath");
+                formFile.append("file", fileObj); //加入文件对象
+                $.ajax({
+                    url: "salary/upload.json",
+                    data: formFile,
+                    type: "post",
+                    dataType: "json",
+                    cache: false,//上传文件无需缓存
+                    processData: false,//用于对data参数进行序列化处理 这里必须false
+                    contentType: false, //必须
+                    success: function (result) {
+                        toPageList(1);
+                    },
+                    error: function(data){
+                        alert("获取数据失败");
+                    }
+                })
+            }
+
+            var deptName=partenW.document.getElementsByClassName("layui-this")[0].innerText;
+            $("#deptName").text(deptName);
+            $("#close").click(function() {
+                $('.addBox').hide();
+            });
+            function confirmAct() {
+                if(confirm('确定要执行此操作吗?')) {
+                    return true;
+                }
+                return false;
+            }
+            //del单点功能
+			function del(obj) {
+                if(confirmAct()===true){
+					var wage_id=$(obj).parent().parent().find("td:first").attr("content");
+					var data={"ids":wage_id};
+					mondifyOpr("salary/delete.json",data);
+                }
+			}
+			//全选
+			function checkAll(c) {
+				var status = c.checked;
+				var oItems = document.getElementsByName('item');
+				for(var i = 0; i < oItems.length; i++) {
+					oItems[i].checked = status;
+				}
+			}
+			//delAll功能
+			function delAll() {
+                if(confirmAct()===true){
+                var cur=$(".current:first").text();
+                var select_date=$('.timer').text();
+				var items = document.getElementsByName("item");
+				var ids='';
+				$.each(document.getElementsByName("item"),function (i, item) {
+                    if(item.checked) {
+                        ids+=$(item).parent().parent().find("td:first").attr("content")+",";
+                    }
+                });
+				var data={"ids":ids,"pageSize":pageSize,"curPage":cur,"date":select_date,"deptId":deptId};
+                mondifyOpr("salary/delete",data);
+                }
+			}
+
+            //update功能
+            function update() {
+                if(confirm('确定要执行此操作吗?')){
+                    var form_data = $("#update_form").serialize();
+                    var parmArr = form_data.split("&");
+                    var cur=$(".current:first").text();
+                    var select_date=$('.timer').text();
+                    console.log(form_data);
+                    var data={"form": form_data};
+                	mondifyOpr("salary/update.json",data);
+				}
+            }
+			function mondifyOpr(url,data) {
+                $.ajax({
+                    url:url,
+                    type:"post",
+                    data:data,
+                    success:function (data) {
+                        if(data.code===200&&data.data!==null&&data.data!==''){
+                            var box = $('#listTable');
+                            var cell = $('#eg').find('tr');
+                            $('.timer').text(data.msg);
+                            var page=data.page;
+                            box.empty();
+                            $.each(data.data,function (i, item) {
+                                var newCell = cell.clone(true);
+                                newCell.find('.pkid').attr("content",item.id);
+                                newCell.find('.id').text(item.workNo);
+                                newCell.find('.workname').text(item.deptName);
+                                newCell.find('.username').text(item.username);
+                                newCell.find('.money').text(item.base);
+                                newCell.find('.num').text(item.coeff);
+                                newCell.find('.dayMoney').text(item.dailyWage);
+                                newCell.find('.cq').text(item.attendance);
+                                newCell.find('.cx').text(item.busTravel);
+                                newCell.find('.gx').text(item.holiday);
+                                newCell.find('.hj').text(item.workTotal);
+                                newCell.find('.workmoney').text(item.seniority);
+                                newCell.find('.toworkday').text(item.subDay);
+                                newCell.find('.toworkmoney').text(item.subWork);
+                                newCell.find('.jt').text(item.allowance);
+                                newCell.find('.getMoney').text(item.grossPay);
+                                newCell.find('.four').text(item.insurance);
+                                newCell.find('.yj').text(item.accuFund);
+                                newCell.find('.gs').text(item.incomeTax);
+                                newCell.find('.jj').text(item.bonus);
+                                newCell.find('.cd').text(item.late);
+                                newCell.find('.qt').text(item.otherDebit);
+                                newCell.find('.df').text(item.partyDue);
+                                newCell.find('.jk').text(item.loan);
+                                newCell.find('.qt1').text(item.other);
+                                newCell.find('.qt2').text(item.otherEl);
+                                newCell.find('.sj').text(item.payroll);
+                                newCell.find('.ka').text(item.creditCard);
+                                box.append(newCell);
+                            });
+                            //合计当前页面
+                            $('tfoot td:eq(0)').text('合计');
+                            $('.moneyhj').text(tj(box.find('.money')));
+                            $('.hjhj').text(tj(box.find('.hj')));
+                            $('.getMoneyhj').text(tj(box.find('.getMoney')));
+                            $('.gshj').text(tj(box.find('.gs')));
+                            $('.sjhj').text(tj(box.find('.sj')));
+
+//                            $("#page").paging({
+//                                pageNo: num,
+//                                totalPage: page.pageCount,
+//                                totalSize: page.totalCount,
+//                                callback: function(num) {
+//                                    toPageList(num)
+//                                }
+//                            });
+							$('.addBox').hide();
+//                            var cur=$(".current:first").text();
+//                            var select_date=$('.timer').text();
+//                        "pageSize":pageSize,"curPage":cur,"date":select_date,"deptId":deptId
+							toPageList(1);
+                        }else{
+                            alert("操作失败，请刷新后重试");
+                        }
+                    },
+                    error: function(data){
+                            alert("获取数据失败");
+                    }
+                });
+            }
+			$("#jtt").change(function () {
+				$(this).val(Number($(this).val())*Number($(this).attr("content")));
+            });
+			//modify功能
+			function modify(obj) {
+				$('.addBox').show();
+				console.log(obj);
+				var wageId=document.getElementById("wageId");
+				var oNum = document.getElementById('num');
+				var oUser = document.getElementById('username');
+				var oPwd = document.getElementById('pwd');
+				var oBirth = document.getElementById('birth');
+				var oAddre = document.getElementById('addre');
+				var gz = document.getElementById('bir');
+				var jt = document.getElementById('jtt');
+				var jj = document.getElementById('jjj');
+				var fj = document.getElementById('fjj');
+				var cc = document.getElementById('ccc');
+				var oTr = obj.parentNode.parentNode;
+				var aTd = oTr.getElementsByTagName('td');
+				rowIndex = obj.parentNode.parentNode.rowIndex;
+                wageId.value=$(aTd[0]).attr("content");
+				oNum.value = aTd[1].innerHTML;
+				oUser.value = aTd[3].innerHTML;
+				oPwd.value = aTd[5].innerHTML;
+				oBirth.value = aTd[11].innerHTML;
+				oAddre.value = aTd[12].innerHTML;
+				jt.value = aTd[14].innerHTML;
+				jt.setAttribute("content",aTd[7].innerText);
+				jj.value = aTd[19].innerHTML;
+				fj.value =Number(aTd[20].innerHTML)+ Number(aTd[21].innerHTML)+Number(aTd[22].innerHTML)+Number(aTd[23].innerHTML)+Number(aTd[24].innerHTML)+Number(aTd[25].innerHTML);
+				gz.value = aTd[4].innerHTML;
+				cc.value = aTd[8].innerHTML;
+				//alert(i);
+			}
+
+			$('.ying').click(function(){
+				$(this).hide();
+				$('.num').hide();
+			})
+		</script>
+		<script th:src="@{examples/js/layer.js}" src="../static/examples/js/layer.js"></script>
+		<script>
+			var index = layer.load(0, {
+				shade: false
+			}); //0代表加载的风格，支持0-2
+			//loading层
+			var index = layer.load(1, {
+				shade: [0.4, '#000'], //0.1透明度的白色背景
+				time: 1500
+			});
+		</script>
+	</body>
+
+</html>

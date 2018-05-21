@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>旺庄员工管理平台</title>
+		<link rel="stylesheet" th:href="@{src/css/layui.css}" href="../static/src/css/layui.css">
+		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
+		<style type="text/css">
+			body {
+				width: 100%;
+				height: 100%;
+				background-color: #009688;
+				padding: 20px;
+			}
+			
+			p {
+				margin: 20px 0;
+				color: #fff;
+				font-size: 20px;
+			}
+			
+			input {
+				margin-left: 20px;
+				width: 150px;
+				height: 30px;
+				padding-left: 10px;
+			}
+			
+			#demo {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<p>请输入部门及员工姓名进行检索</p>
+		<input type="text" name="workNo" id="workNo" placeholder="请输入员工编号" />
+		<input type="text" name="userName" id="userName" placeholder="请输入员工姓名" />
+		<input type="button" name="search" id="search" value="搜索" />
+		<table lay-filter="demo" id="demo" lay-skin="line">
+			<thead>
+				<tr>
+					<th lay-data="{field:'year',width:65,fixed:'left'}" rowspan="2">年份</th>
+					<th lay-data="{field:'month',width:60,fixed:'left'}" rowspan="2">月份</th>
+					<th lay-data="{field:'id',width:90,fixed:'left'}" rowspan="2">考勤编号</th>
+					<th lay-data="{field:'workname', width:120}" rowspan="2">部门</th>
+					<th lay-data="{field:'username',width: 100}" rowspan="2">姓名</th>
+					<th lay-data="{field: 'money',width: 100}" rowspan="2">基本工资</th>
+					<th lay-data="{field:'num',width:80}" rowspan="2">系数</th>
+					<th lay-data="{field:'dayMoney', width:100}" rowspan="2">日工资</th>
+					<th lay-data="{align:'center'}" colspan="4">计资天数</th>
+					<!--<th lay-data="{field:'workDay',width:90}" rowspan="2">出勤天数</th>-->
+					<th lay-data="{field: 'workMoney',width: 100}" rowspan="2">工龄工资</th>
+					<th lay-data="{field:'toWorkday', width:120}" rowspan="2">顶班天数</th>
+					<th lay-data="{field:'toworkMoney',width: 100}" rowspan="2">顶班工资</th>
+					<th lay-data="{field: 'joinTime',width: 100}" rowspan="2">津贴</th>
+					<th lay-data="{field:'getMoney',width:100}" rowspan="2">应发工资</th>
+					<th lay-data="{field:'four', width:100}" rowspan="2">四险</th>
+					<th lay-data="{field:'gesui',width: 100}" rowspan="2">个人所得税</th>
+					<th lay-data="{field: 'yij',width: 100}" rowspan="2">一金</th>
+					<th lay-data="{field: 'jj',width: 120}" rowspan="2">奖金</th>
+					<th lay-data="{field:'ff', width:120}" rowspan="2">罚金</th>
+					<th lay-data="{field:'shi',width: 100}" rowspan="2">实际工资</th>
+					<th lay-data="{field: 'ka',width: 100}" rowspan="2">银行卡号</th>
+				</tr>
+				<tr>
+					<th lay-data="{field:'cq', width:80}">出勤</th>
+					<th lay-data="{field:'cc',width: 80}">出差</th>
+					<th lay-data="{field: 'gx',width: 80}">公休</th>
+					<th lay-data="{field: 'hj',width: 80}">合计</th>
+				</tr>
+			</thead>
+		</table>
+
+	</body>
+	<script th:src="@{src/layui.js}" src="../static/src/layui.js" charset="utf-8"></script>
+	<script th:src="@{js/interface.js}" src="../static/js/interface.js" type="text/javascript" charset="utf-8"></script>
+	<script th:src="@{js/jquery.js}" type="text/javascript" charset="utf-8"></script>
+	<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" th:inline="javascript">
+
+		var pageSize=10;
+		$('#search').click(function() {
+			toPageList(1);
+		});
+		function toPageList(num){
+            var workNo = $("#workNo").val();
+            var userName=$("#userName").val();
+            if(workNo===''&&userName===''){
+                alert("请输入考勤编号或员工姓名");
+            }else{
+                layui.use('table', function() {
+                    var table = layui.table;
+                    var laypage=layui.laypage;
+                    $.ajax({
+                        url: "salary/search",
+                        type: "post",
+                        data: {"workNo": workNo, "userName": userName,"curPage":num,"pageSize":pageSize},
+                        success: function (data) {
+                            if(data.code=200){
+                                console.log(data);
+                                var arr=[];
+                                $.each(data.data.content,function (i, item) {
+                                    var fine=item.late+item.otherDebit+item.partyDue+item.loan+item.other;
+                                    var cell = {
+                                        'workname': item.deptName,
+                                        'id': item.workNo,
+                                        'username': item.username,
+                                        'cq': item.attendance,
+                                        'cc': item.busTravel,
+                                        'hj': item.workTotal,
+                                        'money': item.base,
+                                        'num': item.coeff,
+                                        'four': item.insurance,
+                                        'joinTime': item.allowance,
+                                        'toWorkday': item.subDay,
+                                        'dayMoney': item.dailyWage,
+                                        'gx': item.holiday,
+                                        'workMoney': item.seniority,
+                                        'toworkMoney': item.subWork,
+                                        'getMoney': item.grossPay,
+                                        'gesui': item.incomeTax,
+                                        'yij': item.accuFund,
+                                        'jj': item.bonus,
+                                        'ff': fine,
+                                        'shi': item.payroll,
+                                        'ka' : item.creditCard,
+                                        'year':item.year,
+                                        'month':item.month
+                                    };
+                                    arr.push(cell);
+                                });
+                                table.init('demo', {
+//                                    page:true,
+                                    limit: pageSize,
+                                    toolbar: '#toolbarDemo',
+                                    cols: [],
+                                    data: arr,
+                                    //表格风格
+                                    skin: 'row',
+                                    even: true
+                                    //,size: 'lg' //尺寸
+                                });
+                                var laytable=$(".layui-form.layui-border-box.layui-table-view");
+                                laytable.append("<div class='layui-table-tool'><div class='layui-inline layui-table-page' id='layui-table-page1'>" +
+									"<div class='layui-box layui-laypage layui-laypage-default' id='page'></div></div></div>");
+                                var page=data.data;
+                                if(page.totalElements>0){
+                                    $("#page").paging({
+                                        pageNo: num,
+                                        totalPage: page.totalPages,
+                                        totalSize: page.totalElements,
+                                        callback: function(num) {
+                                            toPageList(num);
+                                        }
+                                    });
+                                    if(num>=page.pageCount){
+                                        $("#nextPage").remove();
+                                        $("#lastPage").remove();
+                                    }
+                                    if(num<=1){
+                                        $("#prePage").remove();
+                                        $("#firstPage").remove();
+                                    }
+                                }
+                            }else{
+                                alert(data.msg);
+                            }
+
+                        },
+                        error: function(data){
+                            alert("获取数据失败");
+                        }
+                    });
+                });
+            }
+		}
+	</script>
+
+</html>

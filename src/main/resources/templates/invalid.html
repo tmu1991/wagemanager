@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>invalid session</title>
+		<script th:inline="javascript">
+			if(window!==null&&top!==null){
+                top.location.href="login.html";
+			}else{
+                location.href="login.html";
+			}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>工资列表</title>
+		<link rel="stylesheet" th:href="@{src/css/layui.css}" media="all">
+		<link rel="stylesheet" th:href="@{css/font_eolqem241z66flxr.css}" media="all"/>
+		<link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
+	</head>
+	<body class="childrenBody">
+	<div style="margin-top: 5px;margin-left: 5px;margin-right: 5px;">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+			<legend>工资列表</legend>
+		</fieldset>
+		<div class="layui-form news_list">
+			<table class="layui-table">
+				<thead>
+				<tr>
+					<th>序号</th>
+					<th>申请名称</th>
+					<th>申请时间</th>
+					<th>申请人</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+				<tbody class="news_content"></tbody>
+			</table>
+		</div>
+		<div id="page"></div>
+
+		<!-- 需要弹出的添加员工界面 -->
+		<div class="layui-row" id="test" style="display: none;">
+			<div class="layui-col-md10">
+				<table class="layui-table">
+					<thead>
+					<tr>
+						<th>序号</th>
+						<th>任务节点名称</th>
+						<th>开始时间</th>
+						<th>结束时间</th>
+						<th>审批人</th>
+						<th>审批意见</th>
+					</tr>
+					</thead>
+					<tbody class="commentList"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{dist/layui.js}" src="../static/dist/layui.js"></script>
+	<script th:inline="javascript">
+        layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
+            var form = layui.form,
+                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                laypage = layui.laypage,
+                $ = layui.jquery;
+            //加载页面数据
+            renderDate(1);
+
+            $("body").on("click", ".layui-icon-read", function () {
+                var _this = $(this);
+                $('.commentList').html('');
+                $.post('declare/comment.json',{'processInstanceId':_this.attr("data-id")},function (result) {
+                    var code = result.code,
+                        listData = result.data;
+                    if (code == 200) {
+						$.each(listData,function (index, item) {
+                            $('.commentList').append(
+                                '<tr>' +
+								'<td>'+index+'</td>' +
+                                '<td>'+item.activityName+'</td>' +
+                                '<td>'+item.startTime+'</td>' +
+                                '<td>'+item.endTime+'</td>' +
+                                '<td>'+item.assignUser+'</td>' +
+                                '<td>'+item.assignMsg+'</td>' +
+								'</tr>'
+							);
+                        });
+                        /* 再弹出添加界面 */
+                        index = layer.open({
+                            type: 1,
+                            title: "审核流程",
+                            skin: "myclass",
+                            area: ["50%"],
+                            content: $("#test").html()
+                        });
+                    } else {
+                        var msg = result.msg;
+                        if (msg) {
+                            lay.alert(msg);
+                        } else {
+                            lay.alert('查询数据失败');
+                        }
+                    }
+                });
+            });
+
+            $("body").on("click", ".layui-icon-upload-circle", function () {
+                var _this = $(this);
+                $.post('declare/start.json',{'declareId':_this.attr("data-id")},function (result) {
+                    var code = result.code;
+                    if (code == 200) {
+                        lay.msg('提交成功');
+						renderDate($('.layui-laypage-curr em:last').text());
+					} else {
+                        var msg = result.msg;
+                        if (msg) {
+                            lay.alert(msg);
+                        } else {
+                            lay.alert('查询数据失败');
+                        }
+                    }
+                });
+//                deleteBatch(_this.attr("data-id"));
+            });
+
+            function renderDate(curPage) {
+                $.post("declare/list.json", {"curPage": curPage}, function (result) {
+                    var code = result.code,
+                        listData = result.data,
+                        page = result.page;
+                    if (code == 200) {
+                        //渲染数据
+                        var dataHtml = '';
+                        if (listData.length != 0) {
+                            $.each(listData, function (i, item) {
+                                dataHtml += '<tr>'
+                                    + '<td>' + i + '</td>'
+                                    + '<td>' + item.declareName + '</td>'
+                                    + '<td>' + item.declareDate + '</td>'
+                                    + '<td>' + item.user.username + '</td>';
+                                if (item.status == 0) {
+                                    dataHtml += '<td>未提交</td>';
+                                } else if(item.status==1) {
+                                    dataHtml += '<td>审核中</td>';
+                                }else if(item.status==2) {
+                                    dataHtml += '<td>审核通过</td>';
+                                }else if(item.status==3) {
+                                    dataHtml += '<td>调整中</td>';
+                                }
+                                dataHtml += '<td>'
+                                    + '<i data-id="'+item.id+'" title="提交" class="iconfont layui-icon layui-icon-upload-circle">&#xe640;</i>'
+                                    + '<i data-id="'+item.processInstanceId+'" title="查看进度" class="iconfont layui-icon-read"></i>'
+                                    + '</td>'
+                                    + '</tr>';
+                            });
+                        } else {
+                            dataHtml = '<tr><td colspan="6">暂无数据</td></tr>';
+                        }
+                        $(".news_content").html(dataHtml);
+                        //分页
+                        laypage.render({
+                            elem: 'page',
+                            limit:page.pageSize,
+                            count: page.totalCount, //数据总数
+                            curr: page.currentPage,
+                            layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    renderDate(obj.curr);
+                                }
+                            }
+                        })
+                    } else {
+                        var msg = result.msg;
+                        if (msg) {
+                            lay.alert(msg);
+                        } else {
+                            lay.alert('查询数据失败');
+                        }
+                    }
+                });
+            }
+        });
+	</script>
+	</body>
+</html>

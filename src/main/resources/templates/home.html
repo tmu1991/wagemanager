@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>旺庄员工管理平台</title>
+		<link rel="stylesheet" th:href="@{src/css/layui.css}" href="../static/src/css/layui.css">
+		<link rel="stylesheet" th:href="@{src/css/admin.css}" type="text/css" href="../static/src/css/admin.css" />
+	</head>
+
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header header">
+				<div class="layui-main">
+				<a href="#" class="logo">旺庄工资管理系统</a>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<img th:src="@{examples/img/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg}" class="layui-nav-img">
+							<span sec:authentication="name"></span>
+						</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a th:href="@{newPassword.html}">修改密码</a>
+							</dd>
+							
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a th:href="@{/logout.html}" href="login.html">退出</a>
+					</li>
+				</ul>
+				</div>
+			</div>
+
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+					<ul class="layui-nav layui-nav-tree" lay-filter="test">
+						<li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_DEPT','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item layui-nav-itemed">
+							<a class="" href="javascript:;">管理操作</a>
+							<dl class="layui-nav-child">
+								<dd id='history.html'>
+									<a href="javascript:;">历史查询</a>
+								</dd>
+								<dd id='statistics.html'>
+									<a href="javascript:;">单月统计</a>
+								</dd>
+								<dd id='search.html'>
+									<a href="javascript:;">单人查询</a>
+								</dd>
+								<dd id='diary.html'>
+									<a href="javascript:;">日志</a>
+								</dd>
+								<dd id='backlog.html'>
+									<a href="javascript:;">待办事项</a>
+								</dd>
+								<dd id='other.html'>
+									<a href="javascript:;">其他</a>
+								</dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item layui-nav-itemed">
+							<a class="" href="javascript:;">部门</a>
+							<dl class="layui-nav-child" id="department">
+
+							</dl>
+						</li>
+						<li sec:authorize="hasRole('ROLE_ADMIN')" class="layui-nav-item layui-nav-itemed">
+							<a class="" href="javascript:;">系统管理</a>
+							<dl class="layui-nav-child" id="salary">
+								<dd id='user.html'>
+									<a href="javascript:;">员工管理</a>
+								</dd>
+								<!--<dd id='role'>-->
+									<!--<a href="javascript:;">角色管理</a>-->
+								<!--</dd>-->
+								<!--<dd id='dept.html'>-->
+									<!--<a href="javascript:;">部门管理</a>-->
+								<!--</dd>-->
+							</dl>
+						</li>
+						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item layui-nav-itemed">
+							<a class="" href="javascript:;">工资申请</a>
+							<dl class="layui-nav-child" id="process">
+								<dd sec:authorize="hasRole('ROLE_STAT')" id='list.html'>
+									<a href="javascript:;">工资查看</a>
+								</dd>
+								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')">
+									<a href="javascript:;">待审核工资</a>
+								</dd>
+							</dl>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="layui-body">
+				<p>
+					<span>欢迎使用旺庄工资管理系统</span><br />
+					<span class="timer"></span>
+				</p>
+				<iframe src="" width="100%" height="100%" style="display: none;"></iframe>
+			</div>
+
+			<div class="layui-footer">
+				<!-- 底部固定区域 -->
+				© 旺庄工资管理系统
+			</div>
+		</div>
+		<script th:src="@{src/layui.js}" src="../static/src/layui.js"></script>
+		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script th:inline="javascript">
+			//JavaScript代码区域
+            layui.use('element', function() {
+                var element = layui.element;
+
+                //确定当前日期
+                var timer = new Date();
+                var year = timer.getFullYear();
+                var month = timer.getMonth() + 1;
+                var today = timer.getDate();
+                var todayThis = year + '年' + month + '月' + today + '日';
+                $('.timer').text(todayThis);
+
+                $.ajax({
+                    type:"post",
+                    url:"dept/power.json",
+                    success:function (data) {
+                        if(data.code=200){
+                            var selectOpr=$("#department");
+                            selectOpr.html("");
+                            $.each(data.data,function (i, item) {
+                                selectOpr.append("<dd id='index.html' data-id='"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
+                            })
+							element.render();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error: function(data){
+                        if (data.responseText.indexOf("<!DOCTYPE html>") >= 0) {
+                            window.location.href = "login";
+                        } else {
+                            alert("获取数据失败");
+                        }
+                    }
+                });
+
+                element.on('nav(test)', function(elem) {
+                    $(".layui-body").css('background-color', '#fff')
+                    $(".layui-body p").hide();
+                    $(".layui-body iframe").show();
+                    var url = $(this).attr('id');
+//                    var url = this.id;
+                    $(".layui-body iframe").attr('src', url);
+                });
+            });
+		</script>
+	</body>
+
+</html>

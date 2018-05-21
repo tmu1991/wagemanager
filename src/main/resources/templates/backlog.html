@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			table{
+				width: 99%;
+				border-collapse: collapse;
+			}
+			thead th{
+				width: auto;
+				height: 50px;
+				border: 1px solid #000000;
+			}
+			tbody td{
+				width: auto;
+				height: 30px;
+				border: 1px solid #000000;
+				text-align: center;	
+			}
+		</style>
+		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
+		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
+		<script th:inline="javascript">
+            var pageSize=10;
+			$(function () {
+				toPageList(1);
+            });
+			function toPageList(num) {
+                $.ajax({
+                    url:"task/list",
+                    type:"post",
+                    data:{"pageSize":pageSize,"curPage":num},
+                    success:function (data) {
+                        var mainContent=$("#mainContent");
+                        mainContent.html("");
+                        if(data.code===200&&data.data!==null&&data.data!==''&&data.data.size!==0){
+                            $.each(data.data,function (i, item) {
+                                mainContent.append("<tr content='"+item.id+"'><td>"+item.deptName+"</td><td>"+item.username+"</td><td>"+item.workNo+"</td><td>"+item.loan+"</td><td>"+item.debit+"</td></tr>");
+                            });
+                            var page=data.page;
+                            if(page.totalCount>0){
+                                $("#page").paging({
+                                    pageNo: num,
+                                    totalPage: page.pageCount,
+                                    totalSize: page.totalCount,
+                                    callback: function(num) {
+                                        toPageList(num);
+                                    }
+                                });
+                                if(num>=page.pageCount){
+                                    $("#nextPage").remove();
+                                    $("#lastPage").remove();
+                                }
+                                if(num<=1){
+                                    $("#prePage").remove();
+                                    $("#firstPage").remove();
+                                }
+							}
+                        }else{
+                            mainContent.append("暂无数据");
+						}
+                    },
+                    error: function(data){
+                        alert("获取数据失败");
+                    }
+                })
+            }
+		</script>
+	</head>
+	<body>
+		<table>
+			<!--表头-->
+			<thead>
+				<th>部门</th>
+				<th>姓名</th>
+				<th>考勤编号</th>
+				<th>借款金额</th>
+				<th>本月扣款</th>
+			</thead>
+			<!--内容-->
+			<tbody id="mainContent">
+
+			</tbody>
+		</table>
+		<div align="center" id="page" class="page_div"></div>
+	</body>
+</html>
