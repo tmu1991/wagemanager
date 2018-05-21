@@ -1,5 +1,6 @@
 package com.wz.wagemanager.security;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wz.wagemanager.tools.PageBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -20,13 +21,13 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         this.setDefaultTargetUrl ("/home.html");
         String ajaxHeader = request.getHeader("X-Requested-With");
         boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
-        if (isAjax) {
+//        if (isAjax) {
             response.setCharacterEncoding ("UTF-8");
-            response.getWriter().print(new PageBean<> ());
+            response.getWriter().print(JSONObject.toJSONString(new PageBean<> ()));
             response.getWriter().flush();
-        } else {
-            super.onAuthenticationSuccess(request, response, authentication);
-        }
+//        } else {
+//            super.onAuthenticationSuccess(request, response, authentication);
+//        }
     }
 
     public String getIpAddress(HttpServletRequest request){

@@ -1,6 +1,7 @@
 package com.wz.wagemanager.security;
 
 import com.wz.wagemanager.entity.SysUser;
+import com.wz.wagemanager.exception.HandThrowException;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.ThreadLocalUtil;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         ThreadLocalUtil.clear ();
         if (user == null || user.getSysDept ()!=null && !user.getSysDept ().getId ().equals (deptId)) {
 //            throw new UsernameNotFoundException("用户不存在");
-            throw new UsernameNotFoundException("请核实用户名和部门");
+            throw new HandThrowException("请核实用户名和部门");
         }
 //        for(SysUser sysUser:users){
 //            if(deptId.equals(sysUser.getSysDept().getId())){
