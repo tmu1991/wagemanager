@@ -10,6 +10,7 @@ import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -33,30 +34,27 @@ import java.util.regex.Pattern;
  * 待办事项
  * @author WindowsTen
  */
-@Controller
+@RestController
+@RequestMapping("task")
 public class TaskController extends BaseExceptionController {
     @Resource
     private TaskService taskService;
 
-    @PostMapping("backlog.html")
-    public String listTask(
-            @RequestParam(value = "pageSize",defaultValue = "10") int pageSize,
-            @RequestParam(value = "curPage",defaultValue = "1") int curPage,
-            Model model
+    @PostMapping("list.json")
+    public PageBean<? extends Object> listTask(
+            @RequestParam(value = "pageSize",defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = "curPage",defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
     ){
         Integer maxYear = taskService.getMaxYear();
         if(maxYear!=null&&maxYear!=0){
             int maxMonth = taskService.getMaxMonth(maxYear);
-            Page page = PageUtil.getPage(taskService.getCount(maxYear,maxMonth), pageSize, curPage);
-            PageRequest pageRequest = new PageRequest (page.getCurrentPage()-1,pageSize,getDefaultSort ());
-            List<ActTask> tasks = taskService.getTask (maxYear, maxMonth, pageRequest);
-            model.addAttribute ("tasks",tasks);
-            model.addAttribute ("page",page);
+            Page<ActTask> taskPage = taskService.getTask (maxYear, maxMonth, PageUtil.pageable (curPage, pageSize, getDefaultSort ()));
+            return new PageBean<> (PageUtil.getPage (taskPage.getTotalElements (),pageSize,curPage),taskPage.getContent ());
         }
-        return "backlog";
+        return new PageBean<> ();
     }
 
-    @PostMapping("task/upload")
+    @PostMapping("upload.json")
     public void upload(MultipartFile file,HttpServletResponse response) throws Exception {
         Assert.assertFalse("上传文件不能为空", file.isEmpty());
         String originalFilename = file.getOriginalFilename();

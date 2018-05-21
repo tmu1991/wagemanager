@@ -1,11 +1,8 @@
 package com.wz.wagemanager.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.sun.istack.internal.Nullable;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -41,6 +38,10 @@ public class SysDeclare {
     @JoinColumn(name = "user_id")
     private SysUser user;
 
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH },fetch = FetchType.EAGER)
+    @JoinColumn(name = "dept_id")
+    private SysDept dept;
+
     // 0 未提交 1审核中 2审核通过 3调整中
     @Column(length = 1)
     private Integer status;
@@ -49,8 +50,8 @@ public class SysDeclare {
     private String processInstanceId;
 
     //如果不写mappedBy会生成关系表
-    @OneToMany(targetEntity = ActSalary.class,cascade = {CascadeType.ALL},mappedBy = "declare")
-    private List<ActSalary> salaryList;
+//    @OneToMany(targetEntity = ActSalary.class,cascade = {CascadeType.ALL},mappedBy = "declare")
+//    private List<ActSalary> salaryList;
 
     @Transient
     private String taskId;

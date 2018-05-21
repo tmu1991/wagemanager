@@ -1,6 +1,7 @@
 package com.wz.wagemanager.dao;
 
 import com.wz.wagemanager.entity.ActTask;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -18,7 +19,7 @@ public interface TaskRepository extends JpaRepository<ActTask,String>,JpaSpecifi
     @Query(value = "select count(*) from act_task where year=?1 and month=?2 AND status=?3",nativeQuery = true)
     Integer countByYearAndMonthAndStatus(int year, int month, int status);
 
-    List<ActTask> findActTasksByYearAndMonthAndStatus(int year, int month, int status, Pageable pageable);
+    Page<ActTask> findActTasksByYearAndMonthAndStatus(int year, int month, int status, Pageable pageable);
 
     ActTask findByYearAndMonthAndWorkNo(int year, int month, String workNo);
 

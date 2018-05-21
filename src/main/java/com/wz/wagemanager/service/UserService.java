@@ -27,7 +27,7 @@ public interface UserService{
 
     List<SysUser> findAll();
 
-    Page<SysUser> findByPage(String deptId, String roleId, String username,Pageable pageRequest);
+    Page<SysUser> findByPage(String deptId, String roleId, String username, Pageable pageRequest);
 
     void removeByIds(String[] ids);
 }

@@ -40,18 +40,23 @@ public class ActSalary {
     //日工资
     @Column(name = "daily_wage")
     private BigDecimal dailyWage;
+
     @ParmDesc(desc = "出勤")
     private BigDecimal attendance;
+
     @ParmDesc(desc = "出差")
     @Column(name = "bus_travel")
+
     private BigDecimal busTravel;
     @ParmDesc(desc = "公休")
     private BigDecimal holiday;
     //工时合计
     @Column(name = "work_total")
     private BigDecimal workTotal;
+
     @ParmDesc(desc = "工龄工资")
     private BigDecimal seniority;
+
     @ParmDesc(desc = "顶班天数")
     @Column(name = "sub_day")
     private BigDecimal subDay;
@@ -135,7 +140,6 @@ public class ActSalary {
         this.otherEl=BigDecimal.ZERO;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH,CascadeType.MERGE})
-    @JoinColumn(name = "declare_id")
-    private SysDeclare declare;
+    @Column(name = "declare_id",length = 32)
+    private String declareId;
 }

@@ -1,6 +1,7 @@
 package com.wz.wagemanager.dao;
 
 import com.wz.wagemanager.entity.SysDeclare;
+import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.entity.SysUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author WindowsTen
@@ -26,4 +29,9 @@ public interface DeclareRepository extends JpaRepository<SysDeclare,String>{
     Integer updateByProperty(@Param("key") String key, @Param("value") Object value, @Param("id") String id);
 
     SysDeclare findByProcessInstanceId(String processInstanceId);
+
+    List<SysDeclare> findByDeptAndStatus(SysDept dept, int status);
+
+    List<SysDeclare> findByDeptAndStatusIn(SysDept dept, Integer[] strings);
+
 }

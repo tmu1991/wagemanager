@@ -18,7 +18,7 @@ public interface ActSalaryService {
 
     void save(ActSalary salary);
 
-    void mutilSave(List<ActSalary> saveList, SysDeclare declare);
+    void mutilSave(List<ActSalary> saveList);
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);
     List<ActSalary> findByDeptIdAndDete(String deptId, int year, int month, PageRequest page);
     Integer countByDeptIdAndDate(String deptId, int year, int month);
@@ -41,4 +41,6 @@ public interface ActSalaryService {
     ActSalary findById(String id);
 
     void deleteAll(List<ActSalary> actSalaries);
+
+    List<ActSalary> findByDeclareId(String declareId);
 }

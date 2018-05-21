@@ -1,6 +1,7 @@
 package com.wz.wagemanager.service;
 
 import com.wz.wagemanager.entity.SysDeclare;
+import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.entity.SysUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,10 @@ public interface DeclareService {
     SysDeclare findByProcessInstanceId(String processInstanceId);
 
     SysDeclare findById(String id);
+
+    List<SysDeclare> findByDeptAndStatus(SysDept dept, int stauts);
+
+    SysDeclare findNotStart(SysDept dept);
+
+    List<SysDeclare> findNotComplete(SysDept sysDept);
 }

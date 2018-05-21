@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 加入自定义UsernamePasswordAuthenticationFilter替代原有Filter
         http.addFilterAt(loginFilter (), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/build/**","/dist/**","/examples/**","/src/**","/dept/select","/invalid.html").permitAll()
+                .antMatchers("/build/**","/dist/**","/examples/**","/src/**","/dept/all.json","/invalid.html").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .loginProcessingUrl ("/login")
@@ -80,11 +80,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Bean
     public SimpleUrlAuthenticationFailureHandler loginFailuerHandler () {
-        return new SimpleUrlAuthenticationFailureHandler ("/login.html?error=true");
+        SimpleUrlAuthenticationFailureHandler failureHandler = new LoginFailuerHandler ();
+//        failureHandler.setDefaultFailureUrl ("/login?error");
+        return failureHandler;
+//        return new SimpleUrlAuthenticationFailureHandler ("/login.html?error=true");
     }
     //登录成功后可使用存储用户信息
     @Bean
-    public SimpleUrlAuthenticationSuccessHandler loginSuccessHandler(){
-        return new SimpleUrlAuthenticationSuccessHandler ("/home.html");
+    public LoginSuccessHandler loginSuccessHandler(){
+        return new LoginSuccessHandler();
     }
 }

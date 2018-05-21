@@ -25,11 +25,11 @@ import java.util.*;
  * @author WindowsTen
  *  日志切面 只记录修改
  */
-//@Aspect
+@Aspect
 @Component
 public class SysLogAdvice {
 
-//    @Around ("execution(* com.wz.wagemanager.service.impl.*.*(..)) && @annotation(annotation)")
+    @Around ("execution(* com.wz.wagemanager.service.impl.*.*(..)) && @annotation(annotation)")
     public Object doAroundMethod (ProceedingJoinPoint joinPoint, OperInfo annotation) throws Throwable {
         OperationType type = annotation.type ();
         Object[] args = joinPoint.getArgs ();

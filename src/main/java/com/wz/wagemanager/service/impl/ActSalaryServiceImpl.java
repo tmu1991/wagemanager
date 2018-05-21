@@ -36,10 +36,9 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED)
-    public void mutilSave (List<ActSalary> saveList,SysDeclare declare) {
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    public void mutilSave (List<ActSalary> saveList) {
         actSalaryRepository.save (saveList);
-        declareRepository.save (declare);
     }
 
     @Override
@@ -104,12 +103,12 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     public void removeByIdIn (String[] ids) {
-
+        actSalaryRepository.removeByIdIn (ids);
     }
 
     @Override
     public void update (ActSalary salary) throws IllegalAccessException {
-
+        actSalaryRepository.save (salary);
     }
 
     @Override
@@ -120,5 +119,10 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Override
     public void deleteAll (List<ActSalary> actSalaries) {
         actSalaryRepository.delete (actSalaries);
+    }
+
+    @Override
+    public List<ActSalary> findByDeclareId (String declareId) {
+        return actSalaryRepository.findByDeclareId(declareId);
     }
 }

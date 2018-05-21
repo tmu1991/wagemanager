@@ -3,7 +3,9 @@ package com.wz.wagemanager.service.impl;
 import com.wz.wagemanager.dao.TaskRepository;
 import com.wz.wagemanager.entity.ActTask;
 import com.wz.wagemanager.service.TaskService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,7 +18,7 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Override
-    public List<ActTask> getTask(int year, int month, PageRequest pageRequest) {
+    public Page<ActTask> getTask(int year, int month, Pageable pageRequest) {
         return taskRepository.findActTasksByYearAndMonthAndStatus(year,month,1,pageRequest);
     }
 

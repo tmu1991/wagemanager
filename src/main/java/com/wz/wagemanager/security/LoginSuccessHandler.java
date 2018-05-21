@@ -1,15 +1,13 @@
 package com.wz.wagemanager.security;
 
-import com.wz.wagemanager.entity.SysUser;
+import com.wz.wagemanager.tools.PageBean;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 //登录成功后，默认跳转到对应角色下的页面
 public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -19,21 +17,16 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
-//        this.setDefaultTargetUrl ("/home");
-        //获得授权后可得到用户信息
-//        CustomUsernamePasswordToken token = (CustomUsernamePasswordToken)authentication.getPrincipal();
-//        SysUser sysUser = token.getSysUser();
-//        sysUser.setLoginTime(new Date());
-        new DefaultRedirectStrategy ().sendRedirect(request, response, "/home");
-//        String ajaxHeader = request.getHeader("X-Requested-With");
-//        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
-//        if (isAjax) {
-//            response.setCharacterEncoding ("UTF-8");
-//            response.getWriter().print(sysUser.getSysRole().getPageUrl());
-//            response.getWriter().flush();
-//        } else {
-//            super.onAuthenticationSuccess(request, response, authentication);
-//        }
+        this.setDefaultTargetUrl ("/home.html");
+        String ajaxHeader = request.getHeader("X-Requested-With");
+        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
+        if (isAjax) {
+            response.setCharacterEncoding ("UTF-8");
+            response.getWriter().print(new PageBean<> ());
+            response.getWriter().flush();
+        } else {
+            super.onAuthenticationSuccess(request, response, authentication);
+        }
     }
 
     public String getIpAddress(HttpServletRequest request){

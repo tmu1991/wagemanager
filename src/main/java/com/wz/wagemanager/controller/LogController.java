@@ -3,6 +3,7 @@ package com.wz.wagemanager.controller;
 import com.wz.wagemanager.entity.SysLog;
 import com.wz.wagemanager.service.LogService;
 import com.wz.wagemanager.tools.BaseExceptionController;
+import com.wz.wagemanager.tools.GlobalConstant;
 import com.wz.wagemanager.tools.PageBean;
 import com.wz.wagemanager.tools.PageUtil;
 import org.springframework.data.domain.Page;
@@ -16,21 +17,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-@Controller
+import java.util.List;
+
+/**
+ * @author WindowsTen
+ */
+@RestController
+@RequestMapping("log")
 public class LogController extends BaseExceptionController {
     @Resource
     private LogService logService;
-    @PostMapping("diary.html")
-    public String listTask(
-            @RequestParam(value = "pageSize",defaultValue = "10") int pageSize,
-            @RequestParam(value = "curPage",defaultValue = "1") int curPage,
-            Model model
+    @PostMapping("list.json")
+    public PageBean<List<SysLog>> listLog(
+            @RequestParam(value = "pageSize",defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = "curPage",defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
     ){
-        PageRequest pageRequest = new PageRequest (curPage-1,pageSize,getDefaultSort ());
-        Page<SysLog> logPage = logService.findByPage (pageRequest);
-        model.addAttribute ("logs",logPage.getContent ());
-        model.addAttribute ("page", PageUtil.getPage (((Number)logPage.getTotalElements ()).intValue (),pageSize,curPage));
-        return "diary";
+        Page<SysLog> logPage = logService.findByPage (PageUtil.pageable (curPage,pageSize,getDefaultSort ()));
+        return new PageBean<> (PageUtil.getPage (logPage.getTotalElements (),pageSize,curPage),logPage.getContent ());
     }
 
     private Sort getDefaultSort(){

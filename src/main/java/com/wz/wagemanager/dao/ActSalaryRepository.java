@@ -17,4 +17,8 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
     ActSalary findByYearAndMonthAndUserId(int year, int month, String userId);
 
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);
+
+    void removeByIdIn(String[] ids);
+
+    List<ActSalary> findByDeclareId(String declareId);
 }

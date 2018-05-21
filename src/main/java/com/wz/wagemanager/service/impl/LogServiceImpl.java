@@ -5,6 +5,7 @@ import com.wz.wagemanager.entity.SysLog;
 import com.wz.wagemanager.service.LogService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,7 +20,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public Page<SysLog> findByPage(PageRequest pageRequest) {
+    public Page<SysLog> findByPage(Pageable pageRequest) {
       return logRepository.findAll(pageRequest);
     }
 }

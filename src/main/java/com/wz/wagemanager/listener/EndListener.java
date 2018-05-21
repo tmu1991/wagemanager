@@ -27,7 +27,7 @@ public class EndListener implements ExecutionListener {
     public void notify (DelegateExecution execution) {
         SysDeclare declare = getDeclareService ().findByProcessInstanceId (execution.getProcessInstanceId ());
         declare.setStatus (2);
-        List<ActSalary> salaryList = declare.getSalaryList ();
+        List<ActSalary> salaryList = getActSalaryService ().findByDeclareId (declare.getId ());
         List<HiSalary> hiSalaries=new ArrayList<> (salaryList.size ());
         salaryList.forEach (actSalary ->{
             HiSalary hiSalary = new HiSalary ();

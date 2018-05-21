@@ -2,7 +2,9 @@ package com.wz.wagemanager.service.impl;
 
 import com.wz.wagemanager.dao.DeclareRepository;
 import com.wz.wagemanager.entity.SysDeclare;
+import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.entity.SysUser;
+import com.wz.wagemanager.exception.HandThrowException;
 import com.wz.wagemanager.service.DeclareService;
 import com.wz.wagemanager.tools.ContextHolderUtils;
 import com.wz.wagemanager.tools.GlobalConstant;
@@ -13,9 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author WindowsTen
@@ -71,6 +75,28 @@ public class DeclareServiceImpl implements DeclareService {
     @Override
     public SysDeclare findById (String id) {
         return declareRepository.findOne (id);
+    }
+
+    @Override
+    public List<SysDeclare> findByDeptAndStatus (SysDept dept,int stauts) {
+        return declareRepository.findByDeptAndStatus (dept,stauts);
+    }
+
+    @Override
+    public SysDeclare findNotStart (SysDept dept) {
+        List<SysDeclare> declares = findByDeptAndStatus (dept, 0);
+        if(CollectionUtils.isEmpty (declares)){
+            return null;
+        }else if(declares.size ()==1){
+            return declares.get (0);
+        }
+        throw new HandThrowException ();
+    }
+
+    private static final Integer[] declareNotComplete=new Integer[]{2,3};
+    @Override
+    public List<SysDeclare> findNotComplete (SysDept sysDept) {
+        return declareRepository.findByDeptAndStatusIn (sysDept,declareNotComplete);
     }
 
 
