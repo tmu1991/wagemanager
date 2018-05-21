@@ -1,0 +1,25 @@
+.layui-body{
+	background-color: #009688;
+}
+.layui-body>p{
+	text-align: center;
+	font-size: 32px;
+	margin-top: 60px;
+	color: #fff;
+}
+.layui-body>p>.timer{
+	/*float: right;
+	margin-right:100px;*/
+	display: inline-block;
+	margin-top: 150px;
+	font-size: 18px;
+}
+.logo{
+	color: #fff;
+	float: left;
+	line-height:60px;
+	font-size:20px;
+	padding:0 25px;
+	text-align: center;
+	margin-right: 15px;
+}
