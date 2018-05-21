@@ -1,0 +1,110 @@
+table {
+    margin: 0 auto !important;
+    font-size: 14px;
+    /*border: 1px solid #009688;*/
+    padding: 20px;
+}
+th {
+    background-color: #efefef;
+    text-align: center;
+    padding: 0 !important;
+}
+.username{
+    width: 90px !important;
+}
+.addBox {
+    display: none;
+}
+
+.paging {
+    clear: both;
+    line-height: 36px;
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 50px;
+}
+
+.paging span {
+    display: inline-block;
+    width: 23px;
+    height: 23px;
+    border-radius: 2px;
+    background-color: #dcdcdc;
+    color: #fff;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.paging span.active {
+    background-color: #F95759 !important;
+}
+
+.paging ul {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #dcdcdc;
+    border-radius: 2px;
+}
+
+.paging li {
+    margin: 0;
+    display: inline-block;
+    width: 46px;
+    text-align: center;
+    border: 1px solid #F95759;
+    cursor: pointer;
+}
+
+.paging li.active {
+    border: 1px solid #dcdcdc;
+}
+
+p {
+    padding: 8px 20px;
+}
+
+.tit {
+    text-align: center;
+    font-size: 24px;
+}
+
+.timer {
+    float: right;
+}
+
+.addBox {
+    position: fixed;
+    z-index: 999;
+    background-color: #fff;
+    top: 00px;
+    left: 50%;
+    width: 540px;
+    margin-left: -270px;
+    height: 800px;
+}
+
+.addBox form {
+    margin-top: 10px !important;
+}
+
+.addBox table {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+#close {
+    line-height: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    /* padding: 10px; */
+    border-radius: 10px;
+}
+input{
+    margin-left: 20px;
+}
