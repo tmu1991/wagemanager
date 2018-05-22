@@ -11,7 +11,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/login.html").setViewName("login");
         registry.addViewController ("/newPassword.html").setViewName ("newPassword");
         registry.addViewController("/invalid.html").setViewName("invalid");
-        registry.addViewController("/index.html").setViewName("index");
+//        registry.addViewController("/index.html").setViewName("index");
         registry.addViewController ("/home.html").setViewName ("home");
         registry.addViewController ("/history.html").setViewName ("history");
         registry.addViewController ("/statistics.html").setViewName ("statistics");
@@ -24,5 +24,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 //        registry.addViewController ("/404").setViewName ("404");
         registry.addViewController ("/task.html").setViewName ("task");
         registry.addViewController ("/list.html").setViewName ("list");
+        registry.addViewController ("/pool.html").setViewName ("pool");
     }
 }

@@ -28,6 +28,7 @@ public class ActSalary {
 
     @Column(name = "work_no")
     private String workNo;
+
     @Column(name = "dept_name")
     private String deptName;
 
@@ -63,13 +64,16 @@ public class ActSalary {
     //顶班工资
     @Column(name = "sub_work")
     private BigDecimal subWork;
+
     @ParmDesc(desc = "津贴")
     private BigDecimal allowance;
     //应发工资
     @Column(name = "gross_pay")
     private BigDecimal grossPay;
+
     @ParmDesc(desc = "四险")
     private BigDecimal insurance;
+
     @ParmDesc(desc = "一金")
     @Column(name = "accu_fund")
     private BigDecimal accuFund;

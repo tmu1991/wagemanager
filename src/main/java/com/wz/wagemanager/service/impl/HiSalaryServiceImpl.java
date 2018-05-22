@@ -48,7 +48,7 @@ public class HiSalaryServiceImpl implements HiSalaryService {
 
 
     @Override
-    public List<HiSalary> findByDeptIdAndDete (String deptId,int year,int month,PageRequest page) {
+    public List<HiSalary> findByDeptIdAndDete (String deptId,int year,int month,Pageable page) {
         return salaryRepository.findByDeptIdAndYearAndMonth (deptId,year,month,page);
     }
 
@@ -58,7 +58,7 @@ public class HiSalaryServiceImpl implements HiSalaryService {
     }
 
     @Override
-    public List<HiSalary> findByYearAndMonth (int year, int month, PageRequest page) {
+    public List<HiSalary> findByYearAndMonth (int year, int month, Pageable page) {
         return salaryRepository.findHiSalariesByYearAndMonth (year,month,page);
     }
 

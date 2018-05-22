@@ -32,11 +32,9 @@ public class LogController extends BaseExceptionController {
             @RequestParam(value = "pageSize",defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(value = "curPage",defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
     ){
-        Page<SysLog> logPage = logService.findByPage (PageUtil.pageable (curPage,pageSize,getDefaultSort ()));
+        Page<SysLog> logPage = logService.findByPage (PageUtil.pageable (curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
         return new PageBean<> (PageUtil.getPage (logPage.getTotalElements (),pageSize,curPage),logPage.getContent ());
     }
 
-    private Sort getDefaultSort(){
-        return new Sort(Sort.Direction.DESC,"createTime");
-    }
+    private static final String DEFAULT_SORT_FIELD="createTime";
 }

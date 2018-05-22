@@ -48,7 +48,7 @@ public class TaskController extends BaseExceptionController {
         Integer maxYear = taskService.getMaxYear();
         if(maxYear!=null&&maxYear!=0){
             int maxMonth = taskService.getMaxMonth(maxYear);
-            Page<ActTask> taskPage = taskService.getTask (maxYear, maxMonth, PageUtil.pageable (curPage, pageSize, getDefaultSort ()));
+            Page<ActTask> taskPage = taskService.getTask (maxYear, maxMonth, PageUtil.pageable (curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
             return new PageBean<> (PageUtil.getPage (taskPage.getTotalElements (),pageSize,curPage),taskPage.getContent ());
         }
         return new PageBean<> ();
@@ -148,7 +148,5 @@ public class TaskController extends BaseExceptionController {
 
     private final String[] TASK_PROPERTIES = new String[]{"deptName","workNo","username","loan","debit"};
 
-    private Sort getDefaultSort(){
-        return new Sort(Sort.Direction.DESC,"createDate");
-    }
+    private static final String DEFAULT_SORT_FIELD="createDate";
 }

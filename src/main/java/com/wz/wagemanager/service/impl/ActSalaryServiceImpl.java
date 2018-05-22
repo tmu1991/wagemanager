@@ -82,8 +82,8 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
-    public List<ActSalary> findByGroupDept (int year, int month) throws Exception {
-        return null;
+    public List<ActSalary> findByGroupDept () throws Exception {
+        return actSalaryRepository.findGroupByDept();
     }
 
     @Override

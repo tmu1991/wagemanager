@@ -8,6 +8,7 @@
 		<link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
 	</head>
 	<body class="childrenBody">
+
 	<div style="margin-top: 5px;margin-left: 5px;margin-right: 5px;">
 		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
 			<legend>工资列表</legend>
@@ -86,7 +87,7 @@
                             type: 1,
                             title: "审核流程",
                             skin: "myclass",
-                            area: ["60%"],
+                            area: ["80%"],
                             content: $("#test").html()
                         });
                     } else {
@@ -160,7 +161,7 @@
                                 var count=i+1;
                                 dataHtml += '<tr>'
                                     + '<td>' + count + '</td>'
-                                    + '<td>' + item.declareName + '</td>'
+                                    + '<td><a href="index/'+item.dept.id+'">' + item.declareName + '</a></td>'
                                     + '<td>' + declareDate + '</td>'
                                     + '<td>' + item.user.username + '</td>';
                                 if (item.status == 0) {

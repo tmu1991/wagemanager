@@ -2,15 +2,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
 	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial=scale=1">
 		<title>动态表格</title>
-		<link th:href="@{bootstrap/css/bootstrap.min.css}" href="../static/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
-		<link th:href="@{layui/css/modules/layer/default/layer.css}" href="../static/layui/css/modules/layer/default/layer.css" type="text/css" rel="stylesheet">
-		<link th:href="@{css/index.css}" type="text/css" rel="stylesheet">
-		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
+		<link th:href="@{/bootstrap/css/bootstrap.min.css}" type="text/css" rel="stylesheet">
+		<link th:href="@{/layui/css/modules/layer/default/layer.css}" type="text/css" rel="stylesheet">
+		<link th:href="@{/css/index.css}" type="text/css" rel="stylesheet">
+		<link th:href="@{/css/page.css}" type="text/css" rel="stylesheet">
 		<style>
 			.changered{
 				color:red;
@@ -21,7 +20,7 @@
 	<body>
 		<p class="tit">交口县旺庄生铁有限责任公司工资表</p>
 		<p>
-			<span id="deptName"></span>
+			<span th:text="${dept.deptName}"></span>
 			<span class="timer"></span>
 		</p>
 		<input sec:authorize="hasAnyRole('ROLE_STAT')" type="file" onchange="xlsFile(this)" name="file" id="xlf" value="导入员工考勤" />
@@ -207,13 +206,13 @@
 
 		<div align="center" id="page" class="page_div"></div>
 
-		<script th:src="@{js/jquery.js}" src="../static/js/jquery.js"></script>
-		<script th:src="@{js/cpexcel.js}" src="../static/js/cpexcel.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/jszip.js}" src="../static/js/jszip.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/shim.js}" src="../static/js/shim.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/interface.js}" src='../static/js/interface.js' type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{layui/lay/modules/layer.js}" src="../static/layui/lay/modules/layer.js"></script>
+		<script th:src="@{/js/jquery.js}" src="../static/js/jquery.js"></script>
+		<script th:src="@{/js/cpexcel.js}" src="../static/js/cpexcel.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{/js/jszip.js}" src="../static/js/jszip.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{/js/shim.js}" src="../static/js/shim.js" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{/js/interface.js}" src='../static/js/interface.js' type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{/js/paging.js}" type="text/javascript" charset="utf-8"></script>
+		<script th:src="@{/layui/lay/modules/layer.js}" src="../static/layui/lay/modules/layer.js"></script>
 		<script type="text/javascript" th:inline="javascript">
 //            //loading层
 			var index=layer.load(2, {shade: [0.4, '#000']});
@@ -221,12 +220,13 @@
 				$(this).addClass("changered");
             });
             var pageSize = 10;
-            var partenW = window.parent;
-            var deptId=partenW.document.getElementsByClassName("layui-this")[0].getAttribute("data-id");
+//            var partenW = window.parent;
+            var deptId=/*[[${dept.id}]]*/;
+//				partenW.document.getElementsByClassName("layui-this")[0].getAttribute("data-id");
 			toPageList(1);
             function toPageList(num) {
                 $.ajax({
-                    url:"salary/dept.json",
+                    url:"/salary/dept.json",
                     type:"post",
                     data:{"deptId":deptId,"pageSize":pageSize,"curPage":num},
                     success:function (data) {
@@ -328,7 +328,7 @@
                 var formFile = new FormData();
                 formFile.append("action", "UploadVMKImagePath");
                 formFile.append("file", fileObj); //加入文件对象
-                var index=layer.load(0, {shade: [0.4, '#000']});
+                var index=top.layer.load(0, {shade: [0.4, '#000']});
                 $.ajax({
                     url: "salary/upload.json",
                     data: formFile,
@@ -338,7 +338,7 @@
                     processData: false,//用于对data参数进行序列化处理 这里必须false
                     contentType: false, //必须
                     success: function (result) {
-                        layer.close(index);
+                        top.layer.close(index);
                         if(result.code == 200){
                             toPageList(1);
 						}else{
@@ -357,8 +357,8 @@
                 })
             }
 
-            var deptName=partenW.document.getElementsByClassName("layui-this")[0].innerText;
-            $("#deptName").text(deptName);
+//            var deptName=partenW.document.getElementsByClassName("layui-this")[0].innerText;
+//            $("#deptName").text(deptName);
             $("#close").click(function() {
                 $('.addBox input').removeClass("changered");
                 $('.addBox').hide();
@@ -415,7 +415,6 @@
                     var parmArr = form_data.split("&");
                     var cur=$(".current:first").text();
                     var select_date=$('.timer').text();
-                    console.log(form_data);
                     var data={"form": form_data};
                 	mondifyOpr("salary/update.json",data);
 				}

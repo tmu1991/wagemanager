@@ -40,6 +40,11 @@ public class SalaryController extends BaseExceptionController {
     @Resource
     private UserService userService;
 
+    @PostMapping ("pool.json")
+    public PageBean<List<ActSalary>> pool () throws Exception {
+        return new PageBean<> (actSalaryService.findByGroupDept());
+    }
+
     @PostMapping ("update.json")
     @OperInfo (type = OperationType.UPDATE)
     public PageBean update (
@@ -67,7 +72,7 @@ public class SalaryController extends BaseExceptionController {
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) throws ParseException {
         Assert.assertNotNull ("部门号不能为空", deptId);
-        org.springframework.data.domain.Page<ActSalary> salaryPage = actSalaryService.findByDeptId (deptId, PageUtil.pageable (curPage, pageSize, getDefaultSort ()));
+        org.springframework.data.domain.Page<ActSalary> salaryPage = actSalaryService.findByDeptId (deptId, PageUtil.pageable (curPage, pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
         return new PageBean<> (PageUtil.getPage (salaryPage.getTotalElements (), pageSize, curPage), salaryPage.getContent ());
 //        return toReturn(date,deptId,pageSize,curPage);
 //        return new PageBean<>(salaryService.findByDeptIdAndYearAndMonth(deptId,maxYear,maxMonth));
@@ -84,7 +89,7 @@ public class SalaryController extends BaseExceptionController {
         if (year != null && year != 0) {
             month = getMontoh (month);
             Page page = PageUtil.getPage (hiSalaryService.countByYearAndMonth (year, month), pageSize, curPage);
-            PageRequest pageRequest = new PageRequest (page.getCurrentPage () - 1, pageSize, getDefaultSort ());
+            Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
             List<HiSalary> salaries = hiSalaryService.findByYearAndMonth (year, month, pageRequest);
             return new PageBean<> (page, salaries);
         }
@@ -109,7 +114,7 @@ public class SalaryController extends BaseExceptionController {
             @RequestParam (value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) Integer curPage,
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) throws Exception {
-        Pageable pageable = PageUtil.pageable (curPage, pageSize, getDefaultSort ());
+        Pageable pageable = PageUtil.pageable (curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
         org.springframework.data.domain.Page<HiSalary> salaries = hiSalaryService.findByWorkNoOrUsername (workNo, userName, pageable);
         return new PageBean<> (PageUtil.getPage (salaries.getTotalElements (), pageSize, curPage), salaries.getContent ());
     }
@@ -130,7 +135,7 @@ public class SalaryController extends BaseExceptionController {
             return new PageBean<> ();
         }
         Page page = PageUtil.getPage (hiSalaryService.countByDeptIdAndDate (deptId, maxYear, maxMonth), pageSize, curPage);
-        PageRequest pageRequest = new PageRequest (page.getCurrentPage () - 1, pageSize, getDefaultSort ());
+        Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
         return new PageBean<> (DateUtil.toDateString (maxYear, maxMonth), page, hiSalaryService.findByDeptIdAndDete (deptId, maxYear, maxMonth, pageRequest));
     }
 
@@ -242,9 +247,7 @@ public class SalaryController extends BaseExceptionController {
         return null;
     }
 
-    private Sort getDefaultSort () {
-        return new Sort (Sort.Direction.DESC, "year", "month", "id");
-    }
+    private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month", "id"};
 
     private static final String[] WORD_PROPERTIES = new String[] {"deptName", "workNo", "customNo", "username", "arrive", "reality"};
 

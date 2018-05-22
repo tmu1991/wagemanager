@@ -27,7 +27,7 @@ public interface ActSalaryService {
     Page<ActSalary> findByWorkNoOrUsername(String workNo, String username, PageRequest page);
     Integer countByWorkNoOrUsername(String workNo, String username);
     ActSalary findByYearAndMonthAndUserId(int year, int month, String userId);
-    List<ActSalary> findByGroupDept(int year, int month) throws Exception;
+    List<ActSalary> findByGroupDept() throws Exception;
 
     Integer getMaxYear();
 

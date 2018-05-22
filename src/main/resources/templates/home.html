@@ -7,6 +7,7 @@
 		<title>旺庄员工管理平台</title>
 		<link rel="stylesheet" th:href="@{src/css/layui.css}" href="../static/src/css/layui.css">
 		<link rel="stylesheet" th:href="@{src/css/admin.css}" type="text/css" href="../static/src/css/admin.css" />
+		<link th:href="@{layui/css/modules/layer/default/layer.css}" href="../static/layui/css/modules/layer/default/layer.css" type="text/css" rel="stylesheet">
 	</head>
 
 	<body class="layui-layout-body">
@@ -38,7 +39,7 @@
 				<div class="layui-side-scroll">
 					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
 					<ul class="layui-nav layui-nav-tree" lay-filter="test">
-						<li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_DEPT','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item layui-nav-itemed">
+						<li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_DEPT','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item">
 							<a class="" href="javascript:;">管理操作</a>
 							<dl class="layui-nav-child">
 								<dd id='history.html'>
@@ -61,13 +62,13 @@
 								</dd>
 							</dl>
 						</li>
-						<li class="layui-nav-item layui-nav-itemed">
+						<li class="layui-nav-item">
 							<a class="" href="javascript:;">部门</a>
 							<dl class="layui-nav-child" id="department">
 
 							</dl>
 						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="layui-nav-item layui-nav-itemed">
+						<li sec:authorize="hasRole('ROLE_ADMIN')" class="layui-nav-item">
 							<a class="" href="javascript:;">系统管理</a>
 							<dl class="layui-nav-child" id="salary">
 								<dd id='user.html'>
@@ -81,13 +82,16 @@
 								<!--</dd>-->
 							</dl>
 						</li>
-						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item layui-nav-itemed">
+						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item">
 							<a class="" href="javascript:;">工资申请</a>
 							<dl class="layui-nav-child" id="process">
 								<dd sec:authorize="hasRole('ROLE_STAT')" id='list.html'>
 									<a href="javascript:;">工资查看</a>
 								</dd>
-								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')">
+								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_LAW')">
+									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
+								</dd>
+								<dd id='pool.html' sec:authorize="hasAnyRole('ROLE_GE_MANAGER','ROLE_FIN')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>
 							</dl>
@@ -110,6 +114,7 @@
 			</div>
 		</div>
 		<script th:src="@{src/layui.js}" src="../static/src/layui.js"></script>
+		<script th:src="@{layui/lay/modules/layer.js}" src="../static/layui/lay/modules/layer.js"></script>
 		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
 		<script th:inline="javascript">
 			//JavaScript代码区域
@@ -133,10 +138,10 @@
                             var data = result.data;
                             if(data.length>1){
                                 $.each(data,function (i, item) {
-                                    $("#department").append("<dd id='index.html' data-id='"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
+                                    $("#department").append("<dd id='index/"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
                                 })
 							}else{
-                                $("#department").append("<dd id='index.html' data-id='"+data.id+"'><a href='javascript:;'>"+data.deptName+"</a></dd>");
+                                $("#department").append("<dd id='index/"+data.id+"'><a href='javascript:;'>"+data.deptName+"</a></dd>");
 							}
 							element.render();
                         }else{

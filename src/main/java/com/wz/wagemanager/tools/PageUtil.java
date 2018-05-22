@@ -4,6 +4,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @describe: 分页工具类
  * @author:
@@ -17,15 +20,20 @@ public class PageUtil {
         return new PageRequest(curPage-1, pageSize);
     }
 
-    public static Pageable pageable(Integer curPage, Integer pageSize,Sort sort){
+    private static Pageable pageable(Integer curPage, Integer pageSize,Sort sort){
         return new PageRequest (curPage-1,pageSize,sort);
     }
     public static Pageable pageable(Integer curPage, Integer pageSize,String sortOrder, String... sortFields){
-        return new PageRequest (curPage-1,pageSize,sortOrder (sortOrder),sortFields);
+        return pageable (curPage,pageSize,getSort (sortOrder,sortFields));
     }
 
-    private static Sort.Direction sortOrder(String sortOrder){
-        return "asc".equals (sortOrder)?Sort.Direction.ASC:Sort.Direction.DESC;
+    private static Sort getSort(String sortOrder, String... sortFields){
+        List<Sort.Order> orders=new ArrayList<>(sortFields.length);
+        final Sort.Direction direction = "asc".equals(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        for (String sortField : sortFields) {
+            orders.add(new Sort.Order(direction, sortField).nullsFirst());
+        }
+        return new Sort(orders);
     }
 
     private static Integer getStart(Integer pageSize, Integer page){
