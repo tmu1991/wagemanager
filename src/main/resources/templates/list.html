@@ -30,9 +30,9 @@
 		<div id="page"></div>
 
 		<!-- 需要弹出的添加员工界面 -->
-		<div class="layui-row" id="test" style="display: none;">
-			<div class="layui-col-md10">
-				<table class="layui-table" align="center">
+		<div class="layui-row" id="test" lay-filter="commentList" style="display: none;">
+			<div style="margin-left: 1%;margin-right: 1%;width: 98%;height: 100%;" class="layui-col-md10">
+				<table class="layui-table">
 					<thead>
 					<tr>
 						<th>序号</th>
@@ -48,10 +48,12 @@
 			</div>
 		</div>
 	</div>
+
 	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
 	<script th:inline="javascript">
-        layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
+        layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             var form = layui.form,
+				table = layui.table,
                 layer = layui.layer,
                 laypage = layui.laypage,
                 $ = layui.jquery;
@@ -66,21 +68,25 @@
                         listData = result.data;
                     if (code == 200) {
 						$.each(listData,function (index, item) {
+						    var count=index+1;
+						    var startTime=item.startTime?item.startTime:'';
+						    var endTime=item.endTime?item.endTime:'';
                             $('.commentList').append(
                                 '<tr>' +
-								'<td>'+index+'</td>' +
+								'<td>'+count+'</td>' +
                                 '<td>'+item.activityName+'</td>' +
-                                '<td>'+item.startTime?item.startTime:''+'</td>' +
-                                '<td>'+item.endTime+'</td>' +
+                                '<td>'+startTime+'</td>' +
+                                '<td>'+endTime+'</td>' +
                                 '<td>'+item.assignUser+'</td>' +
                                 '<td>'+item.assignMsg+'</td></tr>');
                         });
+                        table.render(null,'commentList');
                         /* 再弹出添加界面 */
-                        index = layer.open({
+                        layer.open({
                             type: 1,
                             title: "审核流程",
                             skin: "myclass",
-//                            area: ["50%"],
+                            area: ["60%"],
                             content: $("#test").html()
                         });
                     } else {
@@ -100,7 +106,7 @@
                     $.post('declare/start.json', {'declareId': _this.attr("data-id")}, function (result) {
                         var code = result.code;
                         if (code == 200) {
-                            lay.msg('提交成功');
+                            layer.msg('提交成功');
                             renderDate($('.layui-laypage-curr em:last').text());
                         } else {
                             var msg = result.msg;
@@ -136,19 +142,30 @@
                                     + '<td>' + declareDate + '</td>'
                                     + '<td>' + item.user.username + '</td>';
                                 if (item.status == 0) {
-                                    dataHtml += '<td>未提交</td>';
-                                } else if(item.status==1) {
-                                    dataHtml += '<td>审核中</td>';
-                                }else if(item.status==2) {
-                                    dataHtml += '<td>审核通过</td>';
-                                }else if(item.status==3) {
-                                    dataHtml += '<td>调整中</td>';
-                                }
-                                dataHtml += '<td>'
-                                    + '<button data-id="'+item.id+'" title="提交" class="layui-btn layui-btn-sm tijiao"><i class="layui-icon layui-icon-upload-circle"></i></button>'
-                                    + '<button data-id="'+item.processInstanceId+'" title="查看进度" class="layui-btn layui-btn-primary layui-btn-sm chakan"><i class="layui-icon layui-icon-file-b"></i></button>'
+                                    dataHtml += '<td>未提交</td><td>'
+                                    + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="tijiao layui-icon">&#xe63c;</i>'
+                                    + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="layui-icon">&#xe621;</i>'
                                     + '</td>'
                                     + '</tr>';
+                                } else if(item.status==1) {
+                                    dataHtml += '<td>审核中</td><td>'
+                                        + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon">&#xe63c;</i>'
+                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '</td>'
+                                        + '</tr>';
+                                }else if(item.status==2) {
+                                    dataHtml += '<td>审核通过</td><td>'
+                                        + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon">&#xe63c;</i>'
+                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '</td>'
+                                        + '</tr>';
+                                }else if(item.status==3) {
+                                    dataHtml += '<td>调整中</td><td>'
+                                        + '<i data-id="'+item.id+'" title="重新提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon shenhe">&#xe63c;</i>'
+                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '</td>'
+                                        + '</tr>';
+                                }
                             });
                         } else {
                             dataHtml = '<tr><td colspan="6">暂无数据</td></tr>';

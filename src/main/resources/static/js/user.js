@@ -162,8 +162,8 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                             dataHtml += '<td data-id="'+item.status+'">正常</td>';
                         }
                         dataHtml += '<td>'
-                            + '<a class="layui-btn layui-btn-mini news_edit"><i class="iconfont icon-edit"></i> 编辑</a>'
-                            + '<a class="layui-btn layui-btn-danger layui-btn-mini news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
+                            + '<a class="layui-btn layui-btn-sm news_edit"><i class="iconfont icon-edit"></i> 编辑</a>'
+                            + '<a class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
                             + '</td>'
                             + '</tr>';
                     });

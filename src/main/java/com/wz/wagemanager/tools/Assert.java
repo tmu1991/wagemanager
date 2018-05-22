@@ -39,7 +39,7 @@ public class Assert {
         if (message != null) {
             formatted = message + " ";
         }
-        fail(formatted + "expected null, but was:<" + actual + ">");
+        fail(formatted);
     }
 
 }

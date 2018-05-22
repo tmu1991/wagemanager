@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -161,7 +162,8 @@ public class SalaryController extends BaseExceptionController {
     ) throws Exception {
         SysUser sessionUser = ContextHolderUtils.getPrincipal ();
         SysDept sysDept = sessionUser.getSysDept ();
-        Assert.assertNull ("存在未完成工资审批,请完成后重试",declareService.findNotComplete (sysDept));
+        Assert.assertTrue ("存在未完成工资审批,请完成后重试",
+                CollectionUtils.isEmpty (declareService.findNotComplete (sysDept)));
         String  originalFilename= fileVerify (file);
         String filePath = DataUtil.getFilePath (originalFilename);
         String dateStr=getDateStr (originalFilename);
@@ -188,7 +190,7 @@ public class SalaryController extends BaseExceptionController {
                     actSalary = new ActSalary ();
                     actSalary.setMonth (month);
                     actSalary.setYear (year);
-                    actSalary.setDeptId (declare.getId ());
+                    actSalary.setDeclareId (declare.getId ());
                 }
                 if (StringUtils.isNotBlank (actWork.getReality ())) {
                     actSalary.setAttendance (new BigDecimal (actWork.getReality ()));

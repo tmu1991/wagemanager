@@ -27,44 +27,44 @@
       </extensionElements>
     </userTask>
     <sequenceFlow id="_24" name="通过" sourceRef="_5" targetRef="_22">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_25" name="通过" sourceRef="_22" targetRef="_6">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_26" name="分经理驳回" sourceRef="_22" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_9" name="执法部门驳回" sourceRef="_6" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_11" sourceRef="_14" targetRef="_5"/>
     <userTask activiti:candidateGroups="4028809d63433b680163433c1aa4000a" activiti:exclusive="true" id="_12" name="总经理审批"/>
     <sequenceFlow id="_27" name="总经理驳回" sourceRef="_12" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
     <userTask activiti:candidateGroups="4028809d63433b680163433c1b3a000b" activiti:exclusive="true" id="_30" name="财务部审批"/>
     <sequenceFlow id="_33" name="通过" sourceRef="_30" targetRef="_7">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_35" name="财务部驳回" sourceRef="_30" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_2" name="通过" sourceRef="_12" targetRef="_30">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <userTask activiti:candidateGroups="4028809d63433b680163433c19620008" activiti:exclusive="true" id="_4" name="劳资科审批"/>
     <sequenceFlow id="_8" name="劳资科驳回" sourceRef="_4" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_10" name="通过" sourceRef="_4" targetRef="_12">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_13" name="通过" sourceRef="_6" targetRef="_4">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_16" name="分厂长驳回" sourceRef="_5" targetRef="_3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg='false'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg==0}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram documentation="background=#3C3F41;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">

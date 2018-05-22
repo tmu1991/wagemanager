@@ -83,7 +83,7 @@ public class DeclareController extends BaseExceptionController{
             @RequestParam(value = "declareId") String declareId,
             @RequestParam(value = "taskId")String taskId,
             @RequestParam(value = "comment") String comment,
-            @RequestParam(value = "msg")boolean msg
+            @RequestParam(value = "msg")Integer msg
     ){
 //        String roleId = ContextHolderUtils.getPrincipal ().getSysRole ().getId ();
         SysDeclare declare = declareService.findById (declareId);
@@ -93,8 +93,8 @@ public class DeclareController extends BaseExceptionController{
         Map<String,Object> variables=new HashMap<> (1);
         variables.put ("msg",msg);
         identityService.setAuthenticatedUserId (ContextHolderUtils.getPrincipal ().getUsername ());
-        taskService.addComment (taskId, processInstanceId,comment);
         taskService.complete (taskId,variables);
+        taskService.addComment (taskId, processInstanceId,comment);
         return new PageBean<>();
     }
 

@@ -78,7 +78,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     public ActSalary findByYearAndMonthAndUserId (int year, int month, String userId) {
-        return null;
+        return actSalaryRepository.findByYearAndMonthAndUserId (year,month,userId);
     }
 
     @Override

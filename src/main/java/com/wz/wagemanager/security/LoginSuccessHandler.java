@@ -18,9 +18,9 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
-        this.setDefaultTargetUrl ("/home.html");
-        String ajaxHeader = request.getHeader("X-Requested-With");
-        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
+//        this.setDefaultTargetUrl ("/home.html");
+//        String ajaxHeader = request.getHeader("X-Requested-With");
+//        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
 //        if (isAjax) {
             response.setCharacterEncoding ("UTF-8");
             response.getWriter().print(JSONObject.toJSONString(new PageBean<> ()));
