@@ -165,26 +165,26 @@
                                     + '<td>' + item.user.username + '</td>';
                                 if (item.status == 0) {
                                     dataHtml += '<td>未提交</td><td>'
-                                    + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="tijiao layui-icon">&#xe63c;</i>'
-                                    + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="layui-icon">&#xe621;</i>'
+                                    + '<button class="layui-btn layui-btn-sm tijiao" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-sm layui-btn-disabled" disabled="disabled" data-id="'+item.processInstanceId+'">查看</button>'
                                     + '</td>'
                                     + '</tr>';
                                 } else if(item.status==1) {
                                     dataHtml += '<td>审核中</td><td>'
-                                        + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon">&#xe63c;</i>'
-                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                        + '&nbsp;&nbsp;<button class="layui-btn  layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
                                         + '</td>'
                                         + '</tr>';
                                 }else if(item.status==2) {
                                     dataHtml += '<td>审核通过</td><td>'
-                                        + '<i data-id="'+item.id+'" title="提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon">&#xe63c;</i>'
-                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                        + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
                                         + '</td>'
                                         + '</tr>';
                                 }else if(item.status==3) {
                                     dataHtml += '<td>调整中</td><td>'
-                                        + '<i data-id="'+item.id+'" title="重新提交" style="cursor:hand;font-size: 25px; color: #1E9FFF;" class="layui-icon shenhe">&#xe63c;</i>'
-                                        + '&nbsp;&nbsp;<i data-id="'+item.processInstanceId+'"  style="cursor:hand;font-size: 25px; color: #1E9FFF;" title="查看进度" class="chakan layui-icon">&#xe621;</i>'
+                                        + '<button class="layui-btn layui-btn-sm shenhe" data-id="'+item.id+'">提交</button>'
+                                        + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
                                         + '</td>'
                                         + '</tr>';
                                 }

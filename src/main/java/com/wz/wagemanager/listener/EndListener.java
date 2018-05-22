@@ -31,7 +31,7 @@ public class EndListener implements ExecutionListener {
         List<HiSalary> hiSalaries=new ArrayList<> (salaryList.size ());
         salaryList.forEach (actSalary ->{
             HiSalary hiSalary = new HiSalary ();
-            org.springframework.beans.BeanUtils.copyProperties (actSalary,new HiSalary ());
+            org.springframework.beans.BeanUtils.copyProperties (actSalary,hiSalary);
             hiSalary.setCreateDate (new Date ());
             hiSalaries.add (hiSalary);
         });

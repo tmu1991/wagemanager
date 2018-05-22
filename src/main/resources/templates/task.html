@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>待审核工资列表</title>
-    <link rel="stylesheet" th:href="@{src/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
     <link rel="stylesheet" th:href="@{css/font_eolqem241z66flxr.css}" media="all"/>
     <link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
 </head>
@@ -201,8 +201,8 @@
                                 dataHtml += '<td>调整中</td>';
                             }
                             dataHtml += '<td>'
-                                + '<i style="cursor:hand;font-size: 25px; color: #1E9FFF;" data-id="' + item.processInstanceId + '" title="审核" class="layui-icon shenhe">&#xe62f;</i>'
-                                + '&nbsp;&nbsp;<i style="cursor:hand;font-size: 25px; color: #1E9FFF;" data-id="' + item.processInstanceId + '" title="查看进度" class="layui-icon chakan">&#xe621;</i>'
+                                + '<button class="layui-btn layui-btn-sm shenhe" data-id="' + item.processInstanceId + '">审核</button>'
+                                + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="' + item.processInstanceId + '">查看</button>'
                                 + '</td>'
                                 + '</tr>';
                         });

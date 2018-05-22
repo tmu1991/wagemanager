@@ -139,4 +139,16 @@ private DeptService deptService;
 	public void test(){
 		declareService.findNotComplete(deptService.findById("2")).forEach(System.out::println);
 	}
+	@Test
+	public void testUser1(){
+		SysUser user=new SysUser();
+		user.setUsername("law");
+		user.setBase(randomBD());
+		user.setCreditCard(randomCard());
+		user.setSysRole(roleService.findRoleById("4028809d635c8d2f01635c8daa390004"));
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
+		user.setPassword (passwordEncoder.encode ("123456"));
+		user.setStatus(1);
+		userService.insertUser (user);
+	}
 }
