@@ -17,7 +17,7 @@ public class StatusChangeListener implements TaskListener {
     public void notify (DelegateTask delegateTask) {
         String processInstanceId = delegateTask.getProcessInstanceId ();
         SysDeclare declare = getDeclareService ().findByProcessInstanceId (processInstanceId);
-        declare.setStatus (3);
+        declare.setStatus (Integer.parseInt (status.getExpressionText ()));
         getDeclareService ().save (declare);
     }
 
@@ -25,4 +25,11 @@ public class StatusChangeListener implements TaskListener {
         return (DeclareService) BeanUtils.getObject ("declareService");
     }
 
+    private Expression status;
+
+    public StatusChangeListener(){}
+
+    public StatusChangeListener(Expression status){
+        this.status=status;
+    }
 }

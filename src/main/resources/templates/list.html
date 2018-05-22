@@ -121,6 +121,28 @@
 //                deleteBatch(_this.attr("data-id"));
             });
 
+            //提交工资审批
+            $("body").on("click", ".shenhe", function () {
+                var _this = $(this);
+                layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
+                    $.post('declare/complete.json', {'processInstanceId': _this.next().attr("data-id")}, function (result) {
+                        var code = result.code;
+                        if (code == 200) {
+                            layer.msg('提交成功');
+                            renderDate($('.layui-laypage-curr em:last').text());
+                        } else {
+                            var msg = result.msg;
+                            if (msg) {
+                                layer.alert(msg);
+                            } else {
+                                layer.alert('查询数据失败');
+                            }
+                        }
+                    });
+                })
+//                deleteBatch(_this.attr("data-id"));
+            });
+
             function renderDate(curPage) {
                 $.post("declare/list.json", {"curPage": curPage}, function (result) {
                     var code = result.code,

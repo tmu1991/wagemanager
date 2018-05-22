@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .loginProcessingUrl ("/login")
-                .loginPage("/login.html")
+                .loginPage("/invalid.html")
                 //记住我 时间s 两个星期 key:cookie中的私钥
 //                .and().rememberMe().tokenValiditySeconds(1209600).key("myKey")
                 .and().logout()

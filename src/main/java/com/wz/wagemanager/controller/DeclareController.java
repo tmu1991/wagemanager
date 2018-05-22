@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,21 +81,30 @@ public class DeclareController extends BaseExceptionController{
     private IdentityService identityService;
     @PostMapping(value = "complete.json")
     public PageBean completeTask(
-            @RequestParam(value = "declareId") String declareId,
+            @RequestParam(value = "processInstanceId") String processInstanceId,
             @RequestParam(value = "taskId")String taskId,
-            @RequestParam(value = "comment") String comment,
-            @RequestParam(value = "msg")Integer msg
+            @RequestParam(value = "comment",required = false) String comment,
+            @RequestParam(value = "msg",required = false)Integer msg
     ){
-//        String roleId = ContextHolderUtils.getPrincipal ().getSysRole ().getId ();
-        SysDeclare declare = declareService.findById (declareId);
-        String processInstanceId = declare.getProcessInstanceId ();
-//        Task task = taskService.createTaskQuery ().processInstanceId (processInstanceId).taskCandidateGroup (roleId).singleResult ();
-//        String taskId = task.getId ();
-        Map<String,Object> variables=new HashMap<> (1);
-        variables.put ("msg",msg);
-        identityService.setAuthenticatedUserId (ContextHolderUtils.getPrincipal ().getUsername ());
-        taskService.complete (taskId,variables);
-        taskService.addComment (taskId, processInstanceId,comment);
+        String roleId = ContextHolderUtils.getPrincipal ().getSysRole ().getId ();
+//        SysDeclare declare = declareService.findById (declareId);
+//        String processInstanceId = declare.getProcessInstanceId ();
+        if(org.apache.commons.lang3.StringUtils.isBlank (taskId)){
+            Task task = taskService.createTaskQuery ().processInstanceId (processInstanceId).taskCandidateGroup (roleId).singleResult ();
+            taskId = task.getId ();
+        }
+
+        if(org.apache.commons.lang3.StringUtils.isNotBlank (comment)){
+            identityService.setAuthenticatedUserId (ContextHolderUtils.getPrincipal ().getUsername ());
+            taskService.addComment (taskId, processInstanceId,comment);
+        }
+        if(msg!=null){
+            Map<String,Object> variables=new HashMap<> (1);
+            variables.put ("msg",msg);
+            taskService.complete (taskId,variables);
+        }else{
+            taskService.complete (taskId);
+        }
         return new PageBean<>();
     }
 

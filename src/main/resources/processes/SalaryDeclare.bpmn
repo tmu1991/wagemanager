@@ -17,6 +17,10 @@
     <userTask activiti:candidateGroups="${applyRoleId}" activiti:exclusive="true" id="_3" name="调整申请">
       <extensionElements>
         <activiti:taskListener class="com.wz.wagemanager.listener.StatusChangeListener" event="create">
+          <activiti:field name="status" stringValue="2"/>
+        </activiti:taskListener>
+        <activiti:taskListener class="com.wz.wagemanager.listener.StatusChangeListener" event="complete">
+          <activiti:field name="status" stringValue="1"/>
         </activiti:taskListener>
       </extensionElements>
     </userTask>

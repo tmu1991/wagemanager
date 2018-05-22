@@ -93,7 +93,7 @@ public class DeclareServiceImpl implements DeclareService {
         throw new HandThrowException ();
     }
 
-    private static final Integer[] declareNotComplete=new Integer[]{2,3};
+    private static final Integer[] declareNotComplete=new Integer[]{1,3};
     @Override
     public List<SysDeclare> findNotComplete (SysDept sysDept) {
         return declareRepository.findByDeptAndStatusIn (sysDept,declareNotComplete);
