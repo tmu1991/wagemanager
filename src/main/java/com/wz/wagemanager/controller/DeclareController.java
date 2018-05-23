@@ -79,6 +79,18 @@ public class DeclareController extends BaseExceptionController{
 
     @Resource
     private IdentityService identityService;
+
+    @PostMapping(value = "complete1.json")
+    public PageBean completeTask(
+            @RequestParam(value = "declareId") String declareId,
+            @RequestParam(value = "comment",required = false) String comment,
+            @RequestParam(value = "msg",required = false)Integer msg
+    ){
+        SysDeclare declare = declareService.findById (declareId);
+        String processInstanceId = declare.getProcessInstanceId ();
+        return completeTask (processInstanceId,null,comment,msg);
+    }
+
     @PostMapping(value = "complete.json")
     public PageBean completeTask(
             @RequestParam(value = "processInstanceId") String processInstanceId,
@@ -87,8 +99,6 @@ public class DeclareController extends BaseExceptionController{
             @RequestParam(value = "msg",required = false)Integer msg
     ){
         String roleId = ContextHolderUtils.getPrincipal ().getSysRole ().getId ();
-//        SysDeclare declare = declareService.findById (declareId);
-//        String processInstanceId = declare.getProcessInstanceId ();
         if(org.apache.commons.lang3.StringUtils.isBlank (taskId)){
             Task task = taskService.createTaskQuery ().processInstanceId (processInstanceId).taskCandidateGroup (roleId).singleResult ();
             taskId = task.getId ();
@@ -110,6 +120,13 @@ public class DeclareController extends BaseExceptionController{
 
     @Resource
     private HistoryService historyService;
+
+    @PostMapping(value="comment1.json")
+    public PageBean<List<ProcessEntity>> comment1(
+            @RequestParam(value = "declareId") String declareId
+    ){
+        return comment (declareService.findById (declareId).getProcessInstanceId ());
+    }
 
     @PostMapping(value="comment.json")
     public PageBean<List<ProcessEntity>> comment(

@@ -31,21 +31,6 @@ public class DeptController extends BaseExceptionController {
         return new PageBean<> (deptService.findAll());
     }
 
-    @PostMapping("power.json")
-    public PageBean<Object> selectById(){
-        SysUser sysUser = ContextHolderUtils.getPrincipal ();
-//        sysUser.setLoginTime (new Date());
-//        userService.updateUser (sysUser);
-        SysRole sysRole = sysUser.getSysRole ();
-        switch (sysRole.getRoleAlias ()){
-            case "ROLE_DIRE":
-            case "ROLE_MANAGER":
-            case "ROLE_STAT":
-                return new PageBean<>(deptService.findById(sysUser.getSysDept().getId()));
-            default:
-                return new PageBean<>(deptService.findAll());
-        }
-    }
 
 //    @PostMapping(value = "insert.json")
 //    public PageBean insertDept(@ModelAttribute SysDept dept){

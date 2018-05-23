@@ -36,6 +36,8 @@ public class SysUser implements UserDetails {
     private String password;
     @Column(name = "login_time")
     private Date loginTime;
+    @Column(name = "login_ip",length = 20)
+    private String loginIp;
     /** 创建人 */
     @Column(name = "create_user")
     private String createUser;

@@ -1,6 +1,7 @@
 package com.wz.wagemanager.service;
 
 import com.wz.wagemanager.entity.ActSalary;
+import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.entity.SysDeclare;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,7 @@ public interface ActSalaryService {
     Page<ActSalary> findByWorkNoOrUsername(String workNo, String username, PageRequest page);
     Integer countByWorkNoOrUsername(String workNo, String username);
     ActSalary findByYearAndMonthAndUserId(int year, int month, String userId);
-    List<ActSalary> findByGroupDept() throws Exception;
+    List<SalaryArea> findByGroupDept() throws Exception;
 
     Integer getMaxYear();
 

@@ -7,8 +7,10 @@ import com.wz.wagemanager.dao.UserRepository;
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.ActTask;
 import com.wz.wagemanager.entity.HiSalary;
+import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.service.HiSalaryService;
 import com.wz.wagemanager.tools.CommonUtils;
+import com.wz.wagemanager.tools.CriteriaUtils;
 import com.wz.wagemanager.tools.GlobalConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -22,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service("hiSalaryService")
 @Transactional
@@ -69,29 +69,31 @@ public class HiSalaryServiceImpl implements HiSalaryService {
 
     @Override
     public Page<HiSalary> findByWorkNoOrUsername(String workNo,String username, Pageable page){
-
-        return salaryRepository.findAll(getSpe(workNo,username), page);
+        Map<String,Object> speMap=new HashMap<> (2);
+        speMap.put ("workNo",workNo);
+        speMap.put ("username",username);
+        return salaryRepository.findAll(CriteriaUtils.getSpe (speMap), page);
     }
 
-    @Override
-    public Integer countByWorkNoOrUsername (String workNo,String username) {
-        return ((Number)salaryRepository.count(getSpe(workNo,username))).intValue();
-    }
+//    @Override
+//    public Integer countByWorkNoOrUsername (String workNo,String username) {
+//        return ((Number)salaryRepository.count(getSpe(workNo,username))).intValue();
+//    }
 
-    private Specification<HiSalary> getSpe(String workNo, String username){
-        return  (root, criteriaQuery, criteriaBuilder) -> {
-            List<Predicate> list = new ArrayList<> ();
-            if(StringUtils.isNotBlank (workNo)){
-                list.add (criteriaBuilder.equal(root.get("workNo").as(String.class),workNo));
-            }
-            if(StringUtils.isNotBlank (username)){
-                list.add (criteriaBuilder.equal(root.get("username").as(String.class),username));
-            }
-            Predicate[] p = new Predicate[list.size()];
-            criteriaQuery.where(criteriaBuilder.and(list.toArray(p)));
-            return criteriaQuery.getRestriction();
-        };
-    }
+//    private Specification<HiSalary> getSpe(String workNo, String username){
+//        return  (root, criteriaQuery, criteriaBuilder) -> {
+//            List<Predicate> list = new ArrayList<> ();
+//            if(StringUtils.isNotBlank (workNo)){
+//                list.add (criteriaBuilder.equal(root.get("workNo").as(String.class),workNo));
+//            }
+//            if(StringUtils.isNotBlank (username)){
+//                list.add (criteriaBuilder.equal(root.get("username").as(String.class),username));
+//            }
+//            Predicate[] p = new Predicate[list.size()];
+//            criteriaQuery.where(criteriaBuilder.and(list.toArray(p)));
+//            return criteriaQuery.getRestriction();
+//        };
+//    }
 
     @Override
     public HiSalary findByYearAndMonthAndUserId (int year, int month, String userId) {
@@ -99,8 +101,9 @@ public class HiSalaryServiceImpl implements HiSalaryService {
     }
 
     @Override
-    public List<HiSalary> findByGroupDept (int year,int month) throws Exception {
-        return CommonUtils.castEntity(salaryRepository.findByGroupDept (year, month),HiSalary.class, GlobalConstant.properties);
+    public List<SalaryArea> findByGroupDept (int year, int month) throws Exception {
+        return salaryRepository.findByGroupDept (year,month);
+//        return CommonUtils.castEntity(salaryRepository.findByGroupDept (year, month),HiSalary.class, GlobalConstant.properties);
     }
 
     @Override

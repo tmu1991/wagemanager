@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void insertUser(SysUser sysUser) {
-        userRepository.save(sysUser);
+        userRepository.save (sysUser);
 //        userRepository.insertSysUser(sysUser);
     }
 }

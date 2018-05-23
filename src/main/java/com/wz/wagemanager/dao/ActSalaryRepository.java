@@ -1,13 +1,22 @@
 package com.wz.wagemanager.dao;
 
 import com.wz.wagemanager.entity.ActSalary;
+import com.wz.wagemanager.entity.SalaryArea;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 
 /**
  * @author WindowsTen
@@ -25,10 +34,11 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
 
     List<ActSalary> findByDeclareId(String declareId);
 
-    @Query(value = "select dept_id,dept_name,year,month,declare_id,sum(gross_pay) gross_pay," +
-            "sum(sub_work) sub_work,sum(allowance) allowance,sum(insurance) insurance," +
-            "sum(accu_fund) accu_fund,sum(income_tax) income_tax,sum(payroll) payroll," +
-            "sum(late+other_debit+party_due+loan+other+other_el) other_debit" +
-            "from act_salary GROUP BY dept_id",nativeQuery = true)
-    List<ActSalary> findGroupByDept();
+    @Query (value = "select new com.wz.wagemanager.entity.SalaryArea(a.deptId,a.deptName," +
+            "a.year,a.month,a.declareId,sum(a.grossPay),sum(a.subWork)," +
+            "sum(a.allowance),sum(a.insurance),sum(a.accuFund),sum(a.incomeTax),sum(a.payroll)," +
+            "sum(a.late),sum(a.otherDebit),sum(a.partyDue),sum(a.loan),sum(a.other),sum(a.otherEl))" +
+            "from ActSalary a group by a.deptId")
+    List<SalaryArea> findGroupByDept();
+
 }

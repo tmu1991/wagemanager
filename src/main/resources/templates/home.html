@@ -14,7 +14,7 @@
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header header">
 				<div class="layui-main">
-				<a href="#" class="logo">旺庄工资管理系统</a>
+				<a href="home.html" class="logo">旺庄工资管理系统</a>
 				<ul class="layui-nav layui-layout-right">
 					<li class="layui-nav-item">
 						<a href="javascript:;">
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 
-			<div class="layui-side layui-bg-black">
+			<div class="layui-side layui-bg-black menu">
 				<div class="layui-side-scroll">
 					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
 					<ul class="layui-nav layui-nav-tree" lay-filter="test">
@@ -65,7 +65,7 @@
 						<li class="layui-nav-item">
 							<a class="" href="javascript:;">部门</a>
 							<dl class="layui-nav-child" id="department">
-
+								<dd th:each="dept:${depts}" th:attr="id=${'index/'+dept.id}"><a th:text="${dept.deptName}" href='javascript:;'></a></dd>
 							</dl>
 						</li>
 						<li sec:authorize="hasRole('ROLE_ADMIN')" class="layui-nav-item">
@@ -84,14 +84,14 @@
 						</li>
 						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item">
 							<a class="" href="javascript:;">工资申请</a>
-							<dl class="layui-nav-child" id="process">
+							<dl class="layui-nav-child">
 								<dd sec:authorize="hasRole('ROLE_STAT')" id='list.html'>
 									<a href="javascript:;">工资查看</a>
 								</dd>
 								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_LAW')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>
-								<dd id='pool.html' sec:authorize="hasAnyRole('ROLE_GE_MANAGER','ROLE_FIN')">
+								<dd id='pool.html' sec:authorize="hasAnyRole('ROLE_STAT','ROLE_GE_MANAGER','ROLE_FIN')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>
 							</dl>
@@ -120,7 +120,7 @@
 			//JavaScript代码区域
             layui.use('element', function() {
                 var element = layui.element;
-
+				$(".menu .layui-nav-item:first").addClass("layui-nav-itemed");
                 //确定当前日期
                 var timer = new Date();
                 var year = timer.getFullYear();
@@ -129,33 +129,33 @@
                 var todayThis = year + '年' + month + '月' + today + '日';
                 $('.timer').text(todayThis);
 
-                $.ajax({
-                    type:"post",
-                    url:"dept/power.json",
-                    success:function (result) {
-                        if(result.code=200){
-                            $("#department").html("");
-                            var data = result.data;
-                            if(data.length>1){
-                                $.each(data,function (i, item) {
-                                    $("#department").append("<dd id='index/"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
-                                })
-							}else{
-                                $("#department").append("<dd id='index/"+data.id+"'><a href='javascript:;'>"+data.deptName+"</a></dd>");
-							}
-							element.render();
-                        }else{
-                            alert(data.msg);
-                        }
-                    },
-                    error: function(data){
-                        if (data.responseText.indexOf("<!DOCTYPE html>") >= 0) {
-                            window.location.href = "login";
-                        } else {
-                            alert("获取数据失败");
-                        }
-                    }
-                });
+//                $.ajax({
+//                    type:"post",
+//                    url:"dept/power.json",
+//                    success:function (result) {
+//                        if(result.code=200){
+//                            $("#department").html("");
+//                            var data = result.data;
+//                            if(data.length>1){
+//                                $.each(data,function (i, item) {
+//                                    $("#department").append("<dd id='index/"+item.id+"'><a href='javascript:;'>"+item.deptName+"</a></dd>");
+//                                })
+//							}else{
+//                                $("#department").append("<dd id='index/"+data.id+"'><a href='javascript:;'>"+data.deptName+"</a></dd>");
+//							}
+//							element.render();
+//                        }else{
+//                            alert(data.msg);
+//                        }
+//                    },
+//                    error: function(data){
+//                        if (data.responseText.indexOf("<!DOCTYPE html>") >= 0) {
+//                            window.location.href = "login";
+//                        } else {
+//                            alert("获取数据失败");
+//                        }
+//                    }
+//                });
 
                 element.on('nav(test)', function(elem) {
                     $(".layui-body").css('background-color', '#fff')

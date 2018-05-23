@@ -3,18 +3,21 @@ package com.wz.wagemanager.service.impl;
 import com.wz.wagemanager.dao.ActSalaryRepository;
 import com.wz.wagemanager.dao.DeclareRepository;
 import com.wz.wagemanager.entity.ActSalary;
+import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.entity.SysDeclare;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
@@ -82,8 +85,8 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
-    public List<ActSalary> findByGroupDept () throws Exception {
-        return actSalaryRepository.findGroupByDept();
+    public List<SalaryArea> findByGroupDept () throws Exception {
+        return actSalaryRepository.findGroupByDept ();
     }
 
     @Override
@@ -125,4 +128,5 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     public List<ActSalary> findByDeclareId (String declareId) {
         return actSalaryRepository.findByDeclareId(declareId);
     }
+
 }

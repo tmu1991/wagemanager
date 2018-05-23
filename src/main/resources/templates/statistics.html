@@ -3,96 +3,18 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<style type="text/css">
-			table{
-				width: 99%;
-				border-collapse: collapse;
-			}
-			thead th{
-				width: auto;
-				height: 50px;
-				border: 1px solid #000000;
-			}
-			tbody td{
-				width: auto;
-				height: 40px;
-				border: 1px solid #000000;
-				text-align: center;	
-			}
-			tfoot td{
-				width: auto;
-				height: 45px;
-				border: 1px solid #000000;
-				text-align: center;	
-			}
-		</style>
-		<script th:src="@{js/jquery.js}" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/BigDecimal.js}" type="text/javascript" charset="utf-8"></script>
-		<script th:inline="javascript">
-			$(function () {
-				$.ajax({
-					url:"salary/statistics",
-					type:"post",
-					success:function (data) {
-                        var statistics_tab=$("#statistics_tab");
-                        if(data.code===200&&data.data!==null&&data.data!==''&&data.data.size!==0){
-                            statistics_tab.html("");
-                            $("#sum_time").text(data.msg);
-                            $.each(data.data,function (i,item) {
-								statistics_tab.append("<tr><td class=''>"+item.deptName+"</td><td class='grossPay'>"+item.grossPay+"</td><td class='subWork'>"+item.subWork+
-									"</td><td class='allowance'>"+item.allowance+"</td><td class='insurance'>"+item.insurance+"</td><td class='incomeTax'>"+item.incomeTax+
-									"</td><td class='accuFund'>"+item.accuFund+"</td><td class='payroll'>"+item.payroll+"</td></tr>");
-                            });
-							var statistics_sum=$("#statistics_sum");
-                            statistics_sum.html("");
-							var grossPayBC=BigDecimal.ZERO,subWorkBC=BigDecimal.ZERO,
-								allowanceBC=BigDecimal.ZERO,insuranceBC=BigDecimal.ZERO,
-								incomeTaxBC=BigDecimal.ZERO,accuFundBC=BigDecimal.ZERO,payrollBC=BigDecimal.ZERO;
-							$("td.grossPay").each(function () {
-                                grossPayBC=grossPayBC.add(new BigDecimal($(this).text()));
-                            });
-							var grossPay=grossPayBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-							$("td.subWork").each(function () {
-                                subWorkBC=subWorkBC.add(new BigDecimal($(this).text()));
-                            });
-							var subWork=subWorkBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            $("td.allowance").each(function () {
-                                allowanceBC= allowanceBC.add(new BigDecimal($(this).text()));
-                            });
-                            var allowance=allowanceBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            $("td.insurance").each(function () {
-                                insuranceBC=insuranceBC.add(new BigDecimal($(this).text()));
-                            });
-                            var insurance=insuranceBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            $("td.incomeTax").each(function () {
-                                incomeTaxBC=incomeTaxBC.add(new BigDecimal($(this).text()));
-                            });
-                            var incomeTax=incomeTaxBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            $("td.accuFund").each(function () {
-                                accuFundBC=accuFundBC.add(new BigDecimal($(this).text()));
-                            });
-                            var accuFund=accuFundBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            $("td.payroll").each(function () {
-                                payrollBC=payrollBC.add(new BigDecimal($(this).text()));
-                            });
-                            var payroll=payrollBC.setScale(2, MathContext.ROUND_HALF_UP).toString();
-                            statistics_sum.append("<td>合计</td><td>"+grossPay+"</td><td>"+subWork+"</td><td>"+allowance+"</td><td>"+insurance+"</td><td>"+incomeTax+"</td><td>"+accuFund+"</td><td>"+payroll+"</td>");
-						}else {
-                            statistics_tab.append("暂无数据");
-						}
-                    },
-                    error: function(data){
-                            alert("获取数据失败");
-                    }
-				});
-            });
-		</script>
+		<link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
 	</head>
-	<body>
-	<div><span id="sum_time"></span>部门工资汇总</div>
-		<table>
+	<body class="childrenBody">
+	<div style="margin-top: 10px;margin-left: 10px;margin-right: 5px;">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+			<legend><span class="sum_time"></span>部门工资汇总</legend>
+		</fieldset>
+		<div class="layui-form news_list">
+			<table class="layui-table">
 			<!--表头-->
 			<thead>
+			<tr>
 				<th>部门</th>
 				<th>应发工资</th>
 				<th>顶班工资</th>
@@ -100,18 +22,67 @@
 				<th>四险</th>
 				<th>个税</th>
 				<th>一金</th>
-				<th>实发工资</th>
+				<th>实发工资</th></tr>
 			</thead>
 			<!--内容-->
-			<tbody id="statistics_tab">
-
-			</tbody>
+				<tbody class="news_content"></tbody>
 			<!--合计-->
 			<tfoot>
-				<tr id="statistics_sum">
+				<tr class="statistics_sum">
 
 				</tr>
 			</tfoot>
 		</table>
+	</div>
+	</div>
+
+	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
+	<script th:inline="javascript">
+        layui.use(['table','jquery'],function () {
+            var $ = layui.jquery;
+			$.ajax({
+				url:"salary/statistics.json",
+				type:"post",
+				success:function (result) {
+					var code = result.code,
+						listData = result.data;
+					if(code == 200){
+						//渲染数据
+						var dataHtml = '';
+						var grossPay=0,subWork=0,
+							allowance=0,insurance=0,
+							incomeTax=0,accuFund=0,payroll=0;
+						if (listData.length != 0) {
+							$.each(listData,function (i, item) {
+								dataHtml+="<tr>" +
+									"<td>"+item.deptName+"</td>" +
+									"<td>"+item.grossPay+"</td>" +
+									"<td>"+item.subWork+ "</td>" +
+									"<td>"+item.allowance+"</td>" +
+									"<td>"+item.insurance+"</td>" +
+									"<td>"+item.incomeTax+"</td>" +
+									"<td>"+item.accuFund+"</td>" +
+									"<td>"+item.payroll+"</td>" +
+									"</tr>";
+								grossPay+=item.grossPay;
+								subWork+=item.subWork;
+								allowance+=item.allowance;
+								insurance+=item.insurance;
+								incomeTax+=item.incomeTax;
+								accuFund+=item.accuFund;
+								payroll+=item.payroll;
+							});
+						}
+						$(".sum_time").text(result.msg);
+						$(".news_content").html(dataHtml);
+						$(".statistics_sum").html("<td>合计</td><td>"+grossPay+"</td><td>"+subWork+"</td><td>"+allowance+"</td><td>"+insurance+"</td><td>"+incomeTax+"</td><td>"+accuFund+"</td><td>"+payroll+"</td>");
+					}
+				},
+				error: function(data){
+					alert("获取数据失败");
+				}
+			});
+		});
+	</script>
 	</body>
 </html>

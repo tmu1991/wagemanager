@@ -41,7 +41,7 @@ public class SalaryController extends BaseExceptionController {
     private UserService userService;
 
     @PostMapping ("pool.json")
-    public PageBean<List<ActSalary>> pool () throws Exception {
+    public PageBean<List<SalaryArea>> pool () throws Exception {
         return new PageBean<> (actSalaryService.findByGroupDept());
     }
 
@@ -101,7 +101,7 @@ public class SalaryController extends BaseExceptionController {
         Integer maxYear = hiSalaryService.getMaxYear ();
         if (maxYear != null && maxYear != 0) {
             int maxMonth = hiSalaryService.getMaxMonth (maxYear);
-            List<HiSalary> salaries = hiSalaryService.findByGroupDept (maxYear, maxMonth);
+            List<SalaryArea> salaries = hiSalaryService.findByGroupDept (maxYear, maxMonth);
             return new PageBean<> (DateUtil.toDateString (maxYear, maxMonth), salaries);
         }
         return new PageBean ();

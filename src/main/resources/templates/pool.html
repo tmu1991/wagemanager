@@ -21,8 +21,8 @@
                 <th>顶班工资</th>
                 <th>津贴</th>
                 <th>四险</th>
-                <th>个税</th>
                 <th>一金</th>
+                <th>个税</th>
                 <th>扣款</th>
                 <th>实发工资</th>
                 <th>操作</th>
@@ -58,8 +58,7 @@
                 <div style="margin-top: 5px;" class="layui-form-item">
                     <label class="layui-form-label">审批意见：</label>
                     <div class="layui-input-block">
-                        <input name="processInstanceId" class="processInstanceId" value="" hidden="hidden"/>
-                        <input name="taskId" class="taskId" value="" hidden="hidden"/>
+                        <input name="declareId" class="declareId" value="" hidden="hidden"/>
                         <textarea required lay-verify="required" placeholder="请输入" name="comment"
                                   class="layui-textarea comment"></textarea>
                     </div>
@@ -88,7 +87,7 @@
         $("body").on("click", ".chakan", function () {
             var _this = $(this);
             $('.commentList').html('');
-            $.post('declare/comment.json', {'processInstanceId': _this.attr("data-id")}, function (result) {
+            $.post('declare/comment1.json', {'declareId': _this.attr("data-id")}, function (result) {
                 var code = result.code,
                     listData = result.data;
                 if (code == 200) {
@@ -140,9 +139,7 @@
                 content: $("#test1").html(),
             });
             /* 渲染表单 */
-            var _parent = $(this).parents('tr');
-            $('.taskId').val(_parent.find('td:eq(0)').attr('data-id'));
-            $('.processInstanceId').val($(this).attr('data-id'));
+            $('.declareId').val($(this).attr('data-id'));
             form.render(null, 'userForm');
         });
 
@@ -160,7 +157,7 @@
         });
 
         function verify(objParam) {
-            $.post('declare/complete.json',objParam,function (result) {
+            $.post('declare/complete1.json',objParam,function (result) {
                 var code = result.code;
                 if (code == 200) {
                     layer.close(index);
@@ -186,22 +183,44 @@
                     //渲染数据
                     var dataHtml = '';
                     if (listData.length != 0) {
+                        var grossPay=0,subWork=0,allowance=0,insurance=0,accuFund=0,incomeTax=0,debitTotal=0,payroll=0;
                         $.each(listData, function (i, item) {
+                            var debit=Number(item.late)+Number(item.otherDebit)+Number(item.partyDue)+Number(item.loan)+Number(item.other)+Number(item.otherEl);
                             dataHtml += '<tr>'
-                                + '<td data-id="' + item.id + '">' + item.dept_name + '</td>'
+                                + '<td data-id="' + item.deptId + '">' + item.deptName + '</td>'
                                 + '<td>' + item.grossPay + '</td>'
                                 + '<td>' + item.subWork + '</td>'
                                 + '<td>' + item.allowance + '</td>'
                                 + '<td>' + item.insurance + '</td>'
                                 + '<td>' + item.accuFund + '</td>'
                                 + '<td>' + item.incomeTax + '</td>'
-                                + '<td>' + item.other_debit + '</td>'
+                                + '<td>' + debit + '</td>'
                                 + '<td>' + item.payroll + '</td>'
-                                + '<td><button class="layui-btn layui-btn-sm shenhe" data-id="' + item.declareId + '">审核</button>'
+                                + '<td class=""><button class="layui-btn layui-btn-sm shenhe" data-id="' + item.declareId + '">审核</button>'
                                 + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="' + item.declareId + '">查看</button>'
                                 + '</td>'
                                 + '</tr>';
+                            grossPay+=item.grossPay;
+                            subWork+=item.subWork;
+                            allowance+=item.allowance;
+                            insurance+=item.insurance;
+                            accuFund+=item.accuFund;
+                            incomeTax+=item.incomeTax;
+                            debitTotal+=Number(debit);
+                            payroll+=item.payroll;
                         });
+                        dataHtml+='<tr>' +
+                            '<td>合计</td>' +
+                            '<td>'+grossPay+'</td>' +
+                            '<td>'+subWork+'</td>' +
+                            '<td>'+allowance+'</td>' +
+                            '<td>'+insurance+'</td>' +
+                            '<td>'+accuFund+'</td>' +
+                            '<td>'+incomeTax+'</td>' +
+                            '<td>'+debitTotal+'</td>' +
+                            '<td>'+payroll+'</td>' +
+                            '<td></td>' +
+                            '</tr>';
                     } else {
                         dataHtml = '<tr><td colspan="10">暂无数据</td></tr>';
                     }
@@ -216,6 +235,7 @@
                 }
             });
         }
+
     });
 </script>
 </body>

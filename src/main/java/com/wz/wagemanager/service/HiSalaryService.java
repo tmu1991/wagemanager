@@ -1,6 +1,7 @@
 package com.wz.wagemanager.service;
 
 import com.wz.wagemanager.entity.HiSalary;
+import com.wz.wagemanager.entity.SalaryArea;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +16,9 @@ public interface HiSalaryService {
     List<HiSalary> findByYearAndMonth(int year, int month, Pageable page);
     Integer countByYearAndMonth(int year, int month);
     Page<HiSalary> findByWorkNoOrUsername(String workNo, String username, Pageable page);
-    Integer countByWorkNoOrUsername(String workNo, String username);
+//    Integer countByWorkNoOrUsername(String workNo, String username);
     HiSalary findByYearAndMonthAndUserId(int year, int month, String userId);
-    List<HiSalary> findByGroupDept(int year, int month) throws Exception;
+    List<SalaryArea> findByGroupDept(int year, int month) throws Exception;
 
     Integer getMaxYear();
 

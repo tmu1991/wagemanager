@@ -20,7 +20,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
         renderDate(1,username,deptId,roleId);
         layer.close(index);
 //            }
-    })
+    });
     //批量删除
     $("#delAll").click(function () {
         var $checkbox = $('.news_list tbody input[type="checkbox"][name="ids"]');

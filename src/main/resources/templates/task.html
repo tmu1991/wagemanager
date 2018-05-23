@@ -216,7 +216,7 @@
                         limit: page.pageSize,
                         count: page.totalCount, //数据总数
                         curr: page.currentPage,
-                        layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip'],
+                        layout: ['count', 'prev', 'page', 'next', 'skip'],
                         jump: function (obj, first) {
                             if (!first) {
                                 renderDate(obj.curr);

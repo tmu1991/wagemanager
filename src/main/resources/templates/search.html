@@ -4,178 +4,149 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>旺庄员工管理平台</title>
-		<link rel="stylesheet" th:href="@{src/css/layui.css}" href="../static/src/css/layui.css">
-		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
-		<style type="text/css">
-			body {
-				width: 100%;
-				height: 100%;
-				background-color: #009688;
-				padding: 20px;
-			}
-			
-			p {
-				margin: 20px 0;
-				color: #fff;
-				font-size: 20px;
-			}
-			
-			input {
-				margin-left: 20px;
-				width: 150px;
-				height: 30px;
-				padding-left: 10px;
-			}
-			
-			#demo {
-				display: none;
-			}
-		</style>
+		<link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
 	</head>
 
-	<body>
-		<p>请输入部门及员工姓名进行检索</p>
-		<input type="text" name="workNo" id="workNo" placeholder="请输入员工编号" />
-		<input type="text" name="userName" id="userName" placeholder="请输入员工姓名" />
-		<input type="button" name="search" id="search" value="搜索" />
-		<table lay-filter="demo" id="demo" lay-skin="line">
-			<thead>
-				<tr>
-					<th lay-data="{field:'year',width:65,fixed:'left'}" rowspan="2">年份</th>
-					<th lay-data="{field:'month',width:60,fixed:'left'}" rowspan="2">月份</th>
-					<th lay-data="{field:'id',width:90,fixed:'left'}" rowspan="2">考勤编号</th>
-					<th lay-data="{field:'workname', width:120}" rowspan="2">部门</th>
-					<th lay-data="{field:'username',width: 100}" rowspan="2">姓名</th>
-					<th lay-data="{field: 'money',width: 100}" rowspan="2">基本工资</th>
-					<th lay-data="{field:'num',width:80}" rowspan="2">系数</th>
-					<th lay-data="{field:'dayMoney', width:100}" rowspan="2">日工资</th>
-					<th lay-data="{align:'center'}" colspan="4">计资天数</th>
-					<!--<th lay-data="{field:'workDay',width:90}" rowspan="2">出勤天数</th>-->
-					<th lay-data="{field: 'workMoney',width: 100}" rowspan="2">工龄工资</th>
-					<th lay-data="{field:'toWorkday', width:120}" rowspan="2">顶班天数</th>
-					<th lay-data="{field:'toworkMoney',width: 100}" rowspan="2">顶班工资</th>
-					<th lay-data="{field: 'joinTime',width: 100}" rowspan="2">津贴</th>
-					<th lay-data="{field:'getMoney',width:100}" rowspan="2">应发工资</th>
-					<th lay-data="{field:'four', width:100}" rowspan="2">四险</th>
-					<th lay-data="{field:'gesui',width: 100}" rowspan="2">个人所得税</th>
-					<th lay-data="{field: 'yij',width: 100}" rowspan="2">一金</th>
-					<th lay-data="{field: 'jj',width: 120}" rowspan="2">奖金</th>
-					<th lay-data="{field:'ff', width:120}" rowspan="2">罚金</th>
-					<th lay-data="{field:'shi',width: 100}" rowspan="2">实际工资</th>
-					<th lay-data="{field: 'ka',width: 100}" rowspan="2">银行卡号</th>
-				</tr>
-				<tr>
-					<th lay-data="{field:'cq', width:80}">出勤</th>
-					<th lay-data="{field:'cc',width: 80}">出差</th>
-					<th lay-data="{field: 'gx',width: 80}">公休</th>
-					<th lay-data="{field: 'hj',width: 80}">合计</th>
-				</tr>
-			</thead>
-		</table>
+	<body class="childrenBody">
+	<div style="margin-top: 10px;margin-left: 10px;margin-right: 5px;">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+			<legend>请输入部门及员工姓名进行检索</legend>
+		</fieldset>
+		<blockquote class="layui-elem-quote">
+			<div style="width: 200px;" class="layui-input-inline">
+				<label class="layui-label"> 姓名 </label>
+				<div style="margin-left: 5px;" class="layui-input-block layui-inline">
+					<input style="width: 150px;" type="text" value="" placeholder="请输入员工姓名" name="userName" autocomplete="off" class="layui-input search_input userName">
+				</div>
+			</div>
+			<div style="width: 200px;" class="layui-input-inline">
+				<label class="layui-label"> 编号 </label>
+				<div style="margin-left: 5px;" class="layui-input-block layui-inline">
+					<input style="width: 150px;" type="text" value="" placeholder="请输入员工编号" name="workNo" autocomplete="off" class="layui-input search_input workNo">
+				</div>
+			</div>
+			<!--<div style="width: 200px;" class="layui-inline">-->
+				<!--<label class="layui-label"> 姓名 </label>-->
+				<!--<div style="margin-left: 5px;" class="layui-input-block layui-inline">-->
+					<!--<input style="width: 150px;" type="text" value="" placeholder="请输入员工身份证号" id="keyw" name="" autocomplete="off" class="layui-input search_input">-->
+				<!--</div>-->
+			<!--</div>-->
+			<div class="layui-inline"> <a class="layui-btn search_btn">搜索</a></div>
+		</blockquote>
+
+		<div class="layui-form news_list">
+			<table id="demo" class="layui-table" lay-skin="line">
+
+		    </table>
+            <div id="page"></div>
+        </div>
+	</div>
 
 	</body>
-	<script th:src="@{src/layui.js}" src="../static/src/layui.js" charset="utf-8"></script>
-	<script th:src="@{js/interface.js}" src="../static/js/interface.js" type="text/javascript" charset="utf-8"></script>
-	<script th:src="@{js/jquery.js}" type="text/javascript" charset="utf-8"></script>
-	<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript" th:inline="javascript">
+	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
+	<script th:inline="javascript">
+        layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
+            var form = layui.form,
+				table = layui.table,
+                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                laypage = layui.laypage,
+                $ = layui.jquery;
 
-		var pageSize=10;
-		$('#search').click(function() {
-			toPageList(1);
-		});
-		function toPageList(num){
-            var workNo = $("#workNo").val();
-            var userName=$("#userName").val();
-            if(workNo===''&&userName===''){
-                alert("请输入考勤编号或员工姓名");
-            }else{
-                layui.use('table', function() {
-                    var table = layui.table;
-                    var laypage=layui.laypage;
-                    $.ajax({
-                        url: "salary/search",
-                        type: "post",
-                        data: {"workNo": workNo, "userName": userName,"curPage":num,"pageSize":pageSize},
-                        success: function (data) {
-                            if(data.code=200){
-                                console.log(data);
-                                var arr=[];
-                                $.each(data.data.content,function (i, item) {
-                                    var fine=item.late+item.otherDebit+item.partyDue+item.loan+item.other;
-                                    var cell = {
-                                        'workname': item.deptName,
-                                        'id': item.workNo,
-                                        'username': item.username,
-                                        'cq': item.attendance,
-                                        'cc': item.busTravel,
-                                        'hj': item.workTotal,
-                                        'money': item.base,
-                                        'num': item.coeff,
-                                        'four': item.insurance,
-                                        'joinTime': item.allowance,
-                                        'toWorkday': item.subDay,
-                                        'dayMoney': item.dailyWage,
-                                        'gx': item.holiday,
-                                        'workMoney': item.seniority,
-                                        'toworkMoney': item.subWork,
-                                        'getMoney': item.grossPay,
-                                        'gesui': item.incomeTax,
-                                        'yij': item.accuFund,
-                                        'jj': item.bonus,
-                                        'ff': fine,
-                                        'shi': item.payroll,
-                                        'ka' : item.creditCard,
-                                        'year':item.year,
-                                        'month':item.month
-                                    };
-                                    arr.push(cell);
-                                });
-                                table.init('demo', {
-//                                    page:true,
-                                    limit: pageSize,
-                                    toolbar: '#toolbarDemo',
-                                    cols: [],
-                                    data: arr,
-                                    //表格风格
-                                    skin: 'row',
-                                    even: true
-                                    //,size: 'lg' //尺寸
-                                });
-                                var laytable=$(".layui-form.layui-border-box.layui-table-view");
-                                laytable.append("<div class='layui-table-tool'><div class='layui-inline layui-table-page' id='layui-table-page1'>" +
-									"<div class='layui-box layui-laypage layui-laypage-default' id='page'></div></div></div>");
-                                var page=data.data;
-                                if(page.totalElements>0){
-                                    $("#page").paging({
-                                        pageNo: num,
-                                        totalPage: page.totalPages,
-                                        totalSize: page.totalElements,
-                                        callback: function(num) {
-                                            toPageList(num);
-                                        }
-                                    });
-                                    if(num>=page.pageCount){
-                                        $("#nextPage").remove();
-                                        $("#lastPage").remove();
-                                    }
-                                    if(num<=1){
-                                        $("#prePage").remove();
-                                        $("#firstPage").remove();
-                                    }
+            //查询
+            $(".search_btn").click(function(){
+                var workNo = $(".workNo").val();
+                var userName=$(".userName").val();
+				if(!workNo && !userName){
+				    layer.msg('查询内容不能为空');
+				}else{
+                    var index = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+                    renderDate(1,workNo,userName);
+                    layer.close(index);
+				}
+            });
+
+            renderDate(1);
+
+			function renderDate(num,workNo,userName){
+                table.render({
+                    elem:'#demo',
+                    page:false,
+                    cols: [[
+                        {field:'year',width:65,fixed:'left','title':'年份',rowspan:2},
+                        {field:'month',width:60,fixed:'left','title':'月份',rowspan:2},
+                        {field:'workNo',width:90,fixed:'left','title':'考勤编号',rowspan:2},
+                        {field:'deptName', width:120,'title':'部门',rowspan:2},
+                        {field:'username',width: 100,'title':'姓名',rowspan:2},
+                        {field: 'base',width: 100,'title':'基本工资',rowspan:2},
+                        {field:'coeff',width:80,'title':'系数',rowspan:2},
+                        {field:'dailyWage', width:100,'title':'日工资',rowspan:2},
+                        {align:'center',colspan:'4','title':'计资天数'},
+//                        {field:'workDay',width:90,'title':'出勤天数'},
+                        {field: 'seniority',width: 100,'title':'工龄工资',rowspan:2},
+                        {field:'subDay', width:120,'title':'顶班天数',rowspan:2},
+                        {field:'subWork',width: 100,'title':'顶班工资',rowspan:2},
+                        {field: 'allowance',width: 100,'title':'津贴',rowspan:2},
+                        {field:'grossPay',width:100,'title':'应发工资',rowspan:2},
+                        {field:'insurance', width:100,'title':'四险',rowspan:2},
+                        {field:'incomeTax',width: 100,'title':'个人所得税',rowspan:2},
+                        {field: 'accuFund',width: 100,'title':'一金',rowspan:2},
+                        {field: 'bonus',width: 120,'title':'奖金',rowspan:2},
+                        {align:'center', width:120,'title':'罚金',colspan:6},
+                        {field:'payroll',width: 100,'title':'实际工资',rowspan:2},
+                        {field: 'creditCard',width: 100,'title':'银行卡号',rowspan:2}
+					],[
+                        {field:'attendance', width:80,'title':'出勤'},
+                        {field:'busTravel',width: 80,'title':'出差'},
+                        {field: 'holiday',width: 80,'title':'公休'},
+                        {field: 'workTotal',width: 80,'title':'合计'},
+                        {field:'late', width:100,'title':'迟到/早退'},
+                        {field:'otherDebit',width: 100,'title':'其他扣款'},
+                        {field: 'partyDue',width: 60,'title':'党费'},
+                        {field: 'loan',width: 60,'title':'借款'},
+                        {field: 'other',width: 60,'title':'其他'},
+                        {field: 'other_el',width: 60,'title':'其他'}
+                    ]],
+                    skin: 'row',
+                    even: true,
+                    url: "salary/search.json",
+                    method:"post",
+                    where:{
+                        "workNo": workNo,
+                        "userName": userName,
+                        "curPage":num
+                    },
+                    text:{
+                        none: '暂无相关数据' //默认：无数据。注：该属性为 layui 2.2.5 开始新增
+                    },
+//                    request: {
+//                        "workNo": workNo,
+//                        "userName": userName,
+//                        pageName: 'curPage' //页码的参数名称，默认：page
+//                    },
+                    response: {
+                        statusCode: 200 //成功的状态码，默认：0
+//                        ,countName: 'page.totalCount'
+                    },
+                    done:function(res, curr, count) {
+                        var page=res.page;
+                        laypage.render({
+                            elem: 'page',
+                            limit:page.pageSize,
+                            count: page.totalCount, //数据总数
+                            curr: page.currentPage,
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    renderDate(obj.curr,$(".workNo").val(),$(".userName").val());
                                 }
-                            }else{
-                                alert(data.msg);
                             }
+                        })
+                    }
+                    //,size: 'lg' //尺寸
 
-                        },
-                        error: function(data){
-                            alert("获取数据失败");
-                        }
-                    });
                 });
             }
-		}
+		});
 	</script>
 
 </html>
