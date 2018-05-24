@@ -40,6 +40,7 @@
 	<script th:inline="javascript">
         layui.use(['table','jquery'],function () {
             var $ = layui.jquery;
+            var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
 			$.ajax({
 				url:"salary/statistics.json",
 				type:"post",
@@ -76,12 +77,21 @@
 						$(".sum_time").text(result.msg);
 						$(".news_content").html(dataHtml);
 						$(".statistics_sum").html("<td>合计</td><td>"+grossPay+"</td><td>"+subWork+"</td><td>"+allowance+"</td><td>"+insurance+"</td><td>"+incomeTax+"</td><td>"+accuFund+"</td><td>"+payroll+"</td>");
+					}else{
+                        layer.close(cxindex)
+                        var msg = result.msg;
+                        if (msg) {
+                            layer.alert(msg);
+                        } else {
+                            layer.alert('查询数据失败');
+                        }
 					}
 				},
 				error: function(data){
 					alert("获取数据失败");
 				}
 			});
+            layer.close(cxindex)
 		});
 	</script>
 	</body>

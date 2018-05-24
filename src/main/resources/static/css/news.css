@@ -6,3 +6,8 @@
 
 /*分页*/
 #page{ text-align:right; }
+
+.layui-layer-page .layui-layer-content {
+    position: relative;
+    overflow: visible !important;
+}

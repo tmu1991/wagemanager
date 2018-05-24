@@ -247,7 +247,7 @@ public class SalaryController extends BaseExceptionController {
         return null;
     }
 
-    private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month", "id"};
+    private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
 
     private static final String[] WORD_PROPERTIES = new String[] {"deptName", "workNo", "customNo", "username", "arrive", "reality"};
 

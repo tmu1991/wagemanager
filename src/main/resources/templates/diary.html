@@ -3,92 +3,79 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
-		<style>
-			table{
-				width: 100%;
-				border-collapse: collapse;
-			}
-			thead th{
-				width: auto;
-				height: 50px;
-				font-size: 18px;
-				border: 1px solid #000000;
-			}
-			tbody td{
-				width: auto;
-				height: 30px;
-				border: 1px solid #000000;
-				text-align: center;
-				
-			}
-		</style>
+		<link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
 	</head>
-	<body>
-		
-		<table>
-			<!--表头-->
-			<thead>
-				<th>操作员</th>
-				<th>登录时间</th>
-				<th>操作账户</th>
-				<th>操作事项</th>
-				<th>操作明细</th>
-				<th>操作时间</th>
-			</thead>
-			<!--内容-->
-			<tbody id="mainContent">
+	<body class="childrenBody">
+	<div style="margin-top: 10px;margin-left: 10px;margin-right: 5px;">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+			<legend>日志列表</legend>
+		</fieldset>
 
-			</tbody>
-			
-		</table>
+		<div class="layui-form news_list">
+			<table id="demo" class="layui-table" lay-skin="line">
 
-		<div align="center"  value="1 0"></div>
-		<div align="center" id="page" class="page_div"></div>
+			</table>
+			<div id="page"></div>
+		</div>
+	</div>
+	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
+	<script th:inline="javascript">
+        layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
+            var form = layui.form,
+                table = layui.table,
+                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                laypage = layui.laypage,
+                $ = layui.jquery;
 
-		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
-		<script th:inline="javascript">
-			var pageSize=10;
-			toPageList(1);
-			function toPageList(num) {
-				$.ajax({
-					url:"log/list",
-					type:"post",
-					data:{"pageSize":pageSize,"curPage":num},
-					success:function (data) {
-                        var mainContent=$("#mainContent");
-                        mainContent.html("");
-                        if(data.data.totalElements>0){
-						$.each(data.data.content,function (i, item) {
-							mainContent.append("<tr><td>" + item.username + "</td><td>" + item.startTime + "</td><td>" + item.operName + "</td><td>" + item.operation +
-								"</td><td>" + item.args + "</td><td>"+item.createTime+"</td></tr>");
-						});
+            renderDate(1);
 
-                        $("#page").paging({
-                            pageNo: num,
-                            totalPage: data.data.totalPages,
-                            totalSize: data.data.totalElements,
-                            callback: function(num) {
-                                toPageList(num);
+            function renderDate(num){
+                var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+                table.render({
+                    elem:'#demo',
+                    page:false,
+                    cols: [[
+                        {field:'username','title':'操作员'},
+                        {field:'startTime','title':'登录时间'},
+                        {field:'operName','title':'操作账户'},
+                        {field:'operation','title':'操作事项'},
+                        {field:'args','title':'操作明细'},
+                        {field: 'createTime','title':'操作时间'}
+                    ]],
+                    skin: 'row',
+                    even: true,
+                    url: "log/list.json",
+                    method:"post",
+                    where:{
+                        "curPage":num
+                    },
+                    text:{
+                        none: '暂无相关数据' //默认：无数据。注：该属性为 layui 2.2.5 开始新增
+                    },
+                    response: {
+                        statusCode: 200 //成功的状态码，默认：0
+                    },
+                    done:function(res, curr, count) {
+                        var page=res.page;
+                        laypage.render({
+                            elem: 'page',
+                            limit:page.pageSize,
+                            count: page.totalCount, //数据总数
+                            curr: page.currentPage,
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    renderDate(obj.curr);
+                                }
                             }
                         });
-                        if(num>=data.data.totalPages){
-                            $("#nextPage").remove();
-                            $("#lastPage").remove();
-                        }
-                        if(num<=1){
-                            $("#prePage").remove();
-                            $("#firstPage").remove();
-                        }}else{
-                            mainContent.append("暂无数据");
-						}
-                    },
-                    error: function(data){
-                        alert("获取数据失败");
                     }
-				});
+                    //,size: 'lg' //尺寸
+
+                });
+                layer.close(cxindex)
             }
-		</script>
+        });
+	</script>
 	</body>
 </html>

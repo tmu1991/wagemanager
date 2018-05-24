@@ -64,6 +64,7 @@
             $("body").on("click", ".chakan", function () {
                 var _this = $(this);
                 $('.commentList').html('');
+                var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
                 $.post('declare/comment.json',{'processInstanceId':_this.attr("data-id")},function (result) {
                     var code = result.code,
                         listData = result.data;
@@ -91,6 +92,7 @@
                             content: $("#test").html()
                         });
                     } else {
+                        layer.close(cxindex)
                         var msg = result.msg;
                         if (msg) {
                             layer.alert(msg);
@@ -99,17 +101,20 @@
                         }
                     }
                 });
+                layer.close(cxindex)
             });
 			//提交工资审批
             $("body").on("click", ".tijiao", function () {
                 var _this = $(this);
                 layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
+                    var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
                     $.post('declare/start.json', {'declareId': _this.attr("data-id")}, function (result) {
                         var code = result.code;
                         if (code == 200) {
                             layer.msg('提交成功');
                             renderDate($('.layui-laypage-curr em:last').text());
                         } else {
+                            layer.close(tjindex)
                             var msg = result.msg;
                             if (msg) {
                                 layer.alert(msg);
@@ -118,6 +123,7 @@
                             }
                         }
                     });
+                    layer.close(tjindex)
                 })
 //                deleteBatch(_this.attr("data-id"));
             });
@@ -126,12 +132,14 @@
             $("body").on("click", ".shenhe", function () {
                 var _this = $(this);
                 layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
+                    var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
                     $.post('declare/complete.json', {'processInstanceId': _this.next().attr("data-id")}, function (result) {
                         var code = result.code;
                         if (code == 200) {
                             layer.msg('提交成功');
                             renderDate($('.layui-laypage-curr em:last').text());
                         } else {
+                            layer.close(tjindex)
                             var msg = result.msg;
                             if (msg) {
                                 layer.alert(msg);
@@ -140,11 +148,13 @@
                             }
                         }
                     });
+                    layer.close(tjindex)
                 })
 //                deleteBatch(_this.attr("data-id"));
             });
 
             function renderDate(curPage) {
+                var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
                 $.post("declare/list.json", {"curPage": curPage}, function (result) {
                     var code = result.code,
                         listData = result.data,
@@ -208,6 +218,7 @@
                             }
                         })
                     } else {
+                        layer.close(cxindex)
                         var msg = result.msg;
                         if (msg) {
                             layer.alert(msg);
@@ -216,6 +227,7 @@
                         }
                     }
                 });
+                layer.close(cxindex)
             }
         });
 	</script>

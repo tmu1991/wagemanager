@@ -59,15 +59,14 @@
 				if(!workNo && !userName){
 				    layer.msg('查询内容不能为空');
 				}else{
-                    var index = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
                     renderDate(1,workNo,userName);
-                    layer.close(index);
 				}
             });
 
             renderDate(1);
 
 			function renderDate(num,workNo,userName){
+                var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
                 table.render({
                     elem:'#demo',
                     page:false,
@@ -91,7 +90,8 @@
                         {field:'incomeTax',width: 100,'title':'个人所得税',rowspan:2},
                         {field: 'accuFund',width: 100,'title':'一金',rowspan:2},
                         {field: 'bonus',width: 120,'title':'奖金',rowspan:2},
-                        {align:'center', width:120,'title':'罚金',colspan:6},
+                        {field: 'fj',align:'center', width:120,'title':'罚金',colspan:6},
+                        {field: 'fj1',width: 120,'title':'罚金',rowspan:2},
                         {field:'payroll',width: 100,'title':'实际工资',rowspan:2},
                         {field: 'creditCard',width: 100,'title':'银行卡号',rowspan:2}
 					],[
@@ -104,7 +104,7 @@
                         {field: 'partyDue',width: 60,'title':'党费'},
                         {field: 'loan',width: 60,'title':'借款'},
                         {field: 'other',width: 60,'title':'其他'},
-                        {field: 'other_el',width: 60,'title':'其他'}
+                        {field: 'otherEl',width: 60,'title':'其他'}
                     ]],
                     skin: 'row',
                     even: true,
@@ -128,6 +128,7 @@
 //                        ,countName: 'page.totalCount'
                     },
                     done:function(res, curr, count) {
+
                         var page=res.page;
                         laypage.render({
                             elem: 'page',
@@ -140,11 +141,48 @@
                                     renderDate(obj.curr,$(".workNo").val(),$(".userName").val());
                                 }
                             }
-                        })
+                        });
+
+                        $("[data-field='fj1']").css('display','none');
+
+						$.each($('table tbody tr'),function (index, item) {
+                            $(item).find("[data-field='fj1'] div").text(
+                                Number($(item).find("[data-field='late']").text())+
+                                Number($(item).find("[data-field='otherDebit']").text())+
+                                Number($(item).find("[data-field='partyDue']").text())+
+                                Number($(item).find("[data-field='loan']").text())+
+                                Number($(item).find("[data-field='other']").text())+
+                                Number($(item).find("[data-field='otherEl']").text())
+							);
+                        });
+
+                        $("th[data-field='fj']").css('cursor','pointer').on('click',function () {
+                                $("[data-field='late']").css('display','none');
+                                $("[data-field='otherDebit']").css('display','none');
+                                $("[data-field='partyDue']").css('display','none');
+                                $("[data-field='loan']").css('display','none');
+                                $("[data-field='other']").css('display','none');
+                                $("[data-field='otherEl']").css('display','none');
+                                $("[data-field='fj']").css('display','none');
+                                $("[data-field='fj1']").css('display','');
+						});
+
+                        $("th[data-field='fj1']").css('cursor','pointer').on('click',function () {
+                            $("[data-field='fj1']").css('display','none');
+                            $("[data-field='fj']").css('display','');
+                            $("[data-field='late']").css('display','');
+                            $("[data-field='otherDebit']").css('display','');
+                            $("[data-field='partyDue']").css('display','');
+                            $("[data-field='loan']").css('display','');
+                            $("[data-field='other']").css('display','');
+                            $("[data-field='otherEl']").css('display','');
+                        });
+
                     }
                     //,size: 'lg' //尺寸
 
                 });
+                layer.close(cxindex)
             }
 		});
 	</script>

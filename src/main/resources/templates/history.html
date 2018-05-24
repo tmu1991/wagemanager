@@ -60,7 +60,7 @@
             elem: '#demo',
             type:'month',
             position: 'static',
-            showBottom: false,
+//            showBottom: false,
             btns: ['clear', 'confirm','now'],
             theme: 'molv',
             done: function(value, date, endDate){ //选择日期完毕的回调
@@ -71,6 +71,7 @@
         renderDate(1);
 
         function renderDate(curPage,year,month) {
+            var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
             $.ajax({
                 url:"salary/history.json",
                 type:"post",
@@ -108,12 +109,22 @@
 								}
 							}
 						})
-                    }
+                    }else{
+                        layer.close(cxindex);
+                        var msg = result.msg;
+                        if (msg) {
+                            lay.alert(msg);
+                        } else {
+                            lay.alert('查询数据失败');
+                        }
+					}
                 },
                 error: function(data){
+                    layer.close(cxindex);
                     alert("获取数据失败");
                 }
             });
+            layer.close(cxindex);
         }
     });
 

@@ -3,88 +3,76 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<style type="text/css">
-			table{
-				width: 99%;
-				border-collapse: collapse;
-			}
-			thead th{
-				width: auto;
-				height: 50px;
-				border: 1px solid #000000;
-			}
-			tbody td{
-				width: auto;
-				height: 30px;
-				border: 1px solid #000000;
-				text-align: center;	
-			}
-		</style>
-		<link th:href="@{css/page.css}" type="text/css" rel="stylesheet">
-		<script th:src="@{examples/js/jquery.js}" src="../static/examples/js/jquery.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{js/paging.js}" type="text/javascript" charset="utf-8"></script>
-		<script th:inline="javascript">
-            var pageSize=10;
-			$(function () {
-				toPageList(1);
-            });
-			function toPageList(num) {
-                $.ajax({
-                    url:"task/list",
-                    type:"post",
-                    data:{"pageSize":pageSize,"curPage":num},
-                    success:function (data) {
-                        var mainContent=$("#mainContent");
-                        mainContent.html("");
-                        if(data.code===200&&data.data!==null&&data.data!==''&&data.data.size!==0){
-                            $.each(data.data,function (i, item) {
-                                mainContent.append("<tr content='"+item.id+"'><td>"+item.deptName+"</td><td>"+item.username+"</td><td>"+item.workNo+"</td><td>"+item.loan+"</td><td>"+item.debit+"</td></tr>");
-                            });
-                            var page=data.page;
-                            if(page.totalCount>0){
-                                $("#page").paging({
-                                    pageNo: num,
-                                    totalPage: page.pageCount,
-                                    totalSize: page.totalCount,
-                                    callback: function(num) {
-                                        toPageList(num);
-                                    }
-                                });
-                                if(num>=page.pageCount){
-                                    $("#nextPage").remove();
-                                    $("#lastPage").remove();
-                                }
-                                if(num<=1){
-                                    $("#prePage").remove();
-                                    $("#firstPage").remove();
-                                }
-							}
-                        }else{
-                            mainContent.append("暂无数据");
-						}
-                    },
-                    error: function(data){
-                        alert("获取数据失败");
-                    }
-                })
-            }
-		</script>
+		<link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
 	</head>
-	<body>
-		<table>
-			<!--表头-->
-			<thead>
-				<th>部门</th>
-				<th>姓名</th>
-				<th>考勤编号</th>
-				<th>借款金额</th>
-				<th>本月扣款</th>
-			</thead>
-			<!--内容-->
-			<tbody id="mainContent">
+	<body class="childrenBody">
+	<div style="margin-top: 10px;margin-left: 10px;margin-right: 5px;">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+			<legend>待办事项</legend>
+		</fieldset>
 
-			</tbody>
-		</table>
-		<div align="center" id="page" class="page_div"></div>
+		<div class="layui-form news_list">
+			<table id="demo" class="layui-table" lay-skin="line">
+
+			</table>
+			<div id="page"></div>
+		</div>
+	</div>
+	<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
+	<script th:inline="javascript">
+        layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
+            var form = layui.form,
+                table = layui.table,
+                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                laypage = layui.laypage,
+                $ = layui.jquery;
+
+            renderDate(1);
+
+            function renderDate(num){
+                table.render({
+                    elem:'#demo',
+                    page:false,
+                    cols: [[
+                        {field:'deptName','title':'部门'},
+                        {field:'username','title':'姓名'},
+                        {field:'workNo','title':'考勤编号'},
+                        {field:'loan','title':'借款金额'},
+                        {field:'debit','title':'本月扣款'}
+                    ]],
+                    skin: 'row',
+                    even: true,
+                    url: "task/list.json",
+                    method:"post",
+                    where:{
+                        "curPage":num
+                    },
+                    text:{
+                        none: '暂无相关数据' //默认：无数据。注：该属性为 layui 2.2.5 开始新增
+                    },
+                    response: {
+                        statusCode: 200 //成功的状态码，默认：0
+                    },
+                    done:function(res, curr, count) {
+                        var page=res.page;
+                        laypage.render({
+                            elem: 'page',
+                            limit:page.pageSize,
+                            count: page.totalCount, //数据总数
+                            curr: page.currentPage,
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    renderDate(obj.curr);
+                                }
+                            }
+                        });
+                    }
+                    //,size: 'lg' //尺寸
+
+                });
+            }
+        });
+	</script>
 	</body>
 </html>

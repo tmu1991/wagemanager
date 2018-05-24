@@ -84,6 +84,7 @@
         $("body").on("click", ".chakan", function () {
             var _this = $(this);
             $('.commentList').html('');
+            var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
             $.post('declare/comment.json', {'processInstanceId': _this.attr("data-id")}, function (result) {
                 var code = result.code,
                     listData = result.data;
@@ -116,6 +117,7 @@
                         content: $("#test").html()
                     });
                 } else {
+                    layer.close(cxindex)
                     var msg = result.msg;
                     if (msg) {
                         layer.alert(msg);
@@ -124,6 +126,7 @@
                     }
                 }
             });
+            layer.close(cxindex)
         });
 
         var index;
@@ -156,6 +159,7 @@
         });
 
         function verify(objParam) {
+            var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
             $.post('declare/complete.json',objParam,function (result) {
                 var code = result.code;
                 if (code == 200) {
@@ -163,6 +167,7 @@
                     layer.msg('审核成功');
                     renderDate($('.layui-laypage-curr em:last').text());
                 } else {
+                    layer.close(tjindex);
                     var msg = result.msg;
                     if (msg) {
                         layer.alert(msg);
@@ -171,10 +176,12 @@
                     }
                 }
             },'json');
+            layer.close(tjindex);
             return false;
         }
 
         function renderDate(curPage) {
+            var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
             $.post("declare/task.json", {"curPage": curPage}, function (result) {
                 var code = result.code,
                     listData = result.data,
@@ -224,6 +231,7 @@
                         }
                     })
                 } else {
+                    layer.close(cxindex);
                     var msg = result.msg;
                     if (msg) {
                         layer.alert(msg);
@@ -232,6 +240,7 @@
                     }
                 }
             });
+            layer.close(cxindex);
         }
     });
 </script>
