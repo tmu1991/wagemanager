@@ -14,7 +14,7 @@
 		<div class="layui-input-inline">
 			<label class="layui-label"> 请选择日期 </label>
 			<div class="layui-input-inline">
-				<input id="demo" class="layui-input laydate-icon" placeholder="yyyy-MM" lay-key="4" type="text">
+				<input id="dateMonth" class="layui-input laydate-icon" placeholder="yyyy-MM" type="text">
 			</div>
 		</div>
 	</blockquote>
@@ -55,11 +55,10 @@
 	    var laydate = layui.laydate,
             laypage = layui.laypage,
             $ = layui.jquery;
-
         laydate.render({
-            elem: '#demo',
+            elem: '#dateMonth',
             type:'month',
-            position: 'static',
+//            position: 'static',
 //            showBottom: false,
             btns: ['clear', 'confirm','now'],
             theme: 'molv',

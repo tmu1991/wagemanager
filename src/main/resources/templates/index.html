@@ -1,13 +1,12 @@
-<!doctype html>
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
 	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial=scale=1">
+		<!--<meta name="viewport" content="width=device-width,initial=scale=1">-->
 		<title>动态表格</title>
-		<link th:href="@{/bootstrap/css/bootstrap.min.css}" type="text/css" rel="stylesheet">
-		<link rel="stylesheet" th:href="@{layui/css/layui.css}" media="all">
+		<link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+		<link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
 		<link th:href="@{/css/index.css}" type="text/css" rel="stylesheet">
 		<style>
 			.changered{
@@ -19,7 +18,7 @@
 	<body>
 		<p class="tit">交口县旺庄生铁有限责任公司工资表</p>
 		<p>
-			<span class="deptInfo" th:data-id="${dept.id}" th:text="${dept.deptName}"></span>
+			<span class="deptInfo" th:value="${dept.id}" th:text="${dept.deptName}"></span>
 			<span class="timer"></span>
 		</p>
 		<input sec:authorize="hasAnyRole('ROLE_STAT')" type="file" onchange="xlsFile(this)" name="file" id="xlf" value="导入员工考勤" />
@@ -147,6 +146,7 @@
 				</td>
 			</tr>
 		</table>
+		<div id="page"></div>
 		<hr />
 		<div class="addBox">
 			<!--<h1>更新数据</h1>-->
@@ -204,12 +204,7 @@
 				</table>
 			</form>
 		</div>
-
-		<script th:src="@{/js/cpexcel.js}" src="../static/js/cpexcel.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{/js/jszip.js}" src="../static/js/jszip.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{/js/shim.js}" src="../static/js/shim.js" type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{/js/interface.js}" src='../static/js/interface.js' type="text/javascript" charset="utf-8"></script>
-		<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
+		<script th:src="@{/layui/layui.js}" src="../static/layui/layui.js"></script>
 		<script th:inline="javascript">
             layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 var form = layui.form,
@@ -223,21 +218,21 @@
                     $(this).addClass("changered");
                 });
 
-                var deptId = $('.deptInfo').attr('data-id');
+                var deptId = /*[[${dept.id}]]*/;;
 
                 renderDate(1);
 
                 function renderDate(num) {
                     var index = layer.load(2, {shade: [0.4, '#000']});
                     $.ajax({
-                        url: "salary/dept.json",
+                        url: "/salary/dept.json",
                         type: "post",
                         data: {"deptId": deptId, "curPage": num},
                         success: function (result) {
                             var box = $('#listTable');
                             var code = result.code,
                                 listData = result.data,
-                                page = listTable.page;
+                                page = result.page;
                             if (code == 200) {
                                 var cell = $('#eg').find('tr');
                                 var timerMsg;
@@ -418,7 +413,6 @@
                             });
                             var data = {
                                 "ids": ids,
-                                "pageSize": pageSize,
                                 "curPage": cur,
                                 "date": select_date,
                                 "deptId": deptId
@@ -505,7 +499,7 @@
                                 //                            var cur=$(".current:first").text();
                                 //                            var select_date=$('.timer').text();
                                 //                        "pageSize":pageSize,"curPage":cur,"date":select_date,"deptId":deptId
-                                toPageList(1);
+                                renderDate(1);
                             } else {
                                 alert("操作失败，请刷新后重试");
                             }
