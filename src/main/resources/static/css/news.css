@@ -11,3 +11,7 @@
     position: relative;
     overflow: visible !important;
 }
+
+.changered{
+    color:red;
+}
