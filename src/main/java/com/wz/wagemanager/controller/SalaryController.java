@@ -28,6 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * @author WindowsTen
+ */
 @RestController
 @RequestMapping ("salary")
 public class SalaryController extends BaseExceptionController {
@@ -56,6 +59,7 @@ public class SalaryController extends BaseExceptionController {
     }
 
     @PostMapping ("delete.json")
+    @OperInfo (type = OperationType.DELETE)
     public PageBean delete (
             @RequestParam (value = "ids") String ids
     ) throws ParseException {
