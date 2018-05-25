@@ -32,7 +32,10 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 layer.open({
                     type: 1,
                     title: "审核流程",
-                    skin: "myclass",
+                    shadeClose: true, //开启遮罩关闭
+                    closeBtn: 0, //不显示关闭按钮
+                    shade: 0.6,//遮罩透明度
+                    skin: 'layui-layer-molv',
                     area: ["80%"],
                     content: $("#test").html()
                 });

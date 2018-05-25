@@ -55,7 +55,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
         index = layer.open({
             type: 1,
             title: "更新员工信息",
-            skin: "myclass",
+            skin: 'layui-layer-molv',
             area: ["50%"],
             content: $('#test').html(),
             shadeClose:true,
@@ -84,7 +84,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
         index = layer.open({
             type: 1,
             title: "添加员工",
-            skin: "myclass",
+            skin: 'layui-layer-lan',
             area: ["50%"],
             content: $('#test').html(),
             shadeClose:true,
@@ -105,17 +105,23 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
 
     //监听提交
     form.on('submit(demo1)', function(data){
+        var tjindex = layer.parent().msg('更新中，请稍候',{icon: 16,time:false,shade:0.8});
         $.post('user/insert.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
-                layer.msg("操作成功");
                 var username=$('#keyw').val();
                 var deptId=$('#listDept').val();
                 var roleId=$('#listRole').val();
                 renderDate($('.layui-laypage-curr em:last').text(),username,deptId,roleId);
-                layer.close(index);
+                layer.closeAll();
+                layer.msg("操作成功");
             } else {
-                layer.msg("操作失败，请重试");
+                layer.close(tjindex);
+                if(result.msg){
+                    layer.alert(result.msg);
+                }else{
+                    layer.msg("操作失败，请重试");
+                }
             }
         },'json');
         return false;
@@ -219,14 +225,16 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                 layer.close(scindex);
                 if (code == 200) {
                     layer.msg("删除成功");
+                    var username=$('#keyw').val();
+                    var deptId=$('#listDept').val();
+                    var roleId=$('#listRole').val();
+                    renderDate($('.layui-laypage-curr em:last').text(),username,deptId,roleId);
                 } else {
+                    layer.close(scindex);
                     layer.msg("删除失败，请重试");
                 }
-                var username=$('#keyw').val();
-                var deptId=$('#listDept').val();
-                var roleId=$('#listRole').val();
-                renderDate($('.layui-laypage-curr em:last').text(),username,deptId,roleId);
             });
+            layer.close(scindex);
         })
     }
 

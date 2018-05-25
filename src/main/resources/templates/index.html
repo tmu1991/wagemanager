@@ -8,21 +8,41 @@
 		<link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
 		<link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
 		<link th:href="@{/css/index.css}" type="text/css" rel="stylesheet">
-		<link href="../static/css/news.css" th:href="@{/css/news.css}"/>
+		<link rel="stylesheet" th:href="@{/css/font_eolqem241z66flxr.css}" media="all"/>
+		<link rel="stylesheet" th:href="@{/css/news.css}" media="all"/>
+		<style>
+			.changered{
+				color:red;
+			}
+			.layui-form-label{
+				width:100px;
+			}
+			.layui-input-block{
+				height: 20px;
+			}
+			.layui-form-item{
+				margin-bottom: auto;
+			}
+		</style>
 	</head>
 
 	<body>
+	<div style="margin-right: 5px;margin-left: 5px;">
 		<p class="tit">交口县旺庄生铁有限责任公司工资表</p>
 		<p>
-			<span class="deptInfo" th:value="${dept.id}" th:text="${dept.deptName}"></span>
+			<span class="deptInfo" th:content="${dept.id}" th:text="${dept.deptName}"></span>
 			<span class="timer"></span>
 		</p>
 		<div class="layui-upload">
-			<button type="button" class="layui-btn layui-btn-normal" id="test8">选择文件</button>
-			<button type="button" class="layui-btn" id="test9">开始上传</button>
+			<button sec:authorize="hasAnyRole('ROLE_STAT')" name="file" type="button" class="layui-btn" id="test8">导入员工考勤表</button>
+			<button sec:authorize="hasAnyRole('ROLE_LAW')" name="file" type="button" class="layui-btn" id="test9">导入扣款明细表</button>
+			<div class="layui-upload-list" hidden="hidden">
+				<img class="layui-upload-img" id="demo1">
+				<p id="demoText"></p>
+			</div>
 		</div>
-		<!--<input sec:authorize="hasAnyRole('ROLE_STAT')" type="file" onchange="xlsFile(this)" name="file" id="xlf" value="导入员工考勤" />-->
-		<!--<input sec:authorize="hasAnyRole('ROLE_LAW')" type="file" onchange="xlsFile(this)" name="file" id="xlf" value="导入员工考勤" />-->
+		<!--<input  type="file" onchange="xlsFile(this)"  id="xlf" value="" />-->
+		<!--<input  type="file" onchange="xlsFile(this)"  id="xlf" value="导入员工考勤" />-->
 		<table class="table table-hover table-bordered" id="mytable">
 			<thead>
 				<tr>
@@ -97,7 +117,8 @@
 					<td class="sjhj"></td>
 					<td class="kahj"></td>
 					<td sec:authorize="hasAnyRole('ROLE_STAT')" class="dehj">
-						<a href="javascript:;" class="btn btn-danger" role="button" onclick="delAll(this)">全部删除</a>
+						<a id="delAll" data-type="delAll" class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>全部删除</a>
+						<!--<a href="javascript:;" class="btn btn-danger" role="button" onclick="delAll(this)">全部删除</a>-->
 						<!--<a href="javascript:;" class="btn btn-info" role="button" onclick="addTr()">新增人员</a>-->
 					</td>
 				</tr>
@@ -135,69 +156,85 @@
 				<td class="sj"></td>
 				<td class="ka"></td>
 				<td sec:authorize="hasAnyRole('ROLE_STAT')">
-					<input type="button" name="" value="删除" class="btn btn-danger" onclick="del(this)" />
-					<input type="button" name="" value="修改" class="btn btn-info" onclick="modify(this)" />
+					<a class="layui-btn layui-btn-sm news_edit"><i class="iconfont icon-edit"></i> 编辑</a>
+					<a class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>删除</a>
+					<!--<input type="button" name="" value="删除" class="btn btn-danger" onclick="del(this)" />-->
+					<!--<input type="button" name="" value="修改" class="btn btn-info" onclick="modify(this)" />-->
 				</td>
 			</tr>
 		</table>
 		<div id="page"></div>
 		<hr />
-		<div class="addBox">
+		<div id="addBox" class="addBox" style="display: none;">
+			<div class="layui-col-md10">
 			<!--<h1>更新数据</h1>-->
-			<span id="close">X</span>
-			<form id="update_form">
-				<input type="hidden" name="id" id="wageId">
-				<table class="table table-hover table-bordered">
-					<tr>
-						<th>编号</th>
-						<td><input type="text" name="workNo" class="form-control" id="num" /></td>
-					</tr>
-					<tr>
-						<th>姓名</th>
-						<td><input type="text" name="username" class="form-control" id="username" /></td>
-					</tr>
-					<tr>
-						<th>系数</th>
-						<td><input type="text" name="coeff" class="form-control" id="pwd" /></td>
-					</tr>
-					<tr>
-						<th>工资</th>
-						<td><input type="text" name="base" class="form-control" id="bir" /></td>
-					</tr>
-					<tr>
-						<th>工龄工资</th>
-						<td><input type="text" name="seniority" class="form-control" id="birth" /></td>
-					</tr>
-					<tr>
-						<th>出差</th>
-						<td><input type="text" name="busTravel" class="form-control" id="ccc" /></td>
-					</tr>
-					<tr>
-						<th>顶班天数</th>
-						<td><input type="text" name="subDay" class="form-control" id="addre" /></td>
-					</tr>
-					<tr>
-						<th>津贴</th>
-						<td><input type="text" name="allowance" class="form-control" id="jtt" /></td>
-					</tr>
-					<tr>
-						<th>奖金</th>
-						<td><input type="text" name="bonus" class="form-control" id="jjj" /></td>
-					</tr>
-					<tr>
-						<th>罚金</th>
-						<td><input type="text" name="otherDebit" class="form-control" id="fjj" /></td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="reset" value="重置" class="btn btn-primary" id="reset" />
-							<!--<input type="button" value="添加" class="btn btn-success" id="add" onclick="addList()" />-->
-							<input type="button" value="更新" class="btn btn-info" id="" onclick="update()" />
-						</td>
-					</tr>
-				</table>
+			<!--<span id="close">X</span>-->
+			<form style="margin-top: 5px;" class="layui-form" lay-filter="indexForm" id="update_form">
+				<div class="layui-form-item">
+					<label class="layui-form-label">工   号：</label>
+					<div class="layui-input-block">
+						<input name="id" value="" hidden="hidden"/>
+						<input disabled type="text" lay-verify="required" name="workNo" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">姓名：</label>
+					<div class="layui-input-block">
+						<input disabled type="text" lay-verify="required" name="username" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">系   数：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="coeff" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">基本工资：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="base" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">工龄工资：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="seniority" class="layui-input">
+					</div>
+				</div>
+					<div class="layui-form-item">
+					<label class="layui-form-label">出   差：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="busTravel" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">顶班天数：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="subDay" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">津&nbsp;&nbsp;&nbsp;贴：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="allowance" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">奖&nbsp;&nbsp;&nbsp;金：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="bonus" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
 			</form>
+			</div>
 		</div>
+	</div>
 		<script th:src="@{/layui/layui.js}" src="../static/layui/layui.js"></script>
 		<script th:inline="javascript" th:src="@{/js/index.js}" src="../static/js/index.js"></script>
 	</body>

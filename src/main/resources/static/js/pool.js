@@ -39,7 +39,6 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                     title: ["审核流程"],
                     style: 'position:fixed;margin-top:30%;',
                     area: ["70%"],
-                    anim: 1,
                     content: $("#test").html()
                 });
             } else {
@@ -60,7 +59,6 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
         index = layer.open({
             type: 1,
             title: "审批意见",
-            skin: "myclass",
             area: ["40%", '50%'],
             content: $("#test1").html(),
         });
