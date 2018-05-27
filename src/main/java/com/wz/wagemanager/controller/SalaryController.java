@@ -51,9 +51,9 @@ public class SalaryController extends BaseExceptionController {
     @PostMapping ("update.json")
     @OperInfo (type = OperationType.UPDATE)
     public PageBean update (
-            @RequestParam (value = "form") String form
+            @ModelAttribute (value = "form") ActSalary actSalary
     ) throws ParseException, InstantiationException, IllegalAccessException, NoSuchFieldException, UnsupportedEncodingException {
-        ActSalary actSalary = CommonUtils.toEntity (form, ActSalary.class);
+//        ActSalary actSalary = CommonUtils.toEntity (form, ActSalary.class);
         actSalaryService.update (actSalary);
         return new PageBean<> ();
     }
@@ -178,9 +178,9 @@ public class SalaryController extends BaseExceptionController {
         SysDept sysDept = sessionUser.getSysDept ();
         Assert.assertTrue ("存在未完成工资审批,请完成后重试",
                 CollectionUtils.isEmpty (declareService.findNotComplete (sysDept)));
-        String  originalFilename= fileVerify (file);
+        String  originalFilename= UploadUtils.fileVerify (file);
         String filePath = DataUtil.getFilePath (originalFilename);
-        String dateStr=getDateStr (originalFilename);
+        String dateStr=UploadUtils.getDateStr (originalFilename);
         File dest = DataUtil.getFile (filePath);
         file.transferTo (dest);
         try {
@@ -189,7 +189,7 @@ public class SalaryController extends BaseExceptionController {
             int dateNum = DateUtil.getDateNum (year, month);
             List<ActSalary> saveList = new ArrayList<> ();
             SysDeclare declare = declareService.findNotStart (sysDept);
-            for (ActWork actWork : actList (filePath)) {
+            for (ActWork actWork : UploadUtils.actList (filePath)) {
                 SysUser sysUser = userService.findByWorkNo (actWork.getWorkNo ());
                 Assert.assertNotNull ("工号为[" + actWork.getWorkNo () + "]的员工不存在,请联系管理员添加后重试", sysUser);
                 Assert.assertTrue ("部门[" + actWork.getDeptName () + "]与当前用户部门不符", sysDept.getDeptName ().equals (actWork.getDeptName ()));
@@ -199,7 +199,7 @@ public class SalaryController extends BaseExceptionController {
                             .user (sessionUser).dept (sysDept).status (0).build ();
                     declareService.save (declare);
                 }
-                ActSalary actSalary = actSalaryService.findByYearAndMonthAndUserId (year, month, sysUser.getId ());
+                ActSalary actSalary = actSalaryService.findByYearAndMonthAndWorkNo (year, month, sysUser.getWorkNo ());
                 if (actSalary == null) {
                     actSalary = new ActSalary ();
                     actSalary.setMonth (month);
@@ -212,59 +212,15 @@ public class SalaryController extends BaseExceptionController {
                 CommonUtils.calSalary (actSalary, sysUser, dateNum);
                 saveList.add (actSalary);
             }
-            actSalaryService.mutilSave (saveList);
+            actSalaryService.save (saveList);
         } finally {
             dest.delete ();
         }
         return new PageBean ();
     }
-
-    private String getDateStr(String originalFilename){
-        String dateStr = group (DATE_PATTERN, originalFilename);
-        Assert.assertTrue ("文件名格式错误,无法获取工资日期", StringUtils.isNotBlank (dateStr));
-        return dateStr;
-    }
-    private String fileVerify(MultipartFile file){
-        Assert.assertFalse ("上传文件不能为空", file.isEmpty ());
-        String originalFilename = file.getOriginalFilename ();
-        Assert.assertFalse ("文件名不能为空", StringUtils.isBlank (originalFilename));
-        Assert.assertTrue ("文件类型不符，只能上传xls或xlsx类型的文件！",
-                originalFilename.endsWith (".xls") || originalFilename.endsWith (".xlsx"));
-        return originalFilename;
-    }
-
-    private List<ActWork> actList (String filePath) throws Exception {
-        return ExcelUtil.readExcel (filePath, 1, 0, WORD_PROPERTIES, ActWork.class)
-                .stream ().peek (actWork -> {
-                    actWork.setUsername (DataUtil.deleteStrSpace (actWork.getUsername ()));
-//                    actWork.setArrive(actWork.getArrive().replace(".0",""));
-                    actWork.setCustomNo (actWork.getCustomNo ().replace (".0", ""));
-//                    actWork.setReality(actWork.getReality().replace(".0",""));
-                    actWork.setWorkNo (actWork.getWorkNo ().replace (".0", ""));
-                }).collect (Collectors.toList ());
-    }
-
+    private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
     private String declareName (int year, int month, String deptName) {
         return year + "年" + month + "月" + deptName + "工资申请";
     }
-
-    private String group (Pattern pattern, String originalFilename) {
-        Matcher matcher = pattern.matcher (originalFilename);
-        if (matcher.find ()) {
-            return matcher.group ();
-        }
-        return null;
-    }
-
-    private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
-
-    private static final String[] WORD_PROPERTIES = new String[] {"deptName", "workNo", "customNo", "username", "arrive", "reality"};
-
-
-    public static final Pattern DATE_PATTERN = Pattern.compile ("\\d{4}-\\d{1,2}");
-
-    //             ,"late", "leaveEar",
-//            "absenteeism","overtime","goOut","busOut","workTime","signed","signIn","signOut","notSignIn","notSignOut", "leave",
-//            "busOff","sickLeave","comLeave","homeLeave","weekday","weekend","holiday","dutyDate","dayWork","weekendWork", "holidayWork"};
 
 }

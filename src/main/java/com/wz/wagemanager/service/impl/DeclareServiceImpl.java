@@ -6,6 +6,7 @@ import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.entity.SysUser;
 import com.wz.wagemanager.exception.HandThrowException;
 import com.wz.wagemanager.service.DeclareService;
+import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.tools.ContextHolderUtils;
 import com.wz.wagemanager.tools.GlobalConstant;
 import org.activiti.engine.IdentityService;
@@ -35,6 +36,8 @@ public class DeclareServiceImpl implements DeclareService {
     private RuntimeService runtimeService;
     @Resource
     private IdentityService identityService;
+    @Resource
+    private DeptService deptService;
 
     @Override
     public void updateProperty (String key, Object value,String id) {
@@ -54,13 +57,17 @@ public class DeclareServiceImpl implements DeclareService {
     @Override
     public void start (String declareId) {
         try{
-            identityService.setAuthenticatedUserId (ContextHolderUtils.getPrincipal ().getSysRole ().getId ());
+            final SysUser sysUser = ContextHolderUtils.getPrincipal();
+            identityService.setAuthenticatedUserId (sysUser.getSysRole ().getId ());
             ProcessInstance processInstance = runtimeService.startProcessInstanceByKey (GlobalConstant.PROCESS_KEY, declareId);
             SysDeclare declare = declareRepository.findOne (declareId);
             declare.setStatus (1);
             declare.setProcessInstanceId (processInstance.getId ());
             declare.setDeclareDate (new Date ());
             declareRepository.saveAndFlush (declare);
+            final SysDept sysDept = sysUser.getSysDept();
+            sysDept.setStatus(0);
+            deptService.save(sysDept);
         }finally {
             identityService.setAuthenticatedUserId (null);
         }

@@ -105,7 +105,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
 
     //监听提交
     form.on('submit(demo1)', function(data){
-        var tjindex = layer.parent().msg('更新中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('操作中，请稍候',{icon: 16,time:false,shade:0.8});
         $.post('user/insert.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {

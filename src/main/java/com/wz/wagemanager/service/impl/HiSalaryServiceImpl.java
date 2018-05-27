@@ -75,26 +75,6 @@ public class HiSalaryServiceImpl implements HiSalaryService {
         return salaryRepository.findAll(CriteriaUtils.getSpe (speMap), page);
     }
 
-//    @Override
-//    public Integer countByWorkNoOrUsername (String workNo,String username) {
-//        return ((Number)salaryRepository.count(getSpe(workNo,username))).intValue();
-//    }
-
-//    private Specification<HiSalary> getSpe(String workNo, String username){
-//        return  (root, criteriaQuery, criteriaBuilder) -> {
-//            List<Predicate> list = new ArrayList<> ();
-//            if(StringUtils.isNotBlank (workNo)){
-//                list.add (criteriaBuilder.equal(root.get("workNo").as(String.class),workNo));
-//            }
-//            if(StringUtils.isNotBlank (username)){
-//                list.add (criteriaBuilder.equal(root.get("username").as(String.class),username));
-//            }
-//            Predicate[] p = new Predicate[list.size()];
-//            criteriaQuery.where(criteriaBuilder.and(list.toArray(p)));
-//            return criteriaQuery.getRestriction();
-//        };
-//    }
-
     @Override
     public HiSalary findByYearAndMonthAndUserId (int year, int month, String userId) {
         return salaryRepository.findByYearAndMonthAndUserId (year,month,userId);
@@ -120,63 +100,5 @@ public class HiSalaryServiceImpl implements HiSalaryService {
     public List<HiSalary> findByDeptIdAndYearAndMonth(String deptId, int year, int month) {
         return salaryRepository.findByDeptIdAndYearAndMonth(deptId,year,month);
     }
-
-//    @Override
-//    @OperInfo(type = OperationType.DELETE,desc = "根据年月删除工资信息")
-//    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-//    public void removeByIdIn(List<String> ids){
-//        salaryRepository.removeByIdIn(ids);
-//    }
-
-    @Resource
-    private UserRepository userRepository;
-
-//    @Override
-//    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-//    @OperInfo(type = OperationType.UPDATE,desc = "更新员工工资信息")
-//    public void update(HiSalary hiSalary) throws IllegalAccessException {
-//        HiSalary salary = salaryRepository.findById(hiSalary.getId());
-//        CommonUtils.copyNullValue(hiSalary,salary);
-//        updateUser(salary,hiSalary);
-//        addTask(hiSalary);
-//        CommonUtils.setSalary(hiSalary,null,null, DateUtil.getDateNum(hiSalary.getYear(),hiSalary.getMonth()));
-//        salaryRepository.save(hiSalary);
-//    }
-
-//    private void updateUser(HiSalary salary,HiSalary hiSalary ){
-//        if(hiSalary.getBase()!=null&&salary.getBase().compareTo(hiSalary.getBase())!=0||
-//                hiSalary.getSeniority()!=null&&salary.getSeniority().compareTo(hiSalary.getSeniority())!=0||
-//                hiSalary.getWorkNo()!=null&&!salary.getWorkNo().equals(hiSalary.getWorkNo())||
-//                hiSalary.getCreditCard()!=null&&!salary.getCreditCard().equals(hiSalary.getCreditCard())){
-//            SysUser user = userRepository.getUserById(salary.getUserId());
-//            user.setBase(hiSalary.getBase());
-//            user.setSeniority(hiSalary.getSeniority());
-//            user.setWorkNo(hiSalary.getWorkNo());
-//            user.setCreditCard(hiSalary.getCreditCard());
-//            userRepository.save(user);
-//        }
-//    }
-
-    @Resource
-    private TaskRepository taskRepository;
-
-    private void addTask(ActSalary actSalary){
-        ActTask actTask=taskRepository.findByYearAndMonthAndWorkNo(actSalary.getYear(),actSalary.getMonth(),actSalary.getWorkNo());
-        if(CommonUtils.isNotBlank(actSalary.getLate())||CommonUtils.isNotBlank(actSalary.getOtherDebit())||CommonUtils.isNotBlank(actSalary.getLoan())||
-                CommonUtils.isNotBlank(actSalary.getPartyDue())||CommonUtils.isNotBlank(actSalary.getOther())||CommonUtils.isNotBlank(actSalary.getOtherEl())){
-            if(actTask==null){
-                actTask=ActTask.builder().createDate(new Date()).year(actSalary.getYear()).month(actSalary.getMonth())
-                        .username(actSalary.getUsername()).deptName(actSalary.getDeptName()).workNo(actSalary.getWorkNo())
-                        .status(1).debit(CommonUtils.getDebit(actSalary)).loan(actSalary.getLoan()).build();
-            }else{
-                actTask.setLoan(actSalary.getLoan());
-                actTask.setDebit(CommonUtils.getDebit(actSalary));
-            }
-        }
-        if(actTask!=null){
-            taskRepository.save(actTask);
-        }
-    }
-
 
 }

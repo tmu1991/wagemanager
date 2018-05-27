@@ -28,13 +28,38 @@ public class ActTask {
     @Column(name = "work_no")
     private String workNo;
     private String username;
-    private BigDecimal loan;
-    private BigDecimal debit;
-    private Integer year;
-    private Integer month;
-    private Integer status;
     private String note;
     @JSONField(format = "yyyy-MM-dd")
-    @Column(name = "create_date")
-    private Date createDate;
+    @Column(name = "task_date")
+    private Date taskDate;
+
+    private BigDecimal amount;
+
+    private String type;
+    @Transient
+    private BigDecimal late;
+    @Transient
+    private BigDecimal due;
+    @Transient
+    private Date loanDate;
+    @Transient
+    private BigDecimal loan;
+    @Transient
+    private String loanNote;
+    @Transient
+    private Date debitDate;
+    @Transient
+    private BigDecimal debit;
+    @Transient
+    private String debitNote;
+    @Transient
+    private BigDecimal other;
+    @Transient
+    private BigDecimal otherEl;
+    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REFRESH},fetch = FetchType.LAZY)
+
+    private ActSalary salary;
+
+//    private Integer status;
+
 }

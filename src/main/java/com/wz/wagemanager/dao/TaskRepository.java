@@ -7,21 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<ActTask,String>,JpaSpecificationExecutor<ActTask> {
-    @Query(value = "select max(t.year) from ActTask t")
-    Integer getMaxYear();
 
-    @Query(value = "select max(t.month) from ActTask t where t.year=?1")
-    Integer getMaxMonth(int year);
+    ActTask findByTaskDateAndWorkNoAndType(Date taskDate,String workNo, Integer type);
 
-    @Query(value = "select count(*) from act_task where year=?1 and month=?2 AND status=?3",nativeQuery = true)
-    Integer countByYearAndMonthAndStatus(int year, int month, int status);
-
-    Page<ActTask> findActTasksByYearAndMonthAndStatus(int year, int month, int status, Pageable pageable);
-
-    ActTask findByYearAndMonthAndWorkNo(int year, int month, String workNo);
-
-    List<ActTask> findByStatus(int status);
 }

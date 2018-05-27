@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 public class TimeTask {
     @Resource
     private UserService userService;
-    @Resource
-    private TaskService taskService;
+//    @Resource
+//    private TaskService taskService;
     @Scheduled(cron = "0 0 0 6 1 *")
     public void seniorityTask(){
         userService.findAll().forEach(sysUser -> {
@@ -22,12 +22,12 @@ public class TimeTask {
             userService.insertUser(sysUser);
         });
     }
-    @Scheduled(cron = "0 0 0 6 * *")
-    public void backlogTask(){
-        taskService.findByStatus(1).forEach(actTask -> {
-            actTask.setStatus(0);
-            taskService.save(actTask);
-        });
-    }
+//    @Scheduled(cron = "0 0 0 6 * *")
+//    public void backlogTask(){
+//        taskService.findByStatus(1).forEach(actTask -> {
+//            actTask.setStatus(0);
+//            taskService.save(actTask);
+//        });
+//    }
 
 }

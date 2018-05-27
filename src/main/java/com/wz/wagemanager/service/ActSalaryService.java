@@ -18,8 +18,7 @@ import java.util.List;
 public interface ActSalaryService {
 
     void save(ActSalary salary);
-
-    void mutilSave(List<ActSalary> saveList);
+    void save(List<ActSalary> salaries);
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);
     List<ActSalary> findByDeptIdAndDete(String deptId, int year, int month, PageRequest page);
     Integer countByDeptIdAndDate(String deptId, int year, int month);
@@ -27,7 +26,7 @@ public interface ActSalaryService {
     Integer countByYearAndMonth(int year, int month);
     Page<ActSalary> findByWorkNoOrUsername(String workNo, String username, PageRequest page);
     Integer countByWorkNoOrUsername(String workNo, String username);
-    ActSalary findByYearAndMonthAndUserId(int year, int month, String userId);
+    ActSalary findByYearAndMonthAndWorkNo(int year, int month, String workNo);
     List<SalaryArea> findByGroupDept() throws Exception;
 
     Integer getMaxYear();

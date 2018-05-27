@@ -30,5 +30,8 @@ public class SysDept {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    @Column(name = "status",length = 1)
+    private Integer status;
+
 
 }

@@ -14,8 +14,17 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 {field:'deptName','title':'部门'},
                 {field:'username','title':'姓名'},
                 {field:'workNo','title':'考勤编号'},
-                {field:'loan','title':'借款金额'},
-                {field:'debit','title':'本月扣款'}
+                {field:'amount','title':'金额'},
+                {field:'type','title':'类型',template:function (t) {
+                    if(t.type == 0){
+                        return "借款";
+                    }
+                    if(t.type == 1){
+                        return "其他扣款";
+                    }
+                }},
+                {field:'taskDate','title':'日期'},
+                {field:'note','title':'备注'}
             ]],
             skin: 'row',
             even: true,

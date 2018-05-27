@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author WindowsTen
@@ -146,4 +147,8 @@ public class ActSalary {
 
     @Column(name = "declare_id",length = 32)
     private String declareId;
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "salary_id")
+    private List<ActTask> tasks;
 }

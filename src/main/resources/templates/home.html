@@ -16,7 +16,7 @@
 				<ul class="layui-nav layui-layout-right">
 					<li class="layui-nav-item">
 						<a href="javascript:;">
-							<img th:src="@{examples/img/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg}" class="layui-nav-img">
+							<img th:src="@{img/topPic.jpg}" class="layui-nav-img">
 							<span sec:authentication="name"></span>
 						</a>
 						<dl class="layui-nav-child">
@@ -60,7 +60,7 @@
 								</dd>
 							</dl>
 						</li>
-						<li class="layui-nav-item">
+						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER')" class="layui-nav-item">
 							<a class="" href="javascript:;">部门</a>
 							<dl class="layui-nav-child" id="department">
 								<dd th:each="dept:${depts}" th:attr="id=${'index/'+dept.id}"><a th:text="${dept.deptName}" href='javascript:;'></a></dd>
@@ -89,7 +89,7 @@
 								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_LAW')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>
-								<dd id='pool.html' sec:authorize="hasAnyRole('ROLE_STAT','ROLE_GE_MANAGER','ROLE_FIN')">
+								<dd id='pool.html' sec:authorize="hasAnyRole('ROLE_GE_MANAGER','ROLE_FIN')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>
 							</dl>

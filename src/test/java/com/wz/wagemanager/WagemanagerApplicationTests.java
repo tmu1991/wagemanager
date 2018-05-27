@@ -8,6 +8,8 @@ import com.wz.wagemanager.service.RoleService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.DataUtil;
 import com.wz.wagemanager.tools.ExcelUtil;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -150,5 +152,23 @@ private DeptService deptService;
 		user.setPassword (passwordEncoder.encode ("123456"));
 		user.setStatus(1);
 		userService.insertUser (user);
+	}
+	@Resource
+	private RepositoryService repositoryService;
+	@Resource
+	private RuntimeService runtimeService;
+	@Test
+	public void testRemove(){
+		repositoryService.deleteDeployment("50001",true);
+		repositoryService.deleteDeployment("47501",true);
+		repositoryService.deleteDeployment("45001",true);
+		repositoryService.deleteDeployment("42501",true);
+		repositoryService.deleteDeployment("40001",true);
+		repositoryService.deleteDeployment("37501",true);
+		repositoryService.deleteDeployment("32501",true);
+		repositoryService.deleteDeployment("22501",true);
+		runtimeService.deleteProcessInstance("32505","");
+		runtimeService.deleteProcessInstance("32513","");
+		runtimeService.deleteProcessInstance("35001","");
 	}
 }

@@ -1,15 +1,21 @@
-layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () {
+layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function () {
     var form = layui.form,
-        table = layui.table,
+        laydate = layui.laydate,
         layer = layui.layer,
         laypage = layui.laypage,
         $ = layui.jquery,
         upload = layui.upload;
 //            //loading层
+    laydate.render({
+        elem: '#date1'
+    });
+    laydate.render({
+        elem: '#date2'
+    });
 
     var uploadIndex;
 
-    var uploadInst = upload.render({ //允许上传的文件后缀
+    var uploadInst1 = upload.render({ //允许上传的文件后缀
         elem: '#test8'
         ,url: '/salary/upload.json'
         ,accept: 'file' //普通文件
@@ -19,6 +25,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
         }
         ,done: function(result){
             if (result.code == 200) {
+                layer.msg('上传成功');
                 renderDate(1);
             } else {
                 layer.close(uploadIndex);
@@ -35,7 +42,39 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
             var demoText = $('#demoText');
             demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
             demoText.find('.demo-reload').on('click', function(){
-                uploadInst.upload();
+                uploadInst1.upload();
+            });
+        }
+    });
+
+    var uploadInst2 = upload.render({ //允许上传的文件后缀
+        elem: '#test9'
+        ,url: '/task/upload.json'
+        ,accept: 'file' //普通文件
+        ,exts: 'xls|xlsx' //只允许上传压缩文件
+        ,before: function(obj){
+            uploadIndex = layer.load(0, {shade: [0.4, '#000']});
+        }
+        ,done: function(result){
+            if (result.code == 200) {
+                layer.msg('上传成功');
+                // renderDate(1);
+            } else {
+                layer.close(uploadIndex);
+                if (result.msg) {
+                    layer.alert(result.msg);
+                } else {
+                    layer.alert("上传失败");
+                }
+            }
+        }
+        ,error: function(){
+            layer.close(uploadIndex);
+            //演示失败状态，并实现重传
+            var demoText = $('#demoText');
+            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+            demoText.find('.demo-reload').on('click', function(){
+                uploadInst2.upload();
             });
         }
     });
@@ -115,14 +154,85 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
         return false;
     });
 
+    $("body").on("click", ".loan_edit", function () {  //编辑
+        var tr = $(this).parents('tr');
+        index = layer.open({
+            type: 1,
+            icon: 1,
+            title: "修改员工扣款",
+            skin: 'layui-layer-molv',
+            area: ["50%",'85%'],
+            btnAlign: 'c',
+            content: $('#addLoan').html(),
+            success:function (layero, index) {
+                form.val("loanForm", {
+                    "id": tr.find('td.pkid').attr('data-id')
+                    ,"username": tr.find('td.username').text()
+                    ,"workNo": tr.find('td.id').text()
+                    ,"late": tr.find('td.cd').text()
+                    ,"otherDebit": tr.find('td.qt').text()
+                    ,"partyDue": tr.find('td.df').text()
+                    ,"loan": tr.find('td.jk').text()
+                    ,"other": tr.find('td.qt1').text()
+                    ,"otherEl": tr.find('td.qt2').text()
+                    ,"dateStr":$('.timer').text()
+                    ,"loanDate":tr.find('td.jkdate').text()
+                    ,"loanNote":tr.find('td.jknote').text()
+                    ,"debitDate":tr.find('td.kkdate').text()
+                    ,"debitNote":tr.find('td.kknote').text()
+                });
+                form.render(null,'loanForm');
+            }, cancel: function(){
+                form.val("loanForm", {
+                    "id": ''
+                    ,"username": ''
+                    ,"workNo": ''
+                    ,"late": ''
+                    ,"otherDebit": ''
+                    ,"partyDue": ''
+                    ,"loan": ''
+                    ,"other": ''
+                    ,"otherEl": ''
+                    ,"dateStr":''
+                    ,"loanDate":''
+                    ,"loanNote":''
+                    ,"debitDate":''
+                    ,"debitNote":''
+                });
+                $('.addLoan input').removeClass("changered");
+            }
+        });
+    });
+
+    //监听提交
+    form.on('submit(demo2)', function(data){
+        var tjindex = layer.msg('更新中，请稍候',{icon: 16,time:false,shade:0.8});
+        $.post('/task/update.json',data.field,function (result) {
+            var code = result.code;
+            if (code == 200) {
+                renderDate($('.layui-laypage-curr em:last').text());
+                layer.closeAll();
+                layer.msg("操作成功");
+            } else {
+                layer.close(tjindex);
+                if(result.msg){
+                    layer.alert(result.msg);
+                }else{
+                    layer.msg("操作失败，请重试");
+                }
+            }
+        },'json');
+        return false;
+    });
+
     //del单点功能
     $("body").on("click", ".news_del", function () {  //删除
-        var _this = $(this);
-        deleteBatch(_this.attr("data-id"));
+        deleteBatch($(this).parents('tr').find('td.pkid').attr('data-id'));
     });
 
     //全选
     function checkAll(c) {
+
         var status = c.checked;
         var oItems = document.getElementsByName('item');
         for (var i = 0; i < oItems.length; i++) {
@@ -132,17 +242,22 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
 
     //delAll功能
     $("#delAll").click(function () {
-        var items = $('#listTable input[name="item"]:checked');
-        if(items.length>0){
-            var ids='';
-            $.each(items, function (i, item) {
-                if (item.checked) {
-                    ids += $(item).parent().parent().find("td:first").attr("data-id") + ",";
-                }
-            });
+        var items = $("#listTable input[type='checkbox'][name='item']");
+        var $checked = $('#listTable input[type=\'checkbox\'][name=\'item\']:checked');
+        var ids = '';
+        $.each($checked, function (i, item) {
+            if (i == $checked.length - 1) {
+                ids += $(item).parents('tr').find('td.pkid').attr('data-id');
+            } else {
+                ids += $(item).parents('tr').find('td.pkid').attr('data-id') + ",";
+            }
+        });
+        if (items.is(":checked")) {
+            console.log(ids)
             deleteBatch(ids);
-        }else{
-            layer.alert('请选择要删除的记录');
+        } else {
+            layer.msg("请选择需要删除的用户");
+            return false;
         }
     });
 
@@ -163,6 +278,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
 
     function deleteBatch(ids) {
         layer.confirm('确定删除选中的信息？', {icon: 3, title: '提示信息'}, function () {
+            console.log(ids)
             var scindex = layer.msg('删除中，请稍候', {icon: 16, time: false, shade: 0.8});
             //删除数据
             $.post("/salary/delete.json", {'ids': ids}, function (result) {
@@ -202,6 +318,17 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
                         if (!timerMsg) {
                             timerMsg = item.year + '年' + item.month + '月';
                         }
+                        var jkdate='',kkdate='',jknote='',kknote='';
+                        $.each(item.tasks,function (j, task) {
+                            if(task.type == 0){
+                                jkdate=task.taskDate;
+                                jknote=task.note;
+                            }
+                            if(task.type == 1){
+                                kkdate=task.taskDate;
+                                kknote=task.note;
+                            }
+                        });
                         var newCell = cell.clone(true);
                         newCell.find('.pkid').attr("data-id", item.id);
                         newCell.find('.id').text(item.workNo);
@@ -239,6 +366,10 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage','upload'], function () 
                         );
                         newCell.find('.sj').text(item.payroll);
                         newCell.find('.ka').text(item.creditCard);
+                        newCell.find('.jkdate').text(jkdate);
+                        newCell.find('.jknote').text(jknote);
+                        newCell.find('.kknote').text(kknote);
+                        newCell.find('.kkdate').text(kkdate);
                         box.append(newCell);
                     });
                     //合计当前页面

@@ -2,36 +2,25 @@ package com.wz.wagemanager.controller;
 
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.ActTask;
-import com.wz.wagemanager.entity.HiSalary;
 import com.wz.wagemanager.entity.SysUser;
 import com.wz.wagemanager.service.ActSalaryService;
-import com.wz.wagemanager.service.HiSalaryService;
 import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.math.BigDecimal;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 待办事项
+ *
  * @author WindowsTen
  */
 @RestController
@@ -42,111 +31,134 @@ public class TaskController extends BaseExceptionController {
 
     @PostMapping("list.json")
     public PageBean<? extends Object> listTask(
-            @RequestParam(value = "pageSize",defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(value = "curPage",defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
-    ){
-        Integer maxYear = taskService.getMaxYear();
-        if(maxYear!=null&&maxYear!=0){
-            int maxMonth = taskService.getMaxMonth(maxYear);
-            Page<ActTask> taskPage = taskService.getTask (maxYear, maxMonth, PageUtil.pageable (curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
-            return new PageBean<> (PageUtil.getPage (taskPage.getTotalElements (),pageSize,curPage),taskPage.getContent ());
-        }
-        return new PageBean<> ();
+            @RequestParam(value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
+    ) {
+            Page<ActTask> taskPage = taskService.findByPage(PageUtil.pageable(curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER, DEFAULT_SORT_FIELD));
+            return new PageBean<>(PageUtil.getPage(taskPage.getTotalElements(), pageSize, curPage), taskPage.getContent());
     }
 
     @PostMapping("upload.json")
-    public void upload(MultipartFile file,HttpServletResponse response) throws Exception {
-        Assert.assertFalse("上传文件不能为空", file.isEmpty());
-        String originalFilename = file.getOriginalFilename();
-        Assert.assertFalse("文件名不能为空", StringUtils.isBlank(originalFilename));
-        Assert.assertTrue("文件类型不符，只能上传xls和xlsx类型的文件！",
-                originalFilename.endsWith(".xls") || originalFilename.endsWith(".xlsx"));
+    public void upload(@RequestParam("file") MultipartFile file) throws Exception {
+        String originalFilename = UploadUtils.fileVerify(file);
         String filePath = DataUtil.getFilePath(originalFilename);
         File dest = DataUtil.getFile(filePath);
         //文件上传
         file.transferTo(dest);
         //从文件名中取出导入数据的年月
-        String group = group (DATE_PATTERN,originalFilename);
-        Integer year=DataUtil.getYear(group);
-        Integer month=DataUtil.getMontoh(group);
+        String dateStr = UploadUtils.getDateStr(originalFilename);
+        List<ActTask> tasks = new ArrayList<>();
+        List<ActSalary> salaries = new ArrayList<>();
+        ExcelUtil.readExcel(filePath, 1, 0, TASK_PROPERTIES, ActTask.class).forEach(task -> {
+            tellUser(task);
+            opr(task,tasks,salaries,dateStr,true);
+        });
+        if (!CollectionUtils.isEmpty(tasks)) {
+            taskService.save(tasks);
+        }
+        if (!CollectionUtils.isEmpty(salaries)) {
+            actSalaryService.save(salaries);
+        }
+    }
+
+    @PostMapping("update.json")
+    public PageBean update(@ModelAttribute ActTask task, @RequestParam("dateStr") String dateStr) {
+        tellUser(task);
+        opr(task,null,null,dateStr,false);
+        return new PageBean<>();
+    }
+
+    private void tellUser(ActTask task) {
+        //根据工号取到用户
+        SysUser user = userService.findByWorkNo(task.getWorkNo());
+        Assert.assertNotNull("工号[" + task.getWorkNo() + "]的用户不存在", user);
+        Assert.assertTrue("工号[" + task.getWorkNo() + "]与用户名不符，请核实", user.getUsername().equals(task.getUsername()));
+        Assert.assertTrue("工号[" + task.getWorkNo() + "]部门与当前用户部门不符，请核实",
+                user.getSysDept() != null && task.getDeptName().equals(user.getSysDept().getDeptName()));
+        task.setDeptId(user.getSysDept().getId());
+    }
+
+    private void opr(ActTask task, List<ActTask> tasks, List<ActSalary> salaries, String dateStr,Boolean isAdd) {
+        Integer year = DataUtil.getYear(dateStr);
+        Integer month = DataUtil.getMontoh(dateStr);
         //得到每月多少天
         int dateNum = DateUtil.getDateNum(year, month);
-        List<ActTask> list = new ArrayList<>();
-        ExcelUtil.readExcel(filePath,1,0,TASK_PROPERTIES,ActTask.class).forEach(task -> {
-            //根据工号取到用户
-            SysUser user = userService.findByWorkNo(task.getWorkNo());
-            if(user == null){
-                task.setNote("用户不存在");
-                list.add(task);
-            }else if(!user.getUsername().equals(task.getUsername())){
-                task.setNote("工号与用户不符，请核实");
-                list.add(task);
-            }else if(user.getSysDept()==null||!task.getDeptName().equals(user.getSysDept().getDeptName())){
-                task.setNote("部门与当前用户不符，请核实");
-                list.add(task);
-            }else{
-                task.setMonth(month);
-                task.setYear(year);
-                task.setDeptId(user.getSysDept().getId());
-                //根据从excel表的工号 年份 月份从已存在的待办事项表中进行查询
-                ActTask actTask = taskService.findByYearAndMonthAndWorkNo(year, month, task.getWorkNo());
-                //当前年月 该员工 不存在借款和扣款纪录 且导入的借款和扣款数额不为空
-                if(actTask == null&&task.getDebit().compareTo(BigDecimal.ZERO)!=0||task.getLoan().compareTo(BigDecimal.ZERO)!=0){
-                    //保存本条记录
-                    taskService.save(task);
-                    //更新工资表的借款和扣款记录
-                    ActSalary salary = actSalaryService.findByYearAndMonthAndUserId(year, month, user.getId());
-                    salary.setLoan(task.getLoan());
-                    salary.setOtherDebit(task.getDebit());
-                    //重新计算工资
-                    CommonUtils.calSalary (salary,null,dateNum);
-                    //更新工资记录
-                    actSalaryService.save(salary);
-                }else{
-                    //导入的借款金额 和 数据库中记录不符
-                    if(task.getDebit().compareTo(actTask.getDebit())!=0){
-                        task.setNote("请核实借款金额");
-                    }else if(task.getLoan().compareTo(actTask.getLoan())!=0){
-                        task.setNote("请核实扣款金额");
-                    }
-                }
+
+        if (task.getLate() != null || task.getDue() != null || task.getOther() != null || task.getOtherEl() != null||task.getLoan() != null||task.getDebit() != null) {
+            //更新工资表的借款和扣款记录
+            ActSalary salary = actSalaryService.findByYearAndMonthAndWorkNo(year, month, task.getWorkNo());
+            Assert.assertNotNull("工号[" + task.getWorkNo() + "]的用户" + year + "年" + month + "月工资记录不存在，请添加工资记录后再添加借款记录", salary);
+            List<ActTask> taskList = salary.getTasks();
+            if(taskList==null){
+                taskList=new ArrayList<>();
             }
-        });
-    }
-
-    private void outputFile(HttpServletResponse response,String xlsName) throws IOException {
-        response.reset();
-        response.addHeader("Content-Disposition", "attachment;filename=" + new String(xlsName.getBytes()));
-        OutputStream ous = new BufferedOutputStream(response.getOutputStream());
-        response.setContentType("application/octet-stream");
-        InputStream fis = new BufferedInputStream(new FileInputStream(xlsName));
-        byte[] bis = new byte[1024];
-        while(-1 != fis.read(bis)){
-            ous.write(bis);
+            if (task.getLoan() != null) {
+                //根据从excel表的工号 年份 月份从已存在的待办事项表中进行查询
+                ActTask actTask = taskService.findByTaskDateAndWorkNoAndType(task.getLoanDate(), task.getWorkNo(), 0);
+                if (actTask == null) {
+                    actTask = task;
+                    actTask.setSalary(salary);
+                }
+                actTask.setAmount(task.getLoan());
+                actTask.setTaskDate(task.getLoanDate());
+                actTask.setNote(task.getLoanNote());
+                if(isAdd){
+                    tasks.add(actTask);
+                }else {
+                    taskService.save(actTask);
+                }
+                salary.setLoan(task.getLoan());
+                taskList.add(actTask);
+            }
+            if (task.getDebit() != null) {
+                ActTask actTask = taskService.findByTaskDateAndWorkNoAndType(task.getDebitDate(), task.getWorkNo(), 1);
+                if (actTask == null) {
+                    actTask = task;
+                    actTask.setSalary(salary);
+                }
+                actTask.setAmount(task.getDebit());
+                actTask.setTaskDate(task.getDebitDate());
+                actTask.setNote(task.getDebitNote());
+                if(isAdd){
+                    tasks.add(actTask);
+                }else {
+                    taskService.save(actTask);
+                }
+                salary.setOtherDebit(task.getDebit());
+                taskList.add(actTask);
+            }
+            if (task.getLate().compareTo(salary.getLate()) != 0
+                    || task.getDue().compareTo(salary.getPartyDue()) != 0
+                    || task.getOther().compareTo(salary.getOther()) != 0
+                    || task.getOtherEl().compareTo(salary.getOtherEl()) != 0) {
+                salary.setLate(task.getLate());
+                salary.setPartyDue(task.getDue());
+                salary.setOther(task.getOther());
+                salary.setOtherEl(task.getOtherEl());
+            }
+            salary = cal(salary, task, dateNum);
+            if(isAdd){
+                salaries.add(salary);
+            }else {
+                actSalaryService.save(salary);
+            }
         }
-        ous.flush();
-        ous.close();
     }
 
-    public static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{1,2}");
-    private String group (Pattern pattern, String originalFilename) {
-        Matcher matcher = pattern.matcher (originalFilename);
-        if(matcher.find ()){
-            return matcher.group ();
-        }
-        return null;
+    private ActSalary cal(ActSalary salary, ActTask task, Integer dateNum) {
+        salary.setLoan(task.getLoan());
+        salary.setOtherDebit(task.getDebit());
+        //重新计算工资
+        CommonUtils.calSalary(salary, null, dateNum);
+        return salary;
     }
 
-    private static final String[] headers=new String[]{"部门名称","工号","用户名","借款","扣款","错误事项",};
-    private static final String[] fields=new String[]{"deptName","workNo","username","loan","debit","note"};
-    @Resource
-    private HiSalaryService hiSalaryService;
     @Resource
     private ActSalaryService actSalaryService;
     @Resource
     private UserService userService;
 
-    private final String[] TASK_PROPERTIES = new String[]{"deptName","workNo","username","loan","debit"};
+    private final String[] TASK_PROPERTIES = new String[]{"deptName", "workNo", "username", "late", "debit", "due", "loan", "other", "otherEl", "taskDate", "note"};
 
-    private static final String DEFAULT_SORT_FIELD="createDate";
+    private static final String DEFAULT_SORT_FIELD = "taskDate";
 }

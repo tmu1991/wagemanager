@@ -94,7 +94,7 @@ public class DeclareController extends BaseExceptionController{
     @PostMapping(value = "complete.json")
     public PageBean completeTask(
             @RequestParam(value = "processInstanceId") String processInstanceId,
-            @RequestParam(value = "taskId")String taskId,
+            @RequestParam(value = "taskId",required = false)String taskId,
             @RequestParam(value = "comment",required = false) String comment,
             @RequestParam(value = "msg",required = false)Integer msg
     ){

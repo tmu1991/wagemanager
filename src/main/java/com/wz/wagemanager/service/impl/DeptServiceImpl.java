@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-@Service
+@Service("deptService")
 public class DeptServiceImpl implements DeptService {
     @Resource
     private DeptRepository deptRepository;

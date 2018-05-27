@@ -3,8 +3,10 @@ package com.wz.wagemanager.listener;
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.HiSalary;
 import com.wz.wagemanager.entity.SysDeclare;
+import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
+import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.service.HiSalaryService;
 import com.wz.wagemanager.tools.BeanUtils;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -35,9 +37,16 @@ public class EndListener implements ExecutionListener {
             hiSalary.setCreateDate (new Date ());
             hiSalaries.add (hiSalary);
         });
+        SysDept dept = declare.getDept();
+        dept.setStatus(1);
+        getDeptService().save(dept);
         getDeclareService().save(declare);
         getActSalaryService ().deleteAll(salaryList);
         getHiSalaryService ().mutilSave (hiSalaries);
+    }
+
+    private DeptService getDeptService(){
+        return (DeptService) BeanUtils.getObject ("deptService");
     }
 
     private DeclareService getDeclareService(){

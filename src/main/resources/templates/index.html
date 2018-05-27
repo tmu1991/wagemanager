@@ -34,7 +34,7 @@
 			<span class="timer"></span>
 		</p>
 		<div class="layui-upload">
-			<button sec:authorize="hasAnyRole('ROLE_STAT')" name="file" type="button" class="layui-btn" id="test8">导入员工考勤表</button>
+			<button th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" name="file" type="button" class="layui-btn" id="test8">导入员工考勤表</button>
 			<button sec:authorize="hasAnyRole('ROLE_LAW')" name="file" type="button" class="layui-btn" id="test9">导入扣款明细表</button>
 			<div class="layui-upload-list" hidden="hidden">
 				<img class="layui-upload-img" id="demo1">
@@ -67,7 +67,7 @@
 					<th style="cursor: pointer;" class="yinchang1 fj" rowspan="2" hidden="hidden">罚金</th>
 					<th rowspan="2">实际工资</th>
 					<th rowspan="2">银行卡号</th>
-					<th sec:authorize="hasAnyRole('ROLE_STAT')" rowspan="2">操作</th>
+					<th  th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" rowspan="2">操作</th>
 				</tr>
 				<tr>
 					<th>出勤</th>
@@ -116,10 +116,16 @@
 					<td class="fjhj fj"  hidden="hidden"></td>
 					<td class="sjhj"></td>
 					<td class="kahj"></td>
-					<td sec:authorize="hasAnyRole('ROLE_STAT')" class="dehj">
-						<a id="delAll" data-type="delAll" class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>全部删除</a>
+					<td hidden="hidden" class="jkdate"></td>
+					<td hidden="hidden" class="kkdate"></td>
+					<td hidden="hidden" class="jknote"></td>
+					<td hidden="hidden" class="kknote"></td>
+					<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" class="dehj">
+						<a th:if="${dept.status==1}" id="delAll" data-type="delAll" class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>全部删除</a>
 						<!--<a href="javascript:;" class="btn btn-danger" role="button" onclick="delAll(this)">全部删除</a>-->
 						<!--<a href="javascript:;" class="btn btn-info" role="button" onclick="addTr()">新增人员</a>-->
+					</td>
+					<td sec:authorize="hasAnyRole('ROLE_LAW')">
 					</td>
 				</tr>
 			</tfoot>
@@ -155,11 +161,14 @@
 				<td class="fj" hidden="hidden"></td>
 				<td class="sj"></td>
 				<td class="ka"></td>
-				<td sec:authorize="hasAnyRole('ROLE_STAT')">
-					<a class="layui-btn layui-btn-sm news_edit"><i class="iconfont icon-edit"></i> 编辑</a>
-					<a class="layui-btn layui-btn-danger layui-btn-sm news_del" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>删除</a>
+				<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')">
+					<a class="layui-btn layui-btn-sm news_edit"><i class="layui-icon">&#xe642;</i>编辑</a>
+					<a style="margin-left:0px;margin-top: 5px;" class="layui-btn layui-btn-danger layui-btn-sm news_del"><i class="layui-icon">&#xe640;</i>删除</a>
 					<!--<input type="button" name="" value="删除" class="btn btn-danger" onclick="del(this)" />-->
 					<!--<input type="button" name="" value="修改" class="btn btn-info" onclick="modify(this)" />-->
+				</td>
+				<td sec:authorize="hasAnyRole('ROLE_LAW')">
+					<a class="layui-btn layui-btn-sm loan_edit"><i class="iconfont icon-edit"></i> 编辑</a>
 				</td>
 			</tr>
 		</table>
@@ -171,20 +180,20 @@
 			<!--<span id="close">X</span>-->
 			<form style="margin-top: 5px;" class="layui-form" lay-filter="indexForm" id="update_form">
 				<div class="layui-form-item">
-					<label class="layui-form-label">工   号：</label>
+					<label class="layui-form-label">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：</label>
 					<div class="layui-input-block">
 						<input name="id" value="" hidden="hidden"/>
 						<input disabled type="text" lay-verify="required" name="workNo" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-form-item">
-					<label class="layui-form-label">姓名：</label>
+					<label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
 					<div class="layui-input-block">
 						<input disabled type="text" lay-verify="required" name="username" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-form-item">
-					<label class="layui-form-label">系   数：</label>
+					<label class="layui-form-label">系&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="coeff" class="layui-input">
 					</div>
@@ -202,7 +211,7 @@
 					</div>
 				</div>
 					<div class="layui-form-item">
-					<label class="layui-form-label">出   差：</label>
+					<label class="layui-form-label">出&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;差：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="busTravel" class="layui-input">
 					</div>
@@ -214,13 +223,13 @@
 					</div>
 				</div>
 				<div class="layui-form-item">
-					<label class="layui-form-label">津&nbsp;&nbsp;&nbsp;贴：</label>
+					<label class="layui-form-label">津&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贴：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="allowance" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-form-item">
-					<label class="layui-form-label">奖&nbsp;&nbsp;&nbsp;金：</label>
+					<label class="layui-form-label">奖&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="bonus" class="layui-input">
 					</div>
@@ -232,6 +241,83 @@
 					</div>
 				</div>
 			</form>
+			</div>
+		</div>
+
+		<div id="addLoan" class="addLoan" style="display: none;">
+			<div class="layui-col-md10">
+				<!--<h1>更新数据</h1>-->
+				<!--<span id="close">X</span>-->
+				<form style="margin-top: 5px;" class="layui-form" lay-filter="loanForm" id="loanForm">
+					<div class="layui-form-item">
+						<label class="layui-form-label">工   号：</label>
+						<div class="layui-input-block">
+							<input name="id" value="" hidden="hidden"/>
+							<input name="dateStr" value="" hidden="hidden"/>
+							<input disabled type="text" lay-verify="required" name="workNo" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">姓名：</label>
+						<div class="layui-input-block">
+							<input disabled type="text" lay-verify="required" name="username" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">迟到/早退：</label>
+						<div class="layui-input-block">
+							<input type="text" lay-verify="required" name="late" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">党费：</label>
+						<div class="layui-input-block">
+							<input type="text" lay-verify="required" name="due" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">其他：</label>
+						<div class="layui-input-block">
+							<input type="text" lay-verify="required" name="other" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">其他：</label>
+						<div class="layui-input-block">
+							<input type="text" lay-verify="required" name="otherEl" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">借款：</label>
+						<div class="layui-input-inline">
+							<input type="text" lay-verify="required" name="loan" class="layui-input">
+						</div>
+						<div class="layui-input-inline">
+							<input placeholder="借款日期" type="text" id="date1" name="loanDate" class="layui-input">
+						</div>
+						<div class="layui-input-inline">
+							<input placeholder="备注" type="text" name="loanNote" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">其他扣款：</label>
+						<div class="layui-input-block">
+							<input type="text" lay-verify="required" name="debit" class="layui-input">
+						</div>
+						<div class="layui-input-inline">
+							<input placeholder="扣款发生日期" type="text" id="date2" name="debitDate" class="layui-input">
+						</div>
+						<div class="layui-input-inline">
+							<input placeholder="备注" type="text" name="debitNote" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button class="layui-btn" lay-submit="" lay-filter="demo2">提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>

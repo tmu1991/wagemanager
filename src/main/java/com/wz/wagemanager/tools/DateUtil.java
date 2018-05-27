@@ -1,14 +1,21 @@
 package com.wz.wagemanager.tools;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtil {
+
+    public static Boolean compareDate(Date DATE1, Date DATE2) {
+        return DateUtils.isSameDay(DATE1,DATE2);
+    }
 
     public static String toDateString(Integer year,Integer month){
         if(year == null || year == 0){

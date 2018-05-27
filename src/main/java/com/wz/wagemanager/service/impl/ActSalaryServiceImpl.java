@@ -7,6 +7,8 @@ import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.entity.SysDeclare;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
+import com.wz.wagemanager.tools.Assert;
+import com.wz.wagemanager.tools.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +36,15 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Resource
     private DeclareRepository declareRepository;
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void save (ActSalary salary) {
         actSalaryRepository.save (salary);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void mutilSave (List<ActSalary> saveList) {
-        actSalaryRepository.save (saveList);
+    public void save (List<ActSalary> salaries) {
+        actSalaryRepository.save (salaries);
     }
 
     @Override
@@ -80,8 +83,8 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
-    public ActSalary findByYearAndMonthAndUserId (int year, int month, String userId) {
-        return actSalaryRepository.findByYearAndMonthAndUserId (year,month,userId);
+    public ActSalary findByYearAndMonthAndWorkNo (int year, int month, String workNo) {
+        return actSalaryRepository.findByYearAndMonthAndWorkNo (year,month,workNo);
     }
 
     @Override
@@ -111,6 +114,9 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     public void update (ActSalary salary) throws IllegalAccessException {
+        final ActSalary actSalary = findById(salary.getId());
+        Assert.assertNotNull("当前记录不存在",actSalary);
+        CommonUtils.copyNullValue(salary,actSalary);
         actSalaryRepository.save (salary);
     }
 
