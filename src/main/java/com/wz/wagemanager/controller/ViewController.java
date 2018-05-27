@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import java.util.Collections;
 
+/**
+ * @author WindowsTen
+ */
 @Controller
 public class ViewController {
+
     @Resource
     private DeptService deptService;
     @RequestMapping("index/{deptId}")

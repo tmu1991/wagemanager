@@ -28,6 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * @author WindowsTen
+ */
 @RestController
 @RequestMapping ("salary")
 public class SalaryController extends BaseExceptionController {
@@ -56,6 +59,7 @@ public class SalaryController extends BaseExceptionController {
     }
 
     @PostMapping ("delete.json")
+    @OperInfo (type = OperationType.DELETE)
     public PageBean delete (
             @RequestParam (value = "ids") String ids
     ) throws ParseException {
@@ -85,26 +89,31 @@ public class SalaryController extends BaseExceptionController {
             @RequestParam (value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) Integer curPage,
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) {
-        year = getYear (year);
-        if (year != null && year != 0) {
-            month = getMontoh (month);
-            Page page = PageUtil.getPage (hiSalaryService.countByYearAndMonth (year, month), pageSize, curPage);
-            Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
-            List<HiSalary> salaries = hiSalaryService.findByYearAndMonth (year, month, pageRequest);
-            return new PageBean<> (page, salaries);
+        if(year == null){
+            year = hiSalaryService.getMaxYear ();
         }
-        return new PageBean ();
+        if(month == null){
+            month = hiSalaryService.getMaxMonth (year);
+        }
+        Page page = PageUtil.getPage (hiSalaryService.countByYearAndMonth (year, month), pageSize, curPage);
+        Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
+        List<HiSalary> salaries = hiSalaryService.findByYearAndMonth (year, month, pageRequest);
+        return new PageBean<> (DateUtil.toDateString (year, month),page, salaries);
     }
 
     @PostMapping ("statistics.json")
-    public PageBean getSalaryGroupByDept () throws Exception {
-        Integer maxYear = hiSalaryService.getMaxYear ();
-        if (maxYear != null && maxYear != 0) {
-            int maxMonth = hiSalaryService.getMaxMonth (maxYear);
-            List<SalaryArea> salaries = hiSalaryService.findByGroupDept (maxYear, maxMonth);
-            return new PageBean<> (DateUtil.toDateString (maxYear, maxMonth), salaries);
+    public PageBean getSalaryGroupByDept (
+            @RequestParam (value = "year", defaultValue = "0") Integer year,
+            @RequestParam (value = "month", defaultValue = "0") Integer month
+    ) throws Exception {
+        if(year == null){
+            year = hiSalaryService.getMaxYear ();
         }
-        return new PageBean ();
+        if(month == null){
+            month = hiSalaryService.getMaxMonth (year);
+        }
+        List<SalaryArea> salaries = hiSalaryService.findByGroupDept (year, month);
+        return new PageBean<> (DateUtil.toDateString (year, month), salaries);
     }
 
     @PostMapping ("search.json")

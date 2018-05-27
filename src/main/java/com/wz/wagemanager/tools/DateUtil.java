@@ -9,11 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 public class DateUtil {
-    public static void main (String[] args) throws ParseException {
-        System.out.println (getMonth ("2018年12月"));
-        System.out.println (getYear ("2018年12月"));
-    }
-    public static String toDateString(int year,int month){
+
+    public static String toDateString(Integer year,Integer month){
+        if(year == null || year == 0){
+            return "";
+        }
         return String.valueOf (year) + "年" + month + "月";
     }
     public static int getYear(String date) throws ParseException {

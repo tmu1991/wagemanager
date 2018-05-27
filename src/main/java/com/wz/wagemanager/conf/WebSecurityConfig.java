@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 加入自定义UsernamePasswordAuthenticationFilter替代原有Filter
         http.addFilterAt(loginFilter (), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/build/**","/dist/**","/examples/**","/src/**","/dept/all.json","/invalid.html").permitAll()
+                .antMatchers("/img/**","/js/**","/css/**","/layui/**","/dept/all.json","/invalid.html").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .loginProcessingUrl ("/login")
