@@ -13,46 +13,46 @@
         <legend>员工列表</legend>
     </fieldset>
     <blockquote class="layui-elem-quote">
-    <div style="width: 200px;" class="layui-input-inline">
-        <label class="layui-label"> 角色 </label>
-        <div style="margin-left: 5px;" class="layui-input-block layui-inline">
-        <select style="width: 150px;" class="layui-select listRole" name="roleId">
+        <div style="width: 200px;" class="layui-input-inline">
+            <label class="layui-label"> 角色 </label>
+            <div style="margin-left: 5px;" class="layui-input-block layui-inline">
+                <select style="width: 150px;" class="layui-select listRole" name="roleId">
 
-        </select>
+                </select>
+            </div>
         </div>
-    </div>
-    <div style="width: 200px;" class="layui-input-inline">
-        <label class="layui-label"> 部门 </label>
-        <div style="margin-left: 5px;" class="layui-input-block layui-inline">
-        <select style="width: 150px;" class="layui-select listDept" name="deptId">
+        <div style="width: 200px;" class="layui-input-inline">
+            <label class="layui-label"> 部门 </label>
+            <div style="margin-left: 5px;" class="layui-input-block layui-inline">
+                <select style="width: 150px;" class="layui-select listDept" name="deptId">
 
-        </select>
+                </select>
+            </div>
         </div>
-    </div>
-    <div style="width: 200px;" class="layui-inline">
-        <label class="layui-label"> 姓名 </label>
-        <div style="margin-left: 5px;" class="layui-input-block layui-inline">
-            <input style="width: 150px;" type="text" value="" placeholder="请输入关键字" name="" autocomplete="off" class="layui-input search_input keyw">
+        <div style="width: 200px;" class="layui-inline">
+            <label class="layui-label"> 姓名 </label>
+            <div style="margin-left: 5px;" class="layui-input-block layui-inline">
+                <input style="width: 150px;" type="text" value="" placeholder="请输入关键字" name="" autocomplete="off" class="layui-input search_input keyw">
+            </div>
         </div>
-    </div>
-    <div class="layui-inline"> <a class="layui-btn search_btn">查询</a></div>
-    <div  class="layui-btn-group demoTable layui-inline">
-        <button id="addEmplpyeeBtn" class="layui-btn layui-btn-normal" data-type="insert">添加</button>
-        <button id="delAll" class="layui-btn layui-btn-danger" data-type="delAll">全部删除</button>
-    </div>
+        <div class="layui-inline"> <a class="layui-btn search_btn">查询</a></div>
+        <div  class="layui-btn-group demoTable layui-inline">
+            <button id="addEmplpyeeBtn" class="layui-btn layui-btn-normal" data-type="insert">添加</button>
+            <button id="delAll" class="layui-btn layui-btn-danger" data-type="delAll">全部删除</button>
+        </div>
     </blockquote>
 
     <div class="layui-form news_list">
         <table class="layui-table">
             <!--<colgroup>-->
-                <!--<col width="5%">-->
-                <!--<col width="12%">-->
-                <!--<col width="15%">-->
-                <!--<col width="10%">-->
-                <!--<col width="10%">-->
-                <!--<col width="15%">-->
-                <!--<col width="10%">-->
-                <!--<col width="17%">-->
+            <!--<col width="5%">-->
+            <!--<col width="12%">-->
+            <!--<col width="15%">-->
+            <!--<col width="10%">-->
+            <!--<col width="10%">-->
+            <!--<col width="15%">-->
+            <!--<col width="10%">-->
+            <!--<col width="17%">-->
             <!--</colgroup>-->
             <thead>
             <tr>
@@ -74,51 +74,51 @@
 
 <!--需要弹出的添加员工界面 -->
 <div class="layui-row" id="test" hidden="hidden">
-<div class="layui-col-md10">
-    <form style="margin-top: 5px;" class="layui-form" lay-filter="userForm" id="addEmployeeForm" >
-        <div class="layui-form-item">
-            <label class="layui-form-label">员工姓名：</label>
-            <div class="layui-input-block">
-                <input class="primaryKey" name="id" value="" hidden="hidden"/>
-                <input value="test" type="text" lay-verify="required" name="username" class="layui-input username">
+    <div class="layui-col-md10">
+        <form style="margin-top: 5px;" class="layui-form" lay-filter="userForm" id="addEmployeeForm" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">员工姓名：</label>
+                <div class="layui-input-block">
+                    <input class="primaryKey" name="id" value="" hidden="hidden"/>
+                    <input value="test" type="text" lay-verify="required" name="username" class="layui-input username">
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">考勤编号：</label>
-            <div class="layui-input-block">
-                <input type="text" lay-verify="required" name="workNo" class="layui-input workNo">
+            <div class="layui-form-item">
+                <label class="layui-form-label">考勤编号：</label>
+                <div class="layui-input-block">
+                    <input type="text" lay-verify="required" name="workNo" class="layui-input workNo">
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">员工部门：</label>
-            <div class="layui-input-block">
-                <select class="layui-select modDept" name="sysDept.id">
+            <div class="layui-form-item">
+                <label class="layui-form-label">员工部门：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select modDept" name="sysDept.id">
 
-                </select>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">员工角色：</label>
-            <div class="layui-input-block">
-                <select lay-verify="required" class="layui-select modRole" name="sysRole.id">
+            <div class="layui-form-item">
+                <label class="layui-form-label">员工角色：</label>
+                <div class="layui-input-block">
+                    <select lay-verify="required" class="layui-select modRole" name="sysRole.id">
 
-                </select>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">员工状态：</label>
-            <div class="layui-input-block">
-                <input class="status" checked type="checkbox" value="1" lay-filter="switchTest" name="status" lay-skin="switch" lay-text="正常|禁用">
+            <div class="layui-form-item">
+                <label class="layui-form-label">员工状态：</label>
+                <div class="layui-input-block">
+                    <input class="status" checked type="checkbox" value="1" lay-filter="switchTest" name="status" lay-skin="switch" lay-text="正常|禁用">
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
             </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 </div>
 
 <script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
@@ -215,7 +215,7 @@
                 title: "添加员工",
                 skin: "myclass",
                 area: ["50%"],
-                content: $('#test'),
+                content: $('#test').html(),
                 shadeClose:true,
                 shade:false,
                 success:function (layero, index) {
