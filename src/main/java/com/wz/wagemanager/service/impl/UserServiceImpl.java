@@ -7,6 +7,8 @@ import com.wz.wagemanager.entity.SysUser;
 import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.service.RoleService;
 import com.wz.wagemanager.service.UserService;
+import com.wz.wagemanager.tools.CommonUtils;
+import com.wz.wagemanager.tools.ContextHolderUtils;
 import com.wz.wagemanager.tools.CriteriaUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -19,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("userService")
 @Transactional
@@ -48,6 +47,17 @@ public class UserServiceImpl implements UserService{
     @OperInfo (type = OperationType.UPDATE,desc = "重置密码")
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void updateUser(SysUser sysUser) {
+        userRepository.save (sysUser);
+    }
+
+    @Override
+    public void updateUserByProperties (SysUser sysUser) throws IllegalAccessException {
+        SysUser user = getUserById (sysUser.getId ());
+        CommonUtils.copyProperties (sysUser,user,updateProperties);
+        sysUser.setUpdateDate(new Date());
+        sysUser.setUpdateUser(ContextHolderUtils.getPrincipal().getUsername());
+        sysUser.setSysRole(roleService.findRoleById(user.getSysRole().getId()));
+        sysUser.setSysDept(deptService.findById(user.getSysDept().getId()));
         userRepository.save (sysUser);
     }
 
@@ -100,4 +110,6 @@ public class UserServiceImpl implements UserService{
         userRepository.save (sysUser);
 //        userRepository.insertSysUser(sysUser);
     }
+
+    private static final List<String> updateProperties= Arrays.asList ("username","workNo","sysDept","sysRole","status");
 }

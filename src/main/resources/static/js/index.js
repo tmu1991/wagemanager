@@ -5,13 +5,6 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         laypage = layui.laypage,
         $ = layui.jquery,
         upload = layui.upload;
-//            //loading层
-    laydate.render({
-        elem: '#date1'
-    });
-    laydate.render({
-        elem: '#date2'
-    });
 
     var uploadIndex;
 
@@ -161,8 +154,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             icon: 1,
             title: "修改员工扣款",
             skin: 'layui-layer-molv',
-            area: ["50%",'85%'],
-            btnAlign: 'c',
+            area: ["50%",'80%'],
+            // btnAlign: 'c',
             content: $('#addLoan').html(),
             success:function (layero, index) {
                 form.val("loanForm", {
@@ -170,8 +163,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"username": tr.find('td.username').text()
                     ,"workNo": tr.find('td.id').text()
                     ,"late": tr.find('td.cd').text()
-                    ,"otherDebit": tr.find('td.qt').text()
-                    ,"partyDue": tr.find('td.df').text()
+                    ,"debit": tr.find('td.qt').text()
+                    ,"due": tr.find('td.df').text()
                     ,"loan": tr.find('td.jk').text()
                     ,"other": tr.find('td.qt1').text()
                     ,"otherEl": tr.find('td.qt2').text()
@@ -181,7 +174,15 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"debitDate":tr.find('td.kkdate').text()
                     ,"debitNote":tr.find('td.kknote').text()
                 });
-                form.render(null,'loanForm');
+                laydate.render({
+                    elem: '#date1', //指定元素
+                    // type: 'datetime' //日期格式类型
+                });
+                laydate.render({
+                    elem: '#date2',
+                    // type: 'datetime' //日期格式类型
+                });
+                // form.render(null,'loanForm');
             }, cancel: function(){
                 form.val("loanForm", {
                     "id": ''

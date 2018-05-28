@@ -104,7 +104,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
 
     function renderDate() {
         var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
-        $.post("salary/pool.json", function (result) {
+        $.post("declare/pool.json", function (result) {
             var code = result.code,
                 listData = result.data;
             if (code == 200) {

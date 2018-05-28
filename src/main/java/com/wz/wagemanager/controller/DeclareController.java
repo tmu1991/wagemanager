@@ -1,26 +1,28 @@
 package com.wz.wagemanager.controller;
 
 import com.wz.wagemanager.entity.ProcessEntity;
+import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.entity.SysDeclare;
 import com.wz.wagemanager.entity.SysUser;
+import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
 import com.wz.wagemanager.tools.*;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +38,13 @@ import java.util.stream.Collectors;
 public class DeclareController extends BaseExceptionController{
     @Resource
     private DeclareService declareService;
-
+    @Resource
+    private ActSalaryService actSalaryService;
     @RequestMapping(value = "start.json")
     public PageBean startDeclare(
             @RequestParam(value = "declareId")String declareId
     ){
+        Assert.assertFalse ("提交审核工资列表不能为空",CollectionUtils.isEmpty (actSalaryService.findByDeclareId (declareId)));
         declareService.start(declareId);
         return new PageBean<>();
     }
@@ -77,6 +81,22 @@ public class DeclareController extends BaseExceptionController{
         return new PageBean<>(page,declares);
     }
 
+
+    @PostMapping ("pool.json")
+    public PageBean<List<SalaryArea>> pool () throws Exception {
+        SysUser sysUser = ContextHolderUtils.getPrincipal ();
+        String roleId = sysUser.getSysRole ().getId ();
+        List<Task> list = taskService.createTaskQuery ().taskCandidateGroup (roleId).list ();
+        if(CollectionUtils.isEmpty (list)){
+            return new PageBean<> ();
+        }else{
+            List<String> listIds=new ArrayList<> ();
+            list.forEach (task ->
+                listIds.add (declareService.findByProcessInstanceId (task.getProcessInstanceId ()).getId ()));
+            return new PageBean<> (actSalaryService.findByGroupDept(listIds));
+        }
+    }
+
     @Resource
     private IdentityService identityService;
 
@@ -88,23 +108,27 @@ public class DeclareController extends BaseExceptionController{
     ){
         SysDeclare declare = declareService.findById (declareId);
         String processInstanceId = declare.getProcessInstanceId ();
-        return completeTask (processInstanceId,null,comment,msg);
+        return completeTask (processInstanceId,null,null,comment,msg);
     }
 
     @PostMapping(value = "complete.json")
     public PageBean completeTask(
             @RequestParam(value = "processInstanceId") String processInstanceId,
+            @RequestParam(value = "declareId",required = false)String declareId,
             @RequestParam(value = "taskId",required = false)String taskId,
             @RequestParam(value = "comment",required = false) String comment,
             @RequestParam(value = "msg",required = false)Integer msg
     ){
+        if(StringUtils.isNotBlank (declareId)){
+            Assert.assertFalse ("提交审核工资列表不能为空",CollectionUtils.isEmpty (actSalaryService.findByDeclareId (declareId)));
+        }
         String roleId = ContextHolderUtils.getPrincipal ().getSysRole ().getId ();
-        if(org.apache.commons.lang3.StringUtils.isBlank (taskId)){
+        if(StringUtils.isBlank (taskId)){
             Task task = taskService.createTaskQuery ().processInstanceId (processInstanceId).taskCandidateGroup (roleId).singleResult ();
             taskId = task.getId ();
         }
 
-        if(org.apache.commons.lang3.StringUtils.isNotBlank (comment)){
+        if(StringUtils.isNotBlank (comment)){
             identityService.setAuthenticatedUserId (ContextHolderUtils.getPrincipal ().getUsername ());
             taskService.addComment (taskId, processInstanceId,comment);
         }

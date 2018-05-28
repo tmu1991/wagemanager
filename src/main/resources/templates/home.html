@@ -61,9 +61,19 @@
 							</dl>
 						</li>
 						<li sec:authorize="hasAnyRole('ROLE_STAT','ROLE_DIRE','ROLE_MANAGER')" class="layui-nav-item">
+							<a class="" href="javascript:;">管理操作</a>
+							<dl class="layui-nav-child">
+								<dd id='history.html'>
+									<a href="javascript:;">历史查询</a>
+								</dd>
+							</dl>
+						</li>
+						<li  sec:authorize="hasAnyRole('ROLE_STAT','ROLE_LAW')" class="layui-nav-item">
 							<a class="" href="javascript:;">部门</a>
 							<dl class="layui-nav-child" id="department">
-								<dd th:each="dept:${depts}" th:attr="id=${'index/'+dept.id}"><a th:text="${dept.deptName}" href='javascript:;'></a></dd>
+								<dd th:each="dept:${depts}" th:attr="id=${'index/'+dept.id}">
+									<a th:text="${dept.deptName}" href='javascript:;'></a>
+								</dd>
 							</dl>
 						</li>
 						<li sec:authorize="hasRole('ROLE_ADMIN')" class="layui-nav-item">
@@ -114,7 +124,7 @@
 		<script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
 		<script th:inline="javascript">
 			//JavaScript代码区域
-            layui.use(['jquery','element'], function () {
+            layui.use(['jquery','element','layer'], function () {
                 var $ = layui.jquery,
                 	element = layui.element;
 				$(".menu .layui-nav-item:first").addClass("layui-nav-itemed");

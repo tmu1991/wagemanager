@@ -29,7 +29,7 @@ public interface DeclareService {
 
     List<SysDeclare> findByDeptAndStatus(SysDept dept, int stauts);
 
-    SysDeclare findNotStart(SysDept dept);
+    SysDeclare findModifiable(SysDept dept);
 
     List<SysDeclare> findNotComplete(SysDept sysDept);
 }

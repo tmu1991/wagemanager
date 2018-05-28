@@ -119,7 +119,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                         var count = i + 1;
                         dataHtml += '<tr>'
                             + '<td data-id="' + item.taskId + '">' + count + '</td>'
-                            + '<td>' + item.declareName + '</td>'
+                            + '<td><a href="index/'+item.dept.id+'">' + item.declareName + '</a></td>'
                             + '<td>' + item.declareDate + '</td>'
                             + '<td>' + item.user.username + '</td>';
                         if (item.status == 0) {

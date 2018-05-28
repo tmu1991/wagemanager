@@ -38,7 +38,7 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
             "a.year,a.month,a.declareId,sum(a.grossPay),sum(a.subWork)," +
             "sum(a.allowance),sum(a.insurance),sum(a.accuFund),sum(a.incomeTax),sum(a.payroll)," +
             "sum(a.late),sum(a.otherDebit),sum(a.partyDue),sum(a.loan),sum(a.other),sum(a.otherEl))" +
-            "from ActSalary a group by a.deptId")
-    List<SalaryArea> findGroupByDept();
+            "from ActSalary a where a.declareId in (?1) group by a.deptId")
+    List<SalaryArea> findGroupByDept(List<String> ids);
 
 }

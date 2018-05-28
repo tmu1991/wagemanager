@@ -90,8 +90,8 @@ public class DeclareServiceImpl implements DeclareService {
     }
 
     @Override
-    public SysDeclare findNotStart (SysDept dept) {
-        List<SysDeclare> declares = findByDeptAndStatus (dept, 0);
+    public SysDeclare findModifiable (SysDept dept) {
+        List<SysDeclare> declares = declareRepository.findByDeptAndStatusIn (dept, declareModifiable);
         if(CollectionUtils.isEmpty (declares)){
             return null;
         }else if(declares.size ()==1){
@@ -99,7 +99,7 @@ public class DeclareServiceImpl implements DeclareService {
         }
         throw new HandThrowException ();
     }
-
+    private static final Integer[] declareModifiable=new Integer[]{0,3};
     private static final Integer[] declareNotComplete=new Integer[]{1,3};
     @Override
     public List<SysDeclare> findNotComplete (SysDept sysDept) {

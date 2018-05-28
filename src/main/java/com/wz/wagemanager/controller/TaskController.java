@@ -136,21 +136,13 @@ public class TaskController extends BaseExceptionController {
                 salary.setOther(task.getOther());
                 salary.setOtherEl(task.getOtherEl());
             }
-            salary = cal(salary, task, dateNum);
+            CommonUtils.calSalary(salary, null, dateNum);
             if(isAdd){
                 salaries.add(salary);
             }else {
                 actSalaryService.save(salary);
             }
         }
-    }
-
-    private ActSalary cal(ActSalary salary, ActTask task, Integer dateNum) {
-        salary.setLoan(task.getLoan());
-        salary.setOtherDebit(task.getDebit());
-        //重新计算工资
-        CommonUtils.calSalary(salary, null, dateNum);
-        return salary;
     }
 
     @Resource

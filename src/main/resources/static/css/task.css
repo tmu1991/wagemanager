@@ -13,15 +13,8 @@
     position: relative;
     overflow: visible !important;
 }
-.changered{
-    color:red !important;
-}
 .layui-btn{
     margin-left:0px !important;
-}
-#delAll{
-    margin-left: 0px !important;
-
 }
 table.layui-btn+.layui-btn{
     margin-top: 5px;
@@ -29,28 +22,10 @@ table.layui-btn+.layui-btn{
 .btn-btn{
     text-align: center !important;
 }
-#test8{
-    margin-bottom: 2px !important;
-}
-#test9{
-    margin-bottom: 2px !important;
-}
 .layui-table th{
     font-weight: bold !important;
     color: #333 !important;
 }
-.layui-form-label{
-    width:110px !important;
-}
-.layui-input-block{
-    height: 20px !important;
-}
-.layui-form-item{
-    margin-bottom: auto !important;
-}
-.div-loan{
-    width:25% !important;
-}
 .layui-col-md10{
-    width: 90%;
+    width: 92%;
 }

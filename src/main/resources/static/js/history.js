@@ -38,7 +38,7 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
                                 "</td><td>"+item.insurance+"</td><td>"+item.incomeTax+"</td></td><td>"+item.bonus+"</td><td>"+fine+"</td><td>"+item.payroll+"</td><td>"+item.creditCard+ "</td></tr>";
                         })
                     }else {
-                        dataHtml = '<tr><td colspan="16">暂无数据</td></tr>';
+                        dataHtml = '<tr><td colspan="16"><div class="btn-btn">暂无数据</div></td></tr>';
                     }
 
                     $(".news_content").html(dataHtml);

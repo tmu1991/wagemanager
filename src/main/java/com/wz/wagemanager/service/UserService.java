@@ -14,6 +14,7 @@ public interface UserService{
     SysUser getUserById(String id);
 
     void updateUser(SysUser sysUser);
+    void updateUserByProperties(SysUser sysUser) throws IllegalAccessException;
 
     void insertUser(SysUser sysUser);
 

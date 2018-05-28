@@ -2,6 +2,7 @@ package com.wz.wagemanager.tools;
 
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.SysUser;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -41,12 +42,12 @@ public class CommonUtils {
         return bigDecimal!=null&&bigDecimal.compareTo(BigDecimal.ZERO)!=0;
     }
 
-    public static void copyNullValue(ActSalary original, ActSalary novel) throws IllegalAccessException {
-        Class<? extends ActSalary> aClass = original.getClass();
+    public static <T> void copyProperties(T original, T novel,List<String> properties) throws IllegalAccessException {
+        Class<?> aClass = original.getClass ();
         Field[] declaredFields = aClass.getDeclaredFields();
         for(Field declaredField:declaredFields){
             declaredField.setAccessible(true);
-            if(declaredField.get(original)==null){
+            if(!properties.contains (declaredField.getName ())){
                 declaredField.set(original,declaredField.get(novel));
             }
         }

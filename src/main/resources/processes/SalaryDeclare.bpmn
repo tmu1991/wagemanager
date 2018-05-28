@@ -9,8 +9,7 @@
     <userTask activiti:candidateGroups="4028809d635c8d2f01635c8daa390004" activiti:exclusive="true" id="_6" name="执法部门审批"/>
     <endEvent id="_7" name="流程结束">
       <extensionElements>
-        <activiti:executionListener class="com.wz.wagemanager.listener.EndListener" event="end">
-        </activiti:executionListener>
+        <activiti:executionListener class="com.wz.wagemanager.listener.EndListener" event="end"/>
       </extensionElements>
     </endEvent>
     <startEvent activiti:initiator="applyRoleId" id="_14" name="流程开始"/>

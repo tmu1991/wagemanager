@@ -43,11 +43,6 @@ public class SalaryController extends BaseExceptionController {
     @Resource
     private UserService userService;
 
-    @PostMapping ("pool.json")
-    public PageBean<List<SalaryArea>> pool () throws Exception {
-        return new PageBean<> (actSalaryService.findByGroupDept());
-    }
-
     @PostMapping ("update.json")
     @OperInfo (type = OperationType.UPDATE)
     public PageBean update (
@@ -176,8 +171,8 @@ public class SalaryController extends BaseExceptionController {
     ) throws Exception {
         SysUser sessionUser = ContextHolderUtils.getPrincipal ();
         SysDept sysDept = sessionUser.getSysDept ();
-        Assert.assertTrue ("存在未完成工资审批,请完成后重试",
-                CollectionUtils.isEmpty (declareService.findNotComplete (sysDept)));
+//        Assert.assertTrue ("存在未完成工资审批,请完成后重试",
+//                CollectionUtils.isEmpty (declareService.findNotComplete (sysDept)));
         String  originalFilename= UploadUtils.fileVerify (file);
         String filePath = DataUtil.getFilePath (originalFilename);
         String dateStr=UploadUtils.getDateStr (originalFilename);
@@ -188,17 +183,20 @@ public class SalaryController extends BaseExceptionController {
             Integer month = DataUtil.getMontoh (dateStr);
             int dateNum = DateUtil.getDateNum (year, month);
             List<ActSalary> saveList = new ArrayList<> ();
-            SysDeclare declare = declareService.findNotStart (sysDept);
+            SysDeclare declare = declareService.findModifiable (sysDept);
+            String declareName = declareName (year, month, sysDept.getDeptName ());
+            if(declare == null){
+                declare = SysDeclare.builder ()
+                        .declareName (declareName)
+                        .user (sessionUser).dept (sysDept).status (0).build ();
+                declareService.save (declare);
+            }else{
+                Assert.assertTrue (declareName+"尚未审核完成,请完成后再提交",declareName.equals (declare.getDeclareName ()));
+            }
             for (ActWork actWork : UploadUtils.actList (filePath)) {
                 SysUser sysUser = userService.findByWorkNo (actWork.getWorkNo ());
                 Assert.assertNotNull ("工号为[" + actWork.getWorkNo () + "]的员工不存在,请联系管理员添加后重试", sysUser);
                 Assert.assertTrue ("部门[" + actWork.getDeptName () + "]与当前用户部门不符", sysDept.getDeptName ().equals (actWork.getDeptName ()));
-                if(declare == null){
-                    declare = SysDeclare.builder ()
-                            .declareName (declareName (year, month, sysDept.getDeptName ()))
-                            .user (sessionUser).dept (sysDept).status (0).build ();
-                    declareService.save (declare);
-                }
                 ActSalary actSalary = actSalaryService.findByYearAndMonthAndWorkNo (year, month, sysUser.getWorkNo ());
                 if (actSalary == null) {
                     actSalary = new ActSalary ();

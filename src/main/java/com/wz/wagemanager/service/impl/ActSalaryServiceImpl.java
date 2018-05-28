@@ -9,6 +9,7 @@ import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
 import com.wz.wagemanager.tools.Assert;
 import com.wz.wagemanager.tools.CommonUtils;
+import com.wz.wagemanager.tools.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -88,8 +90,8 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
-    public List<SalaryArea> findByGroupDept () throws Exception {
-        return actSalaryRepository.findGroupByDept ();
+    public List<SalaryArea> findByGroupDept (List<String> ids) throws Exception {
+        return actSalaryRepository.findGroupByDept (ids);
     }
 
     @Override
@@ -114,9 +116,9 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     public void update (ActSalary salary) throws IllegalAccessException {
-        final ActSalary actSalary = findById(salary.getId());
-        Assert.assertNotNull("当前记录不存在",actSalary);
-        CommonUtils.copyNullValue(salary,actSalary);
+        ActSalary actSalary = findById(salary.getId());
+        CommonUtils.copyProperties(salary,actSalary,updateProperties);
+        CommonUtils.calSalary (salary,null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
         actSalaryRepository.save (salary);
     }
 
@@ -135,4 +137,5 @@ public class ActSalaryServiceImpl implements ActSalaryService {
         return actSalaryRepository.findByDeclareId(declareId);
     }
 
+    private static final List<String> updateProperties= Arrays.asList ("coeff","base","seniority","busTravel","subDay","allowance","bonus");
 }

@@ -72,12 +72,8 @@ public class UserController extends BaseExceptionController {
     }
 
     @PostMapping("update.json")
-    public PageBean updateById(@ModelAttribute SysUser user){
-        user.setUpdateDate(new Date());
-        user.setUpdateUser(ContextHolderUtils.getPrincipal().getUsername());
-        user.setSysRole(roleService.findRoleById(user.getSysRole().getId()));
-        user.setSysDept(deptService.findById(user.getSysDept().getId()));
-        userService.updateUser(user);
+    public PageBean updateById(@ModelAttribute SysUser user) throws IllegalAccessException {
+        userService.updateUserByProperties (user);
         return new PageBean<>();
     }
 

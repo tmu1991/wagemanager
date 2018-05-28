@@ -81,7 +81,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
         var _this = $(this);
         layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
             var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
-            $.post('declare/complete.json', {'processInstanceId': _this.next().attr("data-id")}, function (result) {
+            $.post('declare/complete.json', {'declareId':_this.attr('data-id'),'processInstanceId': _this.next().attr("data-id")}, function (result) {
                 var code = result.code;
                 if (code == 200) {
                     layer.msg('提交成功');
