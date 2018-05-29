@@ -148,7 +148,4 @@ public class ActSalary {
     @Column(name = "declare_id",length = 32)
     private String declareId;
 
-    @OneToMany(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "salary_id")
-    private List<ActTask> tasks;
 }

@@ -1,5 +1,6 @@
 package com.wz.wagemanager.controller;
 
+import com.wz.wagemanager.entity.ActForm;
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.ActTask;
 import com.wz.wagemanager.entity.SysUser;
@@ -7,15 +8,19 @@ import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
+import org.activiti.engine.impl.util.CollectionUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,19 +44,18 @@ public class TaskController extends BaseExceptionController {
     }
 
     @PostMapping("upload.json")
-    public void upload(@RequestParam("file") MultipartFile file) throws Exception {
+    public PageBean upload(@RequestParam("file") MultipartFile file) throws Exception {
         String originalFilename = UploadUtils.fileVerify(file);
         String filePath = DataUtil.getFilePath(originalFilename);
         File dest = DataUtil.getFile(filePath);
         //文件上传
         file.transferTo(dest);
         //从文件名中取出导入数据的年月
-        String dateStr = UploadUtils.getDateStr(originalFilename);
         List<ActTask> tasks = new ArrayList<>();
         List<ActSalary> salaries = new ArrayList<>();
-        ExcelUtil.readExcel(filePath, 1, 0, TASK_PROPERTIES, ActTask.class).forEach(task -> {
-            tellUser(task);
-            opr(task,tasks,salaries,dateStr,true);
+        ExcelUtil.readExcel(filePath, 1, 0, TASK_PROPERTIES, ActForm.class).forEach(form -> {
+            tellUser(form);
+            opr(form,tasks,salaries,true);
         });
         if (!CollectionUtils.isEmpty(tasks)) {
             taskService.save(tasks);
@@ -59,91 +63,111 @@ public class TaskController extends BaseExceptionController {
         if (!CollectionUtils.isEmpty(salaries)) {
             actSalaryService.save(salaries);
         }
+        return new PageBean<> ();
     }
 
     @PostMapping("update.json")
-    public PageBean update(@ModelAttribute ActTask task, @RequestParam("dateStr") String dateStr) {
-        tellUser(task);
-        opr(task,null,null,dateStr,false);
+    public PageBean update(@ModelAttribute ActForm form) {
+        tellUser(form);
+        opr(form,null,null,false);
         return new PageBean<>();
     }
 
-    private void tellUser(ActTask task) {
-        //根据工号取到用户
-        SysUser user = userService.findByWorkNo(task.getWorkNo());
-        Assert.assertNotNull("工号[" + task.getWorkNo() + "]的用户不存在", user);
-        Assert.assertTrue("工号[" + task.getWorkNo() + "]与用户名不符，请核实", user.getUsername().equals(task.getUsername()));
-        Assert.assertTrue("工号[" + task.getWorkNo() + "]部门与当前用户部门不符，请核实",
-                user.getSysDept() != null && task.getDeptName().equals(user.getSysDept().getDeptName()));
-        task.setDeptId(user.getSysDept().getId());
+    @PostMapping("salary.json")
+    public PageBean<List<ActTask>> update(@RequestParam("salaryId")String salaryId) {
+        return new PageBean<>(taskService.findBySalaryId (salaryId));
     }
 
-    private void opr(ActTask task, List<ActTask> tasks, List<ActSalary> salaries, String dateStr,Boolean isAdd) {
-        Integer year = DataUtil.getYear(dateStr);
-        Integer month = DataUtil.getMontoh(dateStr);
-        //得到每月多少天
-        int dateNum = DateUtil.getDateNum(year, month);
+    private void tellUser(ActForm form) {
+        //根据工号取到用户
+        SysUser user = userService.findByWorkNo(form.getWorkNo());
+        Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户不存在", user);
+        Assert.assertTrue("工号[" + form.getWorkNo() + "]与用户名不符，请核实", user.getUsername().equals(form.getUsername()));
+        Assert.assertTrue("工号[" + form.getWorkNo() + "]部门与当前用户部门不符，请核实",
+                user.getSysDept() != null && form.getDeptName().equals(user.getSysDept().getDeptName()));
+    }
 
-        if (task.getLate() != null || task.getDue() != null || task.getOther() != null || task.getOtherEl() != null||task.getLoan() != null||task.getDebit() != null) {
-            //更新工资表的借款和扣款记录
-            ActSalary salary = actSalaryService.findByYearAndMonthAndWorkNo(year, month, task.getWorkNo());
-            Assert.assertNotNull("工号[" + task.getWorkNo() + "]的用户" + year + "年" + month + "月工资记录不存在，请添加工资记录后再添加借款记录", salary);
-            List<ActTask> taskList = salary.getTasks();
-            if(taskList==null){
-                taskList=new ArrayList<>();
-            }
-            if (task.getLoan() != null) {
-                //根据从excel表的工号 年份 月份从已存在的待办事项表中进行查询
-                ActTask actTask = taskService.findByTaskDateAndWorkNoAndType(task.getLoanDate(), task.getWorkNo(), 0);
-                if (actTask == null) {
-                    actTask = task;
-                    actTask.setSalary(salary);
+    private void opr(ActForm form, List<ActTask> tasks, List<ActSalary> salaries,Boolean isAdd) {
+
+        //更新工资表的借款和扣款记录
+        ActSalary salary = actSalaryService.findByWorkNo (form.getWorkNo());
+        Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户" + salary.getYear ()+ "年" + salary.getMonth () + "月工资记录不存在，请添加工资记录后再添加借款记录", salary);
+        boolean isChange=false;
+        if(form.getLate ()!=null&&form.getLate().compareTo(salary.getLate()) != 0){
+            salary.setLate(form.getLate());
+            isChange = true;
+        }
+        if(form.getDue() != null&&form.getDue().compareTo(salary.getPartyDue()) != 0){
+            salary.setPartyDue(form.getDue());
+            isChange = true;
+        }
+        if(form.getOther() != null&&form.getOther().compareTo(salary.getOther()) != 0){
+            salary.setOther(form.getOther());
+            isChange = true;
+        }
+        if(form.getOtherEl() != null&&form.getOtherEl().compareTo(salary.getOtherEl()) != 0){
+            salary.setOtherEl(form.getOtherEl());
+            isChange = true;
+        }
+
+        List<ActTask> formTask = form.getTasks ();
+        BigDecimal loan=salary.getLoan ()==null?BigDecimal.ZERO:salary.getLoan (),
+                debit=salary.getOtherDebit ()==null?BigDecimal.ZERO:salary.getOtherDebit ();
+        boolean isTask=false;
+        if(!CollectionUtils.isEmpty (formTask)){
+            List<ActTask> taskList=new ArrayList<> ();
+            for(ActTask actTask:formTask){
+                if(actTask.getAmount () == null){
+                    continue;
                 }
-                actTask.setAmount(task.getLoan());
-                actTask.setTaskDate(task.getLoanDate());
-                actTask.setNote(task.getLoanNote());
+                actTask.setTaskDate (actTask.getTaskDate ().trim ());
+                actTask.setNote (actTask.getNote ().trim ());
+                if(org.apache.commons.lang3.StringUtils.isNotBlank (actTask.getId ())){
+                    ActTask taskById = taskService.findById (actTask.getId ());
+                    if(taskById.getAmount ().compareTo (actTask.getAmount ())==0
+                            &&taskById.getTaskDate ().equals (actTask.getTaskDate ())
+                            &&taskById.getNote ().equals (actTask.getNote ())
+                            &&taskById.getType ().equals (actTask.getType ())){
+                        continue;
+                    }
+                }
+                actTask.setDeptId (form.getDeptId ());
+                actTask.setDeptName (form.getDeptName ());
+                actTask.setUsername (form.getUsername ());
+                actTask.setWorkNo (form.getWorkNo ());
+                actTask.setSalaryId (salary.getId ());
+                if(actTask.getType ()==0){
+                    loan=loan.add (actTask.getAmount ());
+                }
+                if(actTask.getType ()==1){
+                    debit=debit.add (actTask.getAmount ());
+                }
                 if(isAdd){
                     tasks.add(actTask);
-                }else {
-                    taskService.save(actTask);
+                }else{
+                    taskList.add (actTask);
                 }
-                salary.setLoan(task.getLoan());
-                taskList.add(actTask);
+                isTask=true;
             }
-            if (task.getDebit() != null) {
-                ActTask actTask = taskService.findByTaskDateAndWorkNoAndType(task.getDebitDate(), task.getWorkNo(), 1);
-                if (actTask == null) {
-                    actTask = task;
-                    actTask.setSalary(salary);
-                }
-                actTask.setAmount(task.getDebit());
-                actTask.setTaskDate(task.getDebitDate());
-                actTask.setNote(task.getDebitNote());
-                if(isAdd){
-                    tasks.add(actTask);
-                }else {
-                    taskService.save(actTask);
-                }
-                salary.setOtherDebit(task.getDebit());
-                taskList.add(actTask);
-            }
-            if (task.getLate().compareTo(salary.getLate()) != 0
-                    || task.getDue().compareTo(salary.getPartyDue()) != 0
-                    || task.getOther().compareTo(salary.getOther()) != 0
-                    || task.getOtherEl().compareTo(salary.getOtherEl()) != 0) {
-                salary.setLate(task.getLate());
-                salary.setPartyDue(task.getDue());
-                salary.setOther(task.getOther());
-                salary.setOtherEl(task.getOtherEl());
-            }
-            CommonUtils.calSalary(salary, null, dateNum);
-            if(isAdd){
-                salaries.add(salary);
-            }else {
-                actSalaryService.save(salary);
+            if(isTask){
+                salary.setOtherDebit (debit);
+                salary.setLoan (loan);
+                isChange=true;
+                taskService.save (taskList);
             }
         }
+        if (isChange) {
+            CommonUtils.calSalary(salary, null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
+            if(isAdd){
+                salaries.add(salary);
+            }else{
+                actSalaryService.save (salary);
+            }
+
+        }
     }
+
+
 
     @Resource
     private ActSalaryService actSalaryService;

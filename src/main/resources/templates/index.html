@@ -243,12 +243,14 @@
             <div class="layui-col-md10">
                 <!--<h1>更新数据</h1>-->
                 <!--<span id="close">X</span>-->
-                <form style="margin-top: 10px;" class="layui-form" lay-filter="loanForm" id="loanForm">
+                <form style="margin-top: 10px;margin-bottom: 20px" class="layui-form" lay-filter="loanForm" id="loanForm">
                 <div class="layui-form-item">
                 <label class="layui-form-label">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：</label>
             <div class="layui-input-block">
                 <input name="id" value="" hidden="hidden"/>
                 <input name="dateStr" value="" hidden="hidden"/>
+                <input name="deptId" value="" hidden="hidden"/>
+                <input name="deptName" value="" hidden="hidden"/>
                 <input disabled type="text" lay-verify="required" name="workNo" class="layui-input">
                 </div>
                 </div>
@@ -282,29 +284,27 @@
                 <input type="text" lay-verify="required" name="otherEl" class="layui-input">
                 </div>
                 </div>
-                <div class="layui-form-item">
-                <label class="layui-form-label">借&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;款：</label>
-            <div class="layui-input-inline div-loan">
-                <input type="text" lay-verify="required" name="loan" class="layui-input">
-                </div>
-                <div class="layui-input-inline div-loan">
-                <input placeholder="借款日期" type="text" id="date1" name="loanDate" class="layui-input">
-                </div>
-                <div class="layui-input-inline div-loan">
-                <input placeholder="备注" type="text" name="loanNote" class="layui-input">
-                </div>
-                </div>
-                <div class="layui-form-item">
-                <label class="layui-form-label">其他扣款：</label>
-            <div class="layui-input-inline div-loan">
-                <input type="text" lay-verify="required" name="debit" class="layui-input">
-                </div>
-                <div class="layui-input-inline div-loan">
-                <input placeholder="扣款发生日期" type="text" id="date2" name="debitDate" class="layui-input">
-                </div>
-                <div class="layui-input-inline div-loan">
-                <input placeholder="备注" type="text" name="debitNote" class="layui-input">
-                </div>
+                <div class="layui-form-item loanList">
+					<!--<label class="layui-form-label">扣&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;款：</label>-->
+					<!--<div>-->
+						<!--<div class="layui-input-inline div-loan">-->
+							<!--<input name="tasks[0].id" hidden="hidden">-->
+							<!--<input type="text" name="tasks[0].amount" class="layui-input">-->
+						<!--</div>-->
+						<!--<div class="layui-input-inline div-loan">-->
+							<!--<select class="layui-select" name="tasks[0].type">-->
+								<!--<option value="0">借款</option>-->
+								<!--<option value="1">其他扣款</option>-->
+							<!--</select>-->
+						<!--</div>-->
+						<!--<div class="layui-input-inline div-loan">-->
+							<!--<input placeholder="扣款发生日期" type="text" id="date2" name="tasks[0].taskDate" class="layui-input">-->
+						<!--</div>-->
+						<!--<div class="layui-input-inline div-loan">-->
+							<!--<input placeholder="备注" type="text" name="tasks[0].note" class="layui-input">-->
+						<!--</div>-->
+						<!--<button value="0" class="layui-btn layui-input-inline tianjiahang">添加</button>-->
+					<!--</div>-->
                 </div>
                 <div class="layui-form-item">
                 <div class="btn-btn layui-input-block">

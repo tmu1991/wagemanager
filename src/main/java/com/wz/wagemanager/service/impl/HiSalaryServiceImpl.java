@@ -53,12 +53,10 @@ public class HiSalaryServiceImpl implements HiSalaryService {
     }
 
     @Override
-    public Integer countByDeptIdAndDate (String deptId,int year,int month) {
-        return salaryRepository.countByDeptIdAndDate (deptId,year,month);
-    }
-
-    @Override
-    public List<HiSalary> findByYearAndMonth (int year, int month, Pageable page) {
+    public Page<HiSalary> findByPage (int year, int month,String deptId, Pageable page) {
+        if(StringUtils.isNotBlank (deptId)){
+            return salaryRepository.findHiSalariesByYearAndMonthAndDeptId (year,month,deptId,page);
+        }
         return salaryRepository.findHiSalariesByYearAndMonth (year,month,page);
     }
 

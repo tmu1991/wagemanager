@@ -18,16 +18,18 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
     renderDate(1);
 
     function renderDate(curPage,year,month) {
+        var deptId = $(".deptInfo").attr('content');
         var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
         $.ajax({
             url:"salary/history.json",
             type:"post",
-            data:{"year":year,"month":month,"curPage":curPage},
+            data:{"year":year,"month":month,"curPage":curPage,"deptId":deptId},
             success:function (result) {
                 var code = result.code,
                     listData = result.data,
                     page = result.page;
                 if (code == 200) {
+                    $(".date").text(result.msg);
                     //渲染数据
                     var dataHtml = '';
                     if (listData.length != 0) {

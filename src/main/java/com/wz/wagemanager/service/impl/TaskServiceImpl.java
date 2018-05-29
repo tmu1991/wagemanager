@@ -17,12 +17,23 @@ public class TaskServiceImpl implements TaskService {
     @Resource
     private TaskRepository taskRepository;
 
+    @Override
     public Page<ActTask> findByPage(Pageable pageable) {
         return taskRepository.findAll(pageable);
     }
 
     @Override
-    public ActTask findByTaskDateAndWorkNoAndType(Date taskDate, String workNo, Integer type) {
+    public List<ActTask> findBySalaryId (String salaryId) {
+        return taskRepository.findBySalaryId (salaryId);
+    }
+
+    @Override
+    public ActTask findById (String id) {
+        return taskRepository.findOne (id);
+    }
+
+    @Override
+    public ActTask findByTaskDateAndWorkNoAndType(String taskDate, String workNo, Integer type) {
         return taskRepository.findByTaskDateAndWorkNoAndType(taskDate,workNo,type);
     }
 

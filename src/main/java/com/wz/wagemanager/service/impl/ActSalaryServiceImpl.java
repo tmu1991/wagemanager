@@ -54,35 +54,6 @@ public class ActSalaryServiceImpl implements ActSalaryService {
         return actSalaryRepository.findByDeptId(deptId,pageable);
     }
 
-    @Override
-    public List<ActSalary> findByDeptIdAndDete (String deptId, int year, int month, PageRequest page) {
-        return null;
-    }
-
-    @Override
-    public Integer countByDeptIdAndDate (String deptId, int year, int month) {
-        return null;
-    }
-
-    @Override
-    public List<ActSalary> findByYearAndMonth (int year, int month, PageRequest page) {
-        return null;
-    }
-
-    @Override
-    public Integer countByYearAndMonth (int year, int month) {
-        return null;
-    }
-
-    @Override
-    public Page<ActSalary> findByWorkNoOrUsername (String workNo, String username, PageRequest page) {
-        return null;
-    }
-
-    @Override
-    public Integer countByWorkNoOrUsername (String workNo, String username) {
-        return null;
-    }
 
     @Override
     public ActSalary findByYearAndMonthAndWorkNo (int year, int month, String workNo) {
@@ -90,23 +61,13 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
+    public ActSalary findByWorkNo (String workNo) {
+        return actSalaryRepository.findByWorkNo (workNo);
+    }
+
+    @Override
     public List<SalaryArea> findByGroupDept (List<String> ids) throws Exception {
         return actSalaryRepository.findGroupByDept (ids);
-    }
-
-    @Override
-    public Integer getMaxYear () {
-        return null;
-    }
-
-    @Override
-    public Integer getMaxMonth (int maxYear) {
-        return null;
-    }
-
-    @Override
-    public List<ActSalary> findByDeptIdAndYearAndMonth (String deptId, int year, int month) {
-        return null;
     }
 
     @Override

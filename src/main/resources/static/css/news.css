@@ -48,9 +48,9 @@ table.layui-btn+.layui-btn{
 .layui-form-item{
     margin-bottom: auto !important;
 }
-.div-loan{
-    width:25% !important;
-}
+/*.div-loan{*/
+    /*width:15% !important;*/
+/*}*/
 .layui-col-md10{
     width: 90%;
 }

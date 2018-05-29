@@ -26,6 +26,8 @@ import java.util.Map;
 
 public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,JpaSpecificationExecutor<ActSalary> {
 
+    ActSalary findByWorkNo(String workNo);
+
     ActSalary findByYearAndMonthAndWorkNo(int year, int month, String workNo);
 
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);

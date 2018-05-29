@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +47,7 @@ public class SalaryController extends BaseExceptionController {
     @PostMapping ("update.json")
     @OperInfo (type = OperationType.UPDATE)
     public PageBean update (
-            @ModelAttribute (value = "form") ActSalary actSalary
+            @ModelAttribute ActSalary actSalary
     ) throws ParseException, InstantiationException, IllegalAccessException, NoSuchFieldException, UnsupportedEncodingException {
 //        ActSalary actSalary = CommonUtils.toEntity (form, ActSalary.class);
         actSalaryService.update (actSalary);
@@ -73,14 +74,13 @@ public class SalaryController extends BaseExceptionController {
         Assert.assertNotNull ("部门号不能为空", deptId);
         org.springframework.data.domain.Page<ActSalary> salaryPage = actSalaryService.findByDeptId (deptId, PageUtil.pageable (curPage, pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
         return new PageBean<> (PageUtil.getPage (salaryPage.getTotalElements (), pageSize, curPage), salaryPage.getContent ());
-//        return toReturn(date,deptId,pageSize,curPage);
-//        return new PageBean<>(salaryService.findByDeptIdAndYearAndMonth(deptId,maxYear,maxMonth));
     }
 
     @PostMapping ("history.json")
     public PageBean getSalaryByYearAndMonth (
-            @RequestParam (value = "year", defaultValue = "0") Integer year,
-            @RequestParam (value = "month", defaultValue = "0") Integer month,
+            @RequestParam (value = "year", required = false) Integer year,
+            @RequestParam (value = "month", required = false) Integer month,
+            @RequestParam (value = "deptId", required = false) String deptId,
             @RequestParam (value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) Integer curPage,
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) {
@@ -90,16 +90,17 @@ public class SalaryController extends BaseExceptionController {
         if(month == null){
             month = hiSalaryService.getMaxMonth (year);
         }
-        Page page = PageUtil.getPage (hiSalaryService.countByYearAndMonth (year, month), pageSize, curPage);
+//        Page page = PageUtil.getPage (hiSalaryService.countByYearAndMonth (year, month), pageSize, curPage);
         Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
-        List<HiSalary> salaries = hiSalaryService.findByYearAndMonth (year, month, pageRequest);
-        return new PageBean<> (DateUtil.toDateString (year, month),page, salaries);
+        org.springframework.data.domain.Page<HiSalary> hiSalaryPage = hiSalaryService.findByPage (year, month, deptId, pageRequest);
+        return new PageBean<> (DateUtil.toDateString (year, month),
+                PageUtil.getPage (hiSalaryPage.getTotalElements (),pageSize,curPage), hiSalaryPage.getContent ());
     }
 
     @PostMapping ("statistics.json")
     public PageBean getSalaryGroupByDept (
-            @RequestParam (value = "year", defaultValue = "0") Integer year,
-            @RequestParam (value = "month", defaultValue = "0") Integer month
+            @RequestParam (value = "year", required = false) Integer year,
+            @RequestParam (value = "month", required = false) Integer month
     ) throws Exception {
         if(year == null){
             year = hiSalaryService.getMaxYear ();
@@ -123,44 +124,6 @@ public class SalaryController extends BaseExceptionController {
         return new PageBean<> (PageUtil.getPage (salaries.getTotalElements (), pageSize, curPage), salaries.getContent ());
     }
 
-    private PageBean<List<HiSalary>> toReturn (String date, String deptId, int pageSize, int curPage) throws ParseException {
-        Integer maxYear, maxMonth;
-        if (StringUtils.isBlank (date)) {
-            maxYear = hiSalaryService.getMaxYear ();
-            if (maxYear == null || maxYear == 0) {
-                return new PageBean<> ();
-            }
-            maxMonth = hiSalaryService.getMaxMonth (maxYear);
-        } else {
-            maxYear = DateUtil.getYear (date);
-            maxMonth = DateUtil.getMonth (date);
-        }
-        if (maxYear == null || maxYear == 0) {
-            return new PageBean<> ();
-        }
-        Page page = PageUtil.getPage (hiSalaryService.countByDeptIdAndDate (deptId, maxYear, maxMonth), pageSize, curPage);
-        Pageable pageRequest = PageUtil.pageable(curPage,pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
-        return new PageBean<> (DateUtil.toDateString (maxYear, maxMonth), page, hiSalaryService.findByDeptIdAndDete (deptId, maxYear, maxMonth, pageRequest));
-    }
-
-    private int getMontoh (int month) {
-        if (month == 0) {
-            return DateUtil.getCurrentMonth ();
-        }
-        return month;
-    }
-
-    private int getYear (int year) {
-        if (year == 0) {
-            return DateUtil.getCurrentYear ();
-        }
-        return year;
-    }
-//    @Resource
-//    private RoleService roleService;
-//    @Resource
-//    private DeptService deptService;
-
     @Resource
     private DeclareService declareService;
 
@@ -179,8 +142,9 @@ public class SalaryController extends BaseExceptionController {
         File dest = DataUtil.getFile (filePath);
         file.transferTo (dest);
         try {
-            Integer year = DataUtil.getYear (dateStr);
-            Integer month = DataUtil.getMontoh (dateStr);
+            Date date = DateUtil.getDate (dateStr);
+            Integer year = DateUtil.getYear (date);
+            Integer month = DateUtil.getMonth (date);
             int dateNum = DateUtil.getDateNum (year, month);
             List<ActSalary> saveList = new ArrayList<> ();
             SysDeclare declare = declareService.findModifiable (sysDept);

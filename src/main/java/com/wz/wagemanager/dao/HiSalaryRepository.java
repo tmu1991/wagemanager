@@ -2,6 +2,7 @@ package com.wz.wagemanager.dao;
 
 import com.wz.wagemanager.entity.HiSalary;
 import com.wz.wagemanager.entity.SalaryArea;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -15,7 +16,9 @@ public interface HiSalaryRepository extends JpaRepository<HiSalary,String>,JpaSp
 
 //    void batchInsert(List<HiSalary> list);
 
-    List<HiSalary> findHiSalariesByYearAndMonth(int year, int month, Pageable pageable);
+    Page<HiSalary> findHiSalariesByYearAndMonth(int year, int month, Pageable pageable);
+
+    Page<HiSalary> findHiSalariesByYearAndMonthAndDeptId(int year, int month,String deptId, Pageable pageable);
 
     List<HiSalary> findByDeptIdAndYearAndMonth(String deptId, int year, int month, Pageable pageable);
 

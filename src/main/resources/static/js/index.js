@@ -147,60 +147,188 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         return false;
     });
 
+    $("body").on("click", ".tianjiahang", function () {
+        var count = $(this).val();
+        count++;
+        $(this).parents(".loanList").append('<div class="layui-input-block" style="margin-left: 110px;margin-bottom: 5px">' +
+            '                <div class="layui-input-inline div-loan" style="width: 15%;">' +
+            '                <input name="tasks['+count+'].id" hidden="hidden">' +
+            '                <input type="text" name="tasks['+count+'].amount" class="layui-input"> ' +
+            '                </div> ' +
+            '                <div class="layui-input-inline div-loan" style="width: 20%;"> ' +
+            '                <select class="layui-select" name="tasks['+count+'].type"> ' +
+            '                <option value="0">借款</option>' +
+            '                <option value="1">其他扣款</option>' +
+            '                </select>' +
+            '                </div>' +
+            '                <div class="layui-input-inline div-loan" style="width: 25%;">' +
+            '                <input placeholder="扣款发生日期" type="text" id="date2" name="tasks['+count+'].taskDate" class="layui-input"> ' +
+            '                </div>' +
+            '                <div class="layui-input-inline div-loan" style="width: 25%;"> ' +
+            '                <input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input"> ' +
+            '                </div><div class="layui-input-inline tianjiahang" style="width: 5%;"> ' +
+            '                <button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i value="'+count+'" class="layui-icon">&#xe654;</i></button> ' +
+            '                </div>' +
+            '                </div>');
+        form.render();
+        $(this).remove();
+    });
+
     $("body").on("click", ".loan_edit", function () {  //编辑
         var tr = $(this).parents('tr');
-        index = layer.open({
-            type: 1,
-            icon: 1,
-            title: "修改员工扣款",
-            skin: 'layui-layer-molv',
-            area: ["50%",'80%'],
-            // btnAlign: 'c',
-            content: $('#addLoan').html(),
-            success:function (layero, index) {
-                form.val("loanForm", {
-                    "id": tr.find('td.pkid').attr('data-id')
-                    ,"username": tr.find('td.username').text()
-                    ,"workNo": tr.find('td.id').text()
-                    ,"late": tr.find('td.cd').text()
-                    ,"debit": tr.find('td.qt').text()
-                    ,"due": tr.find('td.df').text()
-                    ,"loan": tr.find('td.jk').text()
-                    ,"other": tr.find('td.qt1').text()
-                    ,"otherEl": tr.find('td.qt2').text()
-                    ,"dateStr":$('.timer').text()
-                    ,"loanDate":tr.find('td.jkdate').text()
-                    ,"loanNote":tr.find('td.jknote').text()
-                    ,"debitDate":tr.find('td.kkdate').text()
-                    ,"debitNote":tr.find('td.kknote').text()
-                });
-                laydate.render({
-                    elem: '#date1', //指定元素
-                    // type: 'datetime' //日期格式类型
-                });
-                laydate.render({
-                    elem: '#date2',
-                    // type: 'datetime' //日期格式类型
-                });
-                // form.render(null,'loanForm');
-            }, cancel: function(){
-                form.val("loanForm", {
-                    "id": ''
-                    ,"username": ''
-                    ,"workNo": ''
-                    ,"late": ''
-                    ,"otherDebit": ''
-                    ,"partyDue": ''
-                    ,"loan": ''
-                    ,"other": ''
-                    ,"otherEl": ''
-                    ,"dateStr":''
-                    ,"loanDate":''
-                    ,"loanNote":''
-                    ,"debitDate":''
-                    ,"debitNote":''
-                });
-                $('.addLoan input').removeClass("changered");
+        var salaryId = tr.find('td.pkid').attr('data-id');
+        $.post("/task/salary.json",{"salaryId":salaryId},function (result) {
+            if(result.code == 200){
+            var htmlStr='<div class="layui-col-md10">' +
+                '                <form style="margin-top: 10px;margin-bottom: 20px" class="layui-form" lay-filter="loanForm" id="loanForm">' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input name="id" value="" hidden="hidden"/>' +
+                '                <input name="dateStr" value="" hidden="hidden"/>' +
+                '                <input name="deptId" value="" hidden="hidden"/>' +
+                '                <input name="deptName" value="" hidden="hidden"/>' +
+                '                <input disabled type="text" lay-verify="required" name="workNo" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input disabled type="text" lay-verify="required" name="username" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">迟到/早退：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input type="text" lay-verify="required" name="late" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">党&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input type="text" lay-verify="required" name="due" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">其&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;他：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input type="text" lay-verify="required" name="other" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item">' +
+                '                <label class="layui-form-label">其&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;他：</label>' +
+                '            <div class="layui-input-block">' +
+                '                <input type="text" lay-verify="required" name="otherEl" class="layui-input">' +
+                '                </div>' +
+                '                </div>' +
+                '                <div class="layui-form-item loanList"><label class="layui-form-label">扣&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;款：</label>';
+            var count=0;
+            $.each(result.data,function (i, item) {
+                htmlStr+='<div class="layui-input-block" style="margin-bottom: 5px">' +
+                    '<div class="layui-input-inline div-loan" style="width: 15%;">' +
+                    '<input name="tasks['+count+'].id" value="'+item.id+'" hidden="hidden">' +
+                    '<input type="text" name="tasks['+count+'].amount" value="'+item.amount+'" class="layui-input">' +
+                    '</div>' +
+                    '<div class="layui-input-inline div-loan" style="width: 20%;">' +
+                    '<select class="layui-select" name="tasks['+count+'].type" value="'+item.type+'">' +
+                    '<option value="0">借款</option>' +
+                    '<option value="1">其他扣款</option>' +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="layui-input-inline div-loan" style="width: 25%;">' +
+                    '<input placeholder="扣款发生日期" type="text" id="date2" value="'+item.taskDate+'" name="tasks['+count+'].taskDate" class="layui-input">' +
+                    '</div>' +
+                    '<div class="layui-input-inline div-loan" style="width: 25%;">' +
+                    '<input placeholder="备注" type="text" name="tasks['+count+'].note" value="'+item.note+'" class="layui-input">' +
+                    '</div>' +
+                    '</div>';
+                count++;
+            });
+            htmlStr+='<div class="layui-input-block" style="margin-left: 110px;margin-bottom: 5px">' +
+                '<div class="layui-input-inline div-loan" style="width: 15%;">' +
+                '<input name="tasks['+count+'].id" hidden="hidden">' +
+                '<input type="text" name="tasks['+count+'].amount" class="layui-input">' +
+                '</div>' +
+                '<div class="layui-input-inline div-loan" style="width: 20%;">' +
+                '<select class="layui-select" name="tasks['+count+'].type">' +
+                '<option value="0">借款</option>' +
+                '<option value="1">其他扣款</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="layui-input-inline div-loan" style="width: 25%;">' +
+                '<input placeholder="扣款发生日期" type="text" id="date2" name="tasks['+count+'].taskDate" class="layui-input">' +
+                '</div>' +
+                '<div class="layui-input-inline div-loan" style="width: 25%;">' +
+                '<input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input">' +
+                '</div>' +
+                '<div class="layui-input-inline tianjiahang" style="width: 5%;">' +
+                '<button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i value="'+count+'" class="layui-icon">&#xe654;</i></button>' +
+                '</div>' +
+                '</div></div>' +
+                '                <div class="layui-form-item">' +
+                '                <div class="btn-btn layui-input-block">' +
+                '                <button class="layui-btn" lay-submit="" lay-filter="demo2">提交</button>' +
+                '                <button type="reset" class="layui-btn layui-btn-primary">重置</button>' +
+                '                </div>' +
+                '                </div>' +
+                '                </form>' +
+                '                </div>';
+            index = layer.open({
+                type: 1,
+                icon: 1,
+                title: "修改员工扣款",
+                skin: 'layui-layer-molv',
+                area: ["55%"],
+                // btnAlign: 'c',
+                content: htmlStr,
+                success:function (layero, index) {
+                    form.val("loanForm", {
+                        "id": salaryId
+                        ,"username": tr.find('td.username').text()
+                        ,"workNo": tr.find('td.id').text()
+                        ,"late": tr.find('td.cd').text()
+                        ,"debit": tr.find('td.qt').text()
+                        ,"due": tr.find('td.df').text()
+                        ,"loan": tr.find('td.jk').text()
+                        ,"other": tr.find('td.qt1').text()
+                        ,"otherEl": tr.find('td.qt2').text()
+                        ,"dateStr":$('.timer').text()
+                        ,"deptId":$('.deptInfo').attr('content')
+                        ,"deptName":$('.deptInfo').text()
+                        ,"loanDate":tr.find('td.jkdate').text()
+                        ,"loanNote":tr.find('td.jknote').text()
+                        ,"debitDate":tr.find('td.kkdate').text()
+                        ,"debitNote":tr.find('td.kknote').text()
+                    });
+                    laydate.render({
+                        elem: '#date1', //指定元素
+                        // type: 'datetime' //日期格式类型
+                    });
+                    laydate.render({
+                        elem: '#date2',
+                        // type: 'datetime' //日期格式类型
+                    });
+                    // form.render(null,'loanForm');
+                }, cancel: function(){
+                    form.val("loanForm", {
+                        "id": ''
+                        ,"username": ''
+                        ,"workNo": ''
+                        ,"late": ''
+                        ,"otherDebit": ''
+                        ,"partyDue": ''
+                        ,"loan": ''
+                        ,"other": ''
+                        ,"otherEl": ''
+                        ,"dateStr":''
+                        ,"loanDate":''
+                        ,"loanNote":''
+                        ,"debitDate":''
+                        ,"debitNote":''
+                    });
+                    $('.addLoan input').removeClass("changered");
+                }
+            });
             }
         });
     });
@@ -244,7 +372,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
     //delAll功能
     $("#delAll").click(function () {
         var items = $("#listTable input[type='checkbox'][name='item']");
-        var $checked = $('#listTable input[type=\'checkbox\'][name=\'item\']:checked');
+        var $checked = $('#listTable input[type=checkbox][name=item]:checked');
         var ids = '';
         $.each($checked, function (i, item) {
             if (i == $checked.length - 1) {

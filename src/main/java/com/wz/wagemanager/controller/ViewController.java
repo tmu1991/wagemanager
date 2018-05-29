@@ -29,6 +29,15 @@ public class ViewController {
         return "index";
     }
 
+    @RequestMapping("salary.html")
+    public String salaryHistory(
+            Model model
+    ){
+        SysUser sysUser = ContextHolderUtils.getPrincipal ();
+        model.addAttribute("dept",sysUser.getSysDept ());
+        return "salary";
+    }
+
     @RequestMapping("home.html")
     public String home(Model model){
         SysUser sysUser = ContextHolderUtils.getPrincipal ();

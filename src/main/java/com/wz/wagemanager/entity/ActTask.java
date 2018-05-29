@@ -21,44 +21,29 @@ public class ActTask {
     @GenericGenerator (name="uuid",strategy="uuid")
     @Column(name = "id",length = 32)
     private String id;
+
     @Column(name = "dept_id")
     private String deptId;
+
     @Column(name = "dept_name")
     private String deptName;
+
     @Column(name = "work_no")
     private String workNo;
+
     private String username;
+
     private String note;
-    @JSONField(format = "yyyy-MM-dd")
+
     @Column(name = "task_date")
-    private Date taskDate;
+    private String taskDate;
 
     private BigDecimal amount;
 
-    private String type;
-    @Transient
-    private BigDecimal late;
-    @Transient
-    private BigDecimal due;
-    @Transient
-    private Date loanDate;
-    @Transient
-    private BigDecimal loan;
-    @Transient
-    private String loanNote;
-    @Transient
-    private Date debitDate;
-    @Transient
-    private BigDecimal debit;
-    @Transient
-    private String debitNote;
-    @Transient
-    private BigDecimal other;
-    @Transient
-    private BigDecimal otherEl;
-    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REFRESH},fetch = FetchType.LAZY)
+    private Integer type;
 
-    private ActSalary salary;
+    @Column(name = "salary_id",length = 32)
+    private String salaryId;
 
 //    private Integer status;
 
