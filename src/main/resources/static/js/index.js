@@ -148,7 +148,9 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
     });
 
     $("body").on("click", ".tianjiahang", function () {
-        var count = $(this).val();
+        console.log($(this))
+        var count = $(this).attr('data-id');
+        console.log(count)
         count++;
         $(this).parents(".loanList").append('<div class="layui-input-block" style="margin-left: 110px;margin-bottom: 5px">' +
             '                <div class="layui-input-inline div-loan" style="width: 15%;">' +
@@ -166,8 +168,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             '                </div>' +
             '                <div class="layui-input-inline div-loan" style="width: 25%;"> ' +
             '                <input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input"> ' +
-            '                </div><div class="layui-input-inline tianjiahang" style="width: 5%;"> ' +
-            '                <button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i value="'+count+'" class="layui-icon">&#xe654;</i></button> ' +
+            '                </div><div data-id="'+count+'" class="layui-input-inline tianjiahang" style="width: 5%;"> ' +
+            '                <button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe654;</i></button> ' +
             '                </div>' +
             '                </div>');
         form.render();
@@ -261,8 +263,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '<div class="layui-input-inline div-loan" style="width: 25%;">' +
                 '<input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input">' +
                 '</div>' +
-                '<div class="layui-input-inline tianjiahang" style="width: 5%;">' +
-                '<button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i value="'+count+'" class="layui-icon">&#xe654;</i></button>' +
+                '<div class="layui-input-inline tianjiahang" data-id="'+count+'"  style="width: 5%;">' +
+                '<button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe654;</i></button>' +
                 '</div>' +
                 '</div></div>' +
                 '                <div class="layui-form-item">' +
