@@ -168,11 +168,12 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             '                </div>' +
             '                <div class="layui-input-inline div-loan" style="width: 25%;"> ' +
             '                <input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input"> ' +
-            '                </div><div data-id="'+count+'" class="layui-input-inline tianjiahang" style="width: 5%;"> ' +
+            '                </div>                                 <div data-id="'+count+'" class="layui-input-inline tianjiahang" style="width: 3%;"> ' +
             '                <button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe654;</i></button> ' +
             '                </div>' +
             '                </div>');
-        form.render();
+        form.render('select');
+        laydate.render();
         $(this).remove();
     });
 
@@ -225,14 +226,28 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '                </div>' +
                 '                <div class="layui-form-item loanList"><label class="layui-form-label">扣&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;款：</label>';
             var count=0;
+            var data={
+                "id": salaryId
+                ,"username": tr.find('td.username').text()
+                ,"workNo": tr.find('td.id').text()
+                ,"late": tr.find('td.cd').text()
+                // ,"debit": tr.find('td.qt').text()
+                ,"due": tr.find('td.df').text()
+                // ,"loan": tr.find('td.jk').text()
+                ,"other": tr.find('td.qt1').text()
+                ,"otherEl": tr.find('td.qt2').text()
+                ,"deptId":$('.deptInfo').attr('content')
+                ,"deptName":$('.deptInfo').text()
+            };
             $.each(result.data,function (i, item) {
+                data['tasks['+count+'].type']=item.type;
                 htmlStr+='<div class="layui-input-block" style="margin-bottom: 5px">' +
                     '<div class="layui-input-inline div-loan" style="width: 15%;">' +
                     '<input name="tasks['+count+'].id" value="'+item.id+'" hidden="hidden">' +
                     '<input type="text" name="tasks['+count+'].amount" value="'+item.amount+'" class="layui-input">' +
                     '</div>' +
                     '<div class="layui-input-inline div-loan" style="width: 20%;">' +
-                    '<select class="layui-select" name="tasks['+count+'].type" value="'+item.type+'">' +
+                    '<select class="layui-select" name="tasks['+count+'].type">' +
                     '<option value="0">借款</option>' +
                     '<option value="1">其他扣款</option>' +
                     '</select>' +
@@ -263,7 +278,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '<div class="layui-input-inline div-loan" style="width: 25%;">' +
                 '<input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input">' +
                 '</div>' +
-                '<div class="layui-input-inline tianjiahang" data-id="'+count+'"  style="width: 5%;">' +
+                '<div class="layui-input-inline tianjiahang" data-id="'+count+'"  style="width: 3%;">' +
                 '<button style="margin-left: 20px !important;margin-top:10px;border-radius: 100px;border: medium none;" class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe654;</i></button>' +
                 '</div>' +
                 '</div></div>' +
@@ -284,24 +299,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 // btnAlign: 'c',
                 content: htmlStr,
                 success:function (layero, index) {
-                    form.val("loanForm", {
-                        "id": salaryId
-                        ,"username": tr.find('td.username').text()
-                        ,"workNo": tr.find('td.id').text()
-                        ,"late": tr.find('td.cd').text()
-                        ,"debit": tr.find('td.qt').text()
-                        ,"due": tr.find('td.df').text()
-                        ,"loan": tr.find('td.jk').text()
-                        ,"other": tr.find('td.qt1').text()
-                        ,"otherEl": tr.find('td.qt2').text()
-                        ,"dateStr":$('.timer').text()
-                        ,"deptId":$('.deptInfo').attr('content')
-                        ,"deptName":$('.deptInfo').text()
-                        ,"loanDate":tr.find('td.jkdate').text()
-                        ,"loanNote":tr.find('td.jknote').text()
-                        ,"debitDate":tr.find('td.kkdate').text()
-                        ,"debitNote":tr.find('td.kknote').text()
-                    });
+                    form.val("loanForm", data);
                     laydate.render({
                         elem: '#date1', //指定元素
                         // type: 'datetime' //日期格式类型
@@ -310,24 +308,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         elem: '#date2',
                         // type: 'datetime' //日期格式类型
                     });
-                    // form.render(null,'loanForm');
+                    form.render(null,'loanForm');
                 }, cancel: function(){
-                    form.val("loanForm", {
-                        "id": ''
-                        ,"username": ''
-                        ,"workNo": ''
-                        ,"late": ''
-                        ,"otherDebit": ''
-                        ,"partyDue": ''
-                        ,"loan": ''
-                        ,"other": ''
-                        ,"otherEl": ''
-                        ,"dateStr":''
-                        ,"loanDate":''
-                        ,"loanNote":''
-                        ,"debitDate":''
-                        ,"debitNote":''
-                    });
                     $('.addLoan input').removeClass("changered");
                 }
             });
