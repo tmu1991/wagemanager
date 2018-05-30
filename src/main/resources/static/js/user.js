@@ -109,12 +109,12 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
         $.post('user/insert.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
+                layer.closeAll();
+                layer.msg("操作成功");
                 var username=$('#keyw').val();
                 var deptId=$('#listDept').val();
                 var roleId=$('#listRole').val();
                 renderDate($('.layui-laypage-curr em:last').text(),username,deptId,roleId);
-                layer.closeAll();
-                layer.msg("操作成功");
             } else {
                 layer.close(tjindex);
                 if(result.msg){
@@ -224,6 +224,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                 form.render();
                 layer.close(scindex);
                 if (code == 200) {
+                    layer.closeAll();
                     layer.msg("删除成功");
                     var username=$('#keyw').val();
                     var deptId=$('#listDept').val();

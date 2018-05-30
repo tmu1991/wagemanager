@@ -15,6 +15,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -40,11 +42,13 @@ public class DeclareServiceImpl implements DeclareService {
     private DeptService deptService;
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void updateProperty (String key, Object value,String id) {
         declareRepository.updateByProperty (key,value,id);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void save (SysDeclare declare) {
         declareRepository.save (declare);
     }
@@ -55,6 +59,7 @@ public class DeclareServiceImpl implements DeclareService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void start (String declareId) {
         try{
             final SysUser sysUser = ContextHolderUtils.getPrincipal();

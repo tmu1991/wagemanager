@@ -18,6 +18,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         }
         ,done: function(result){
             if (result.code == 200) {
+                layer.closeAll();
                 layer.msg('上传成功');
                 renderDate(1);
             } else {
@@ -50,8 +51,9 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         }
         ,done: function(result){
             if (result.code == 200) {
+                layer.closeAll();
                 layer.msg('上传成功');
-                // renderDate(1);
+                renderDate(1);
             } else {
                 layer.close(uploadIndex);
                 if (result.msg) {
@@ -132,9 +134,9 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         $.post('/salary/update.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
-                renderDate($('.layui-laypage-curr em:last').text());
                 layer.closeAll();
                 layer.msg("操作成功");
+                renderDate($('.layui-laypage-curr em:last').text());
             } else {
                 layer.close(tjindex);
                 if(result.msg){
@@ -148,9 +150,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
     });
 
     $("body").on("click", ".tianjiahang", function () {
-        console.log($(this))
         var count = $(this).attr('data-id');
-        console.log(count)
         count++;
         $(this).parents(".loanList").append('<div class="layui-input-block" style="margin-left: 110px;margin-bottom: 5px">' +
             '                <div class="layui-input-inline div-loan" style="width: 15%;">' +
@@ -164,7 +164,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             '                </select>' +
             '                </div>' +
             '                <div class="layui-input-inline div-loan" style="width: 25%;">' +
-            '                <input placeholder="扣款发生日期" type="text" id="date2" name="tasks['+count+'].taskDate" class="layui-input"> ' +
+            '                <input placeholder="扣款发生日期" type="text" id="date'+count+'" name="tasks['+count+'].taskDate" class="layui-input"> ' +
             '                </div>' +
             '                <div class="layui-input-inline div-loan" style="width: 25%;"> ' +
             '                <input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input"> ' +
@@ -173,7 +173,11 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             '                </div>' +
             '                </div>');
         form.render('select');
-        laydate.render();
+        var date =new Date();
+        laydate.render({
+            elem: '#date'+count //指定元素
+            ,max:'date'
+        });
         $(this).remove();
     });
 
@@ -231,16 +235,22 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 ,"username": tr.find('td.username').text()
                 ,"workNo": tr.find('td.id').text()
                 ,"late": tr.find('td.cd').text()
-                // ,"debit": tr.find('td.qt').text()
                 ,"due": tr.find('td.df').text()
-                // ,"loan": tr.find('td.jk').text()
                 ,"other": tr.find('td.qt1').text()
                 ,"otherEl": tr.find('td.qt2').text()
                 ,"deptId":$('.deptInfo').attr('content')
                 ,"deptName":$('.deptInfo').text()
             };
+            var dateArrays=[];
+            var date=new Date();
             $.each(result.data,function (i, item) {
                 data['tasks['+count+'].type']=item.type;
+                // data['tasks['+count+'].taskDate']=item.taskDate;
+                dateArrays.push({
+                    elem: '#date'+count //指定元素
+                    ,max:'date'
+                    ,value:item.taskDate
+                });
                 htmlStr+='<div class="layui-input-block" style="margin-bottom: 5px">' +
                     '<div class="layui-input-inline div-loan" style="width: 15%;">' +
                     '<input name="tasks['+count+'].id" value="'+item.id+'" hidden="hidden">' +
@@ -253,7 +263,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     '</select>' +
                     '</div>' +
                     '<div class="layui-input-inline div-loan" style="width: 25%;">' +
-                    '<input placeholder="扣款发生日期" type="text" id="date2" value="'+item.taskDate+'" name="tasks['+count+'].taskDate" class="layui-input">' +
+                    '<input placeholder="扣款发生日期" type="text" id="date'+count+'" name="tasks['+count+'].taskDate" class="layui-input">' +
                     '</div>' +
                     '<div class="layui-input-inline div-loan" style="width: 25%;">' +
                     '<input placeholder="备注" type="text" name="tasks['+count+'].note" value="'+item.note+'" class="layui-input">' +
@@ -273,7 +283,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '</select>' +
                 '</div>' +
                 '<div class="layui-input-inline div-loan" style="width: 25%;">' +
-                '<input placeholder="扣款发生日期" type="text" id="date2" name="tasks['+count+'].taskDate" class="layui-input">' +
+                '<input placeholder="扣款发生日期" type="text" id="date'+count+'" name="tasks['+count+'].taskDate" class="layui-input">' +
                 '</div>' +
                 '<div class="layui-input-inline div-loan" style="width: 25%;">' +
                 '<input placeholder="备注" type="text" name="tasks['+count+'].note" class="layui-input">' +
@@ -290,6 +300,10 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '                </div>' +
                 '                </form>' +
                 '                </div>';
+            dateArrays.push({
+                elem: '#date'+count //指定元素
+                ,max:'date'
+            });
             index = layer.open({
                 type: 1,
                 icon: 1,
@@ -299,18 +313,12 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 // btnAlign: 'c',
                 content: htmlStr,
                 success:function (layero, index) {
+                    $.each(dateArrays,function (i, item) {
+                        console.log(item)
+                        laydate.render(item);
+                    });
                     form.val("loanForm", data);
-                    laydate.render({
-                        elem: '#date1', //指定元素
-                        // type: 'datetime' //日期格式类型
-                    });
-                    laydate.render({
-                        elem: '#date2',
-                        // type: 'datetime' //日期格式类型
-                    });
                     form.render(null,'loanForm');
-                }, cancel: function(){
-                    $('.addLoan input').removeClass("changered");
                 }
             });
             }
@@ -323,9 +331,9 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
         $.post('/task/update.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
-                renderDate($('.layui-laypage-curr em:last').text());
                 layer.closeAll();
                 layer.msg("操作成功");
+                renderDate($('.layui-laypage-curr em:last').text());
             } else {
                 layer.close(tjindex);
                 if(result.msg){
@@ -366,7 +374,6 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             }
         });
         if (items.is(":checked")) {
-            console.log(ids)
             deleteBatch(ids);
         } else {
             layer.msg("请选择需要删除的用户");
@@ -425,7 +432,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     page = result.page;
                 if (code == 200) {
                     var cell = $('#eg').find('tr');
-                    var timerMsg;
+                    var timerMsg='';
                     box.empty();
                     $.each(listData, function (i, item) {
                         if (!timerMsg) {
@@ -479,10 +486,6 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         );
                         newCell.find('.sj').text(item.payroll);
                         newCell.find('.ka').text(item.creditCard);
-                        newCell.find('.jkdate').text(jkdate);
-                        newCell.find('.jknote').text(jknote);
-                        newCell.find('.kknote').text(kknote);
-                        newCell.find('.kkdate').text(kkdate);
                         box.append(newCell);
                     });
                     //合计当前页面

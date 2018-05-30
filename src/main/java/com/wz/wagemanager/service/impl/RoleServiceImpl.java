@@ -7,11 +7,15 @@ import com.wz.wagemanager.service.RoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service("roleService")
+@Transactional
 public class RoleServiceImpl implements RoleService {
     @Resource
     private RoleRepository roleRepository;
@@ -26,6 +30,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional (propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public SysRole insertSysRole(SysRole sysRole) {
         return roleRepository.save(sysRole);
     }
@@ -41,11 +46,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void save (SysRole role) {
         roleRepository.save (role);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void deleteById (String roleId) {
         roleRepository.delete (roleId);
     }

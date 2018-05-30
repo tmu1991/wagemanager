@@ -87,7 +87,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
         $.post('declare/complete.json',objParam,function (result) {
             var code = result.code;
             if (code == 200) {
-                layer.close(index);
+                layer.closeAll();
                 layer.msg('审核成功');
                 renderDate($('.layui-laypage-curr em:last').text());
             } else {

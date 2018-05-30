@@ -59,6 +59,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             $.post('declare/start.json', {'declareId': _this.attr("data-id")}, function (result) {
                 var code = result.code;
                 if (code == 200) {
+                    layer.closeAll();
                     layer.msg('提交成功');
                     renderDate($('.layui-laypage-curr em:last').text());
                 } else {
@@ -84,6 +85,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             $.post('declare/complete.json', {'declareId':_this.attr('data-id'),'processInstanceId': _this.next().attr("data-id")}, function (result) {
                 var code = result.code;
                 if (code == 200) {
+                    layer.closeAll();
                     layer.msg('提交成功');
                     renderDate($('.layui-laypage-curr em:last').text());
                 } else {
@@ -118,10 +120,15 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                         }
                         var count=i+1;
                         dataHtml += '<tr>'
-                            + '<td>' + count + '</td>'
-                            + '<td><a href="index/'+item.dept.id+'">' + item.declareName + '</a></td>'
-                            + '<td>' + declareDate + '</td>'
-                            + '<td>' + item.user.username + '</td>';
+                            + '<td>' + count + '</td>';
+                        if(item.status==2){
+                            dataHtml+= '<td>' + item.declareName + '</td>'
+                        }else {
+                            dataHtml+= '<td><a href="index/'+item.dept.id+'">' + item.declareName + '</a></td>';
+                        }
+                        dataHtml+= '<td>' + declareDate + '</td>'
+                        + '<td>' + item.user.username + '</td>';
+                            
                         if (item.status == 0) {
                             dataHtml += '<td>未提交</td><td>'
                                 + '<button class="layui-btn layui-btn-sm tijiao" data-id="'+item.id+'">提交</button>'

@@ -1,4 +1,4 @@
-layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
+layui.use(['form', 'layer','table', 'jquery', 'laytpl','laypage'], function () {
     var table = layui.table,
         layer = layui.layer,
         laypage = layui.laypage;
@@ -15,7 +15,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 {field:'username','title':'姓名'},
                 {field:'workNo','title':'考勤编号'},
                 {field:'amount','title':'金额'},
-                {field:'type','title':'类型',template:function (t) {
+                {field:'type','title':'类型',templet:function (t) {
                     if(t.type == 0){
                         return "借款";
                     }

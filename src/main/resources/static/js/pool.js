@@ -61,17 +61,80 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
             title: "审批意见",
             area: ["40%", '50%'],
             content: $("#test1").html(),
+            cancel:function () {
+                $(".layui-form input[name='sign']").val(1);
+            }
         });
-        /* 渲染表单 */
-        $('.declareId').val($(this).attr('data-id'));
+        form.val({
+            declareId:$(this).attr('data-id'),
+            deptId:$(this).parents('tr').find('td:first').attr('data-id')
+        });
         form.render(null, 'userForm');
     });
 
+    //全选
+    form.on('checkbox(allChoose)', function (data) {
+        var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]:not([name="show"])');
+        child.each(function (index, item) {
+            item.checked = data.elem.checked;
+        });
+        form.render('checkbox');
+    });
+
+    var kkindex;
     //监听提交
     form.on('submit(demo1)', function (data) {
         var obj = data.field;
-        obj.msg = 1;
-        return verify(obj);
+        if(obj.sign == 1){
+            $.post('task/dept.json',{"deptId":obj.deptId},function (result) {
+                var code = result.code,
+                    data = result.data;
+                if(code == 200){
+                    if(data.length>0){
+                        $("#deptId").val(obj.deptId);
+                        kkindex = layer.open({
+                            type: 1,
+                            title: "代扣款明细",
+                            area: ["50%"],
+                            content: $("#test2").html(),
+                            success:function () {
+                                var dataHtml='';
+                                $.each(data, function (i, item) {
+                                    dataHtml += '<tr>'
+                                        + '<td>';
+                                    if(item.status==0){
+                                        dataHtml+='<input checked value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                                    }else{
+                                        dataHtml+='<input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                                    }
+                                    dataHtml+='</td>'
+                                        + '<td>' + item.username + '</td><td>' + item.workNo + '</td>'
+                                        + '<td>' + item.amount + '</td><td>';
+                                    if(item.type == 0){
+                                        dataHtml+='<td>借款</td><td>';
+                                    }else{
+                                        dataHtml+='<td>其他扣款</td><td>';
+                                    }
+                                    dataHtml+=+ '<td>' + item.taskDate + '</td><td>' + item.note + '</td></tr>';
+                                });
+                            }
+                        });
+                    }else{
+                        obj.msg = 1;
+                        return verify(obj);
+                    }
+                }else{
+                    if(result.msg){
+                        layer.alert(result.msg);
+                    }else{
+                        layer.alert('查询扣款失败');
+                    }
+                }
+            })
+        }else{
+            obj.msg = 1;
+            return verify(obj);
+        }
     });
 
     form.on('submit(demo2)', function (data) {
@@ -80,13 +143,29 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
         return verify(obj);
     });
 
+    form.on('submit(demo3)', function (data) {
+        $.post('task/charged.json',data.field,function (result) {
+            if(result.code == 200){
+                $(".layui-form input[name='sign']").val(0);
+                layer.close(kkindex);
+            }else{
+                if(result.msg){
+                    layer.alert(result.msg);
+                }else{
+                    layer.alert('操作失败')
+                }
+            }
+        });
+    });
+
     function verify(objParam) {
         var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
         $.post('declare/complete1.json',objParam,function (result) {
             var code = result.code;
             if (code == 200) {
-                layer.close(index);
+                layer.closeAll();
                 layer.msg('审核成功');
+                $(".layui-form input[name='sign']").val(1);
                 renderDate();
             } else {
                 layer.close(tjindex)
@@ -98,7 +177,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         },'json');
-        layer.close(tjindex)
+        layer.close(tjindex);
         return false;
     }
 
@@ -115,7 +194,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                     $.each(listData, function (i, item) {
                         var debit=Number(item.late)+Number(item.otherDebit)+Number(item.partyDue)+Number(item.loan)+Number(item.other)+Number(item.otherEl);
                         dataHtml += '<tr>'
-                            + '<td data-id="' + item.deptId + '">' + item.deptName + '</td>'
+                            + '<td data-id="' + item.deptId + '"><a href="index/'+item.deptId+'> ' + item.deptName + '</a></td>'
                             + '<td>' + item.grossPay + '</td>'
                             + '<td>' + item.subWork + '</td>'
                             + '<td>' + item.allowance + '</td>'

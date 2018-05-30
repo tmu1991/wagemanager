@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <title>分部门待审核工资列表</title>
     <link rel="stylesheet" th:href="@{layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
     <link rel="stylesheet" th:href="@{css/font_eolqem241z66flxr.css}" media="all"/>
     <link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
-    <link href="../static/css/task.css" th:href="@{css/task.css}"/>
+    <!--<link href="../static/css/task.css" th:href="@{css/task.css}"/>-->
 </head>
 <body class="childrenBody">
 <div style="margin-top: 5px;margin-left: 5px;margin-right: 5px;">
@@ -57,9 +58,11 @@
         <div class="layui-col-md10">
             <form style="margin-top: 5px;" class="layui-form" lay-filter="userForm">
                 <div style="margin-top: 5px;" class="layui-form-item">
-                    <label class="layui-form-label">审批意见：</label>
+                    <label style="width: 80px !important;" class="layui-form-label">审批意见：</label>
                     <div class="layui-input-block">
                         <input name="declareId" class="declareId" value="" hidden="hidden"/>
+                        <input name="deptId" value="" hidden="hidden"/>
+                        <input sec:authorize="hasAnyRole('ROLE_FIN')" name="sign" value="1" hidden="hidden"/>
                         <textarea required lay-verify="required" placeholder="请输入" name="comment"
                                   class="layui-textarea comment"></textarea>
                     </div>
@@ -72,6 +75,31 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    <div class="layui-row" id="test2" style="display: none;">
+    <div class="layui-form task_list">
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></th>
+                <th>员工姓名</th>
+                <th>考勤编号</th>
+                <th>金额</th>
+                <th>类型</th>
+                <th>日期</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody class="news_content"></tbody>
+        </table>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <input id="deptId" name="deptId" hidden="hidden">
+                <button class="layui-btn" lay-submit="" lay-filter="demo3">扣款</button>
+            </div>
+        </div>
+    </div>
     </div>
 </div>
 <script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>

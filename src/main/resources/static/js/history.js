@@ -29,6 +29,7 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
                     listData = result.data,
                     page = result.page;
                 if (code == 200) {
+                    layer.closeAll();
                     $(".date").text(result.msg);
                     //渲染数据
                     var dataHtml = '';

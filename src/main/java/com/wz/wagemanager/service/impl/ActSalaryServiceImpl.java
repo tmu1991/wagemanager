@@ -71,11 +71,13 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void removeByIdIn (String[] ids) {
         actSalaryRepository.removeByIdIn (ids);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void update (ActSalary salary) throws IllegalAccessException {
         ActSalary actSalary = findById(salary.getId());
         CommonUtils.copyProperties(salary,actSalary,updateProperties);
@@ -89,6 +91,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void deleteAll (List<ActSalary> actSalaries) {
         actSalaryRepository.delete (actSalaries);
     }

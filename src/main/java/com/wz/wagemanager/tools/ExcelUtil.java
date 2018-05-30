@@ -1,5 +1,7 @@
 package com.wz.wagemanager.tools;
 
+import com.wz.wagemanager.entity.ActForm;
+import com.wz.wagemanager.entity.ActTask;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
@@ -7,11 +9,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +30,113 @@ import java.util.regex.Pattern;
  * @Date    : 2014-10-29 上午12:40:44
  */
 public class ExcelUtil {
+
+    public static List<ActForm> readForm(String filePath) throws Exception {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new IOException ("文件名为" + file.getName() + "的文件不存在！");
+        }
+        List<ActForm> list = new ArrayList<> ();
+        Workbook workbook=null;
+        try(FileInputStream fis= new FileInputStream(file)){
+            Row row;
+            if(filePath.endsWith (".xlsx")){
+                workbook = new XSSFWorkbook(fis);
+            }else if(filePath.endsWith (".xls")){
+                workbook = new HSSFWorkbook(fis);
+            }else{
+                throw new RuntimeException ("文件格式不符,只支持xls或xlsx格式文件");
+            }
+            Sheet sheet = workbook.getSheetAt(0);
+            AtomicInteger lastRowNum = new AtomicInteger (sheet.getLastRowNum ());
+            if (lastRowNum.get () <= 0) {
+                throw new RuntimeException ("文件内容为空");
+            }
+            int index = 1;
+            while ( ( row = sheet.getRow ( index ) ) != null ) {
+                //获取不为空的列个数
+                if(row.getPhysicalNumberOfCells ()==1){
+                    break;
+                }
+                index++;
+                ActForm actForm=new ActForm ();
+                ActTask actTask=new ActTask ();
+                actForm.setDeptName (getStringCellValue (0,row));
+                actForm.setWorkNo (getStringCellValue (1,row));
+                actForm.setUsername (getStringCellValue (2,row));
+                Assert.assertTrue ("行["+index+"]用户部门工号名称不能为空",
+                        StringUtils.isNotBlank (actForm.getDeptName ())&&StringUtils.isNotBlank (actForm.getWorkNo ())&&StringUtils.isNotBlank (actForm.getUsername ()));
+                actForm.setLate (getDecimalCellValue (3,row));
+                actForm.setDue (getDecimalCellValue (4,row));
+                actForm.setOther (getDecimalCellValue (5,row));
+                actForm.setOtherEl (getDecimalCellValue (6,row));
+                BigDecimal decimalCellValue = getDecimalCellValue (7, row);
+                if(decimalCellValue != null && decimalCellValue.compareTo (BigDecimal.ZERO)!=0){
+                    actTask.setAmount (decimalCellValue);
+                    actTask.setType (getIntegerCellValue (8,row));
+                    actTask.setTaskDate (getDateCellValue (9,row));
+                    actTask.setNote (getStringCellValue (10,row));
+                    actForm.setTasks (Collections.singletonList (actTask));
+                }
+                if(isBlank (actForm.getLate ())&&isBlank (actForm.getDue ())&&isBlank (actForm.getOther ())
+                        &&isBlank (actForm.getOtherEl ())&& CollectionUtils.isEmpty (actForm.getTasks ())){
+                    continue;
+                }
+                list.add(actForm);
+            }
+        }finally {
+            if(workbook!=null){
+                workbook.close ();
+            }
+        }
+        Assert.assertFalse ("无有效列",CollectionUtils.isEmpty (list));
+        return list;
+    }
+
+
+    private static boolean isBlank(BigDecimal decimal){
+        return decimal==null || decimal.compareTo (BigDecimal.ZERO) == 0;
+    }
+
+    private static String getDateCellValue(int index,Row row){
+        Cell cell = row.getCell ( index );
+        if(cell != null){
+            Date cellValue = cell.getDateCellValue ();
+            return new SimpleDateFormat ("yyyy-MM-dd").format (cellValue);
+        }
+        return null;
+    }
+
+    private static String getStringCellValue ( int index , Row row ) {
+
+        Cell cell = row.getCell ( index );
+        if(cell != null){
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            return cell.getStringCellValue ();
+        }
+        return null;
+    }
+
+    private static Integer getIntegerCellValue (int index , Row row ) {
+
+        Cell cell = row.getCell ( index );
+        if ( cell != null ) {
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            return Integer.parseInt (cell.getStringCellValue ());
+        }
+        return null;
+    }
+
+    private static BigDecimal getDecimalCellValue (int index , Row row ) {
+
+        Cell cell = row.getCell ( index );
+        if ( cell != null ) {
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            return new BigDecimal (cell.getStringCellValue ());
+        }
+        return null;
+    }
+
 
     public static <T> List<T> readExcel(String filePath,int start,int end,String[] properties,Class<T> clazz) throws Exception {
         if(filePath.endsWith (".xls")){
@@ -75,7 +187,14 @@ public class ExcelUtil {
                     String value = getCellValue(row.getCell(j));
                     Field declaredField = clazz.getDeclaredField (properties[j]);
                     declaredField.setAccessible (true);
-                    declaredField.set (newInstance,value);
+                    if(declaredField.getType ().equals (BigDecimal.class)){
+                        declaredField.set (newInstance,new BigDecimal(value));
+                    }else if(declaredField.getType ().equals (Integer.class)){
+                        declaredField.set (newInstance,Integer.parseInt (value));
+                    }else{
+                        declaredField.set (newInstance,value);
+                    }
+
                 }
             }
         }

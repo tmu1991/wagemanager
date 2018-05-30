@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,5 +43,6 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
             "sum(a.late),sum(a.otherDebit),sum(a.partyDue),sum(a.loan),sum(a.other),sum(a.otherEl))" +
             "from ActSalary a where a.declareId in (?1) group by a.deptId")
     List<SalaryArea> findGroupByDept(List<String> ids);
+
 
 }

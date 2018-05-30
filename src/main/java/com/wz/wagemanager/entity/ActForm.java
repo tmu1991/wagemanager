@@ -13,8 +13,6 @@ import java.util.List;
 @Data
 public class ActForm {
 
-    private String deptId;
-
     private String deptName;
 
     private String workNo;
@@ -25,10 +23,12 @@ public class ActForm {
 
     private BigDecimal due;
 
-    private List<ActTask> tasks;
-
     private BigDecimal other;
 
     private BigDecimal otherEl;
+
+    private List<ActTask> tasks;
+
+    private String deptId;
 
 }

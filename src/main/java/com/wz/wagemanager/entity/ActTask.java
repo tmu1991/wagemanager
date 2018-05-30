@@ -45,6 +45,9 @@ public class ActTask {
     @Column(name = "salary_id",length = 32)
     private String salaryId;
 
+    //状态为0表示扣款中,1表示未扣款
+    private Integer status;
+
 //    private Integer status;
 
 }

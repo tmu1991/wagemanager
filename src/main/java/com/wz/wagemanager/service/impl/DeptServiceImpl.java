@@ -8,11 +8,15 @@ import com.wz.wagemanager.service.DeptService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service("deptService")
+@Transactional(rollbackFor = Exception.class)
 public class DeptServiceImpl implements DeptService {
     @Resource
     private DeptRepository deptRepository;
@@ -23,6 +27,7 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    @Transactional (propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public SysDept save(SysDept sysDept) {
         return deptRepository.save(sysDept);
     }
@@ -43,6 +48,7 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void deleteById (String deptId) {
         deptRepository.delete (deptId);
     }

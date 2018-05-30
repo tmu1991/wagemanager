@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void updateUserByProperties (SysUser sysUser) throws IllegalAccessException {
         SysUser user = getUserById (sysUser.getId ());
         CommonUtils.copyProperties (sysUser,user,updateProperties);
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void deleteUser(String id) {
         userRepository.delete(id);
     }
@@ -100,6 +102,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void removeByIds(String[] ids) {
         userRepository.deleteByIdIn(ids);
     }
