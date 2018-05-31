@@ -9,15 +9,17 @@ import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
 import org.activiti.engine.impl.util.CollectionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +33,8 @@ import java.util.List;
 @RestController
 @RequestMapping("task")
 public class TaskController extends BaseExceptionController {
-    @Resource
+
+    @Autowired
     private TaskService taskService;
 
     @PostMapping("list.json")
@@ -61,8 +64,8 @@ public class TaskController extends BaseExceptionController {
     }
 
     @PostMapping("salary.json")
-    public PageBean<List<ActTask>> update(@RequestParam("salaryId")String salaryId) {
-        return new PageBean<>(taskService.findBySalaryId (salaryId));
+    public PageBean<List<ActTask>> update(@RequestParam("workNo")String workNo) {
+        return new PageBean<>(taskService.findByWorkNo (workNo));
     }
 
     @PostMapping("dept.json")
@@ -72,13 +75,34 @@ public class TaskController extends BaseExceptionController {
 
     @PostMapping("charged.json")
     public PageBean charged(
-            @RequestParam("deptId")String deptId,
-            @RequestParam("ids")List<String> ids
+            @RequestParam(value = "unCheckIds",required = false)List<String> unCheckIds,
+            @RequestParam(value = "checkIds",required = false)List<String> checkIds
     ) {
-        taskService.charged(deptId,ids);
+        taskService.charged(checkIds,unCheckIds);
         return new PageBean<>();
     }
 
+    @RequestMapping("download")
+    public void download(HttpServletResponse response) throws IOException {
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "static/xls/loanTemplate.xls");
+        try (OutputStream toClient = new BufferedOutputStream (response.getOutputStream ());
+             BufferedInputStream fis = new BufferedInputStream (new FileInputStream (file))) {
+            byte[] buffer = new byte[fis.available ()];
+            fis.read (buffer);
+            // 清空response
+            response.reset ();
+            response.setCharacterEncoding ("utf-8");
+            response.setContentType ("application/octet-stream");
+            //防止文件名乱码
+            String fileName=new String("扣款模板.xls".getBytes(),"ISO8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+            toClient.write (buffer);
+            toClient.flush ();
+        } catch (IOException ex) {
+            ex.printStackTrace ();
+        }
+
+    }
 
 
 

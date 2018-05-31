@@ -10,11 +10,12 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     $("body").on("click", ".chakan", function () {
         var _this = $(this);
         $('.commentList').html('');
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('declare/comment.json', {'processInstanceId': _this.attr("data-id")}, function (result) {
             var code = result.code,
                 listData = result.data;
             if (code == 200) {
+                layer.closeAll();
                 $.each(listData, function (index, item) {
                     var count = index + 1;
                     var startTime = item.startTime ? item.startTime : '';
@@ -51,7 +52,6 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex)
     });
 
     var index;
@@ -83,7 +83,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     });
 
     function verify(objParam) {
-        var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('declare/complete.json',objParam,function (result) {
             var code = result.code;
             if (code == 200) {
@@ -100,12 +100,11 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         },'json');
-        layer.close(tjindex);
         return false;
     }
 
     function renderDate(curPage) {
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post("declare/task.json", {"curPage": curPage}, function (result) {
             var code = result.code,
                 listData = result.data,
@@ -154,6 +153,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                         }
                     }
                 })
+                layer.closeAll();
             } else {
                 layer.close(cxindex);
                 var msg = result.msg;
@@ -164,6 +164,5 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex);
     }
 });

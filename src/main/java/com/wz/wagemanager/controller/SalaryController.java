@@ -21,10 +21,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,22 +42,20 @@ public class SalaryController extends BaseExceptionController {
     private UserService userService;
 
     @PostMapping ("update.json")
-    @OperInfo (type = OperationType.UPDATE)
     public PageBean update (
             @ModelAttribute ActSalary actSalary
     ) throws ParseException, InstantiationException, IllegalAccessException, NoSuchFieldException, UnsupportedEncodingException {
 //        ActSalary actSalary = CommonUtils.toEntity (form, ActSalary.class);
-        actSalaryService.update (actSalary);
+        actSalaryService.update (actSalary,new SysLog ());
         return new PageBean<> ();
     }
 
     @PostMapping ("delete.json")
-    @OperInfo (type = OperationType.DELETE)
     public PageBean delete (
             @RequestParam (value = "ids") String ids
     ) throws ParseException {
         Assert.assertNotNull ("员工不能为空", ids);
-        actSalaryService.removeByIdIn (ids.split (","));
+        actSalaryService.removeByIdIn (ids.split (","),new SysLog ());
         return new PageBean<> ();
     }
 
@@ -87,6 +82,9 @@ public class SalaryController extends BaseExceptionController {
         if(year == null){
             year = hiSalaryService.getMaxYear ();
         }
+        if(year == null){
+            return new PageBean ();
+        }
         if(month == null){
             month = hiSalaryService.getMaxMonth (year);
         }
@@ -104,6 +102,9 @@ public class SalaryController extends BaseExceptionController {
     ) throws Exception {
         if(year == null){
             year = hiSalaryService.getMaxYear ();
+        }
+        if(year == null){
+            return new PageBean ();
         }
         if(month == null){
             month = hiSalaryService.getMaxMonth (year);
@@ -174,7 +175,7 @@ public class SalaryController extends BaseExceptionController {
                 CommonUtils.calSalary (actSalary, sysUser, dateNum);
                 saveList.add (actSalary);
             }
-            actSalaryService.save (saveList);
+            actSalaryService.save (saveList,new SysLog ());
         } finally {
             dest.delete ();
         }

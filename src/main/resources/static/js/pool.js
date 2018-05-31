@@ -10,11 +10,12 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     $("body").on("click", ".chakan", function () {
         var _this = $(this);
         $('.commentList').html('');
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('declare/comment1.json', {'declareId': _this.attr("data-id")}, function (result) {
             var code = result.code,
                 listData = result.data;
             if (code == 200) {
+                layer.closeAll();
                 $.each(listData, function (index, item) {
                     var count = index + 1;
                     var startTime = item.startTime ? item.startTime : '';
@@ -51,7 +52,6 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex)
     });
 
     var index;
@@ -65,9 +65,9 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 $(".layui-form input[name='sign']").val(1);
             }
         });
-        form.val({
-            declareId:$(this).attr('data-id'),
-            deptId:$(this).parents('tr').find('td:first').attr('data-id')
+        form.val("userForm",{
+            'declareId':$(this).attr('data-id'),
+            'deptId':$(this).parents('tr').find('td:first').attr('data-id')
         });
         form.render(null, 'userForm');
     });
@@ -85,38 +85,42 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     //监听提交
     form.on('submit(demo1)', function (data) {
         var obj = data.field;
-        if(obj.sign == 1){
+        console.log($(".layui-form input[name='sign']").val());
+        if($(".layui-form input[name='sign']").val() == 1){
             $.post('task/dept.json',{"deptId":obj.deptId},function (result) {
                 var code = result.code,
                     data = result.data;
                 if(code == 200){
                     if(data.length>0){
+                        var dataHtml='';
+                        $.each(data, function (i, item) {
+                            dataHtml += '<tr>'
+                                + '<td>';
+                            if(item.status==0){
+                                dataHtml+='<input checked value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                            }else{
+                                dataHtml+='<input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                            }
+                            dataHtml+='</td>'
+                                + '<td>' + item.username + '</td>'
+                                + '<td>' + item.workNo + '</td>'
+                                + '<td>' + item.amount + '</td>';
+                            if(item.type == 0){
+                                dataHtml+='<td>借款</td>';
+                            }else{
+                                dataHtml+='<td>其他扣款</td>';
+                            }
+                            dataHtml+= '<td>' + item.taskDate + '</td><td>' + item.note + '</td></tr>';
+                        });
+                        $(".load_content").html(dataHtml);
                         $("#deptId").val(obj.deptId);
                         kkindex = layer.open({
                             type: 1,
-                            title: "代扣款明细",
-                            area: ["50%"],
+                            title: "待扣款明细",
+                            area: ["60%"],
                             content: $("#test2").html(),
                             success:function () {
-                                var dataHtml='';
-                                $.each(data, function (i, item) {
-                                    dataHtml += '<tr>'
-                                        + '<td>';
-                                    if(item.status==0){
-                                        dataHtml+='<input checked value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
-                                    }else{
-                                        dataHtml+='<input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
-                                    }
-                                    dataHtml+='</td>'
-                                        + '<td>' + item.username + '</td><td>' + item.workNo + '</td>'
-                                        + '<td>' + item.amount + '</td><td>';
-                                    if(item.type == 0){
-                                        dataHtml+='<td>借款</td><td>';
-                                    }else{
-                                        dataHtml+='<td>其他扣款</td><td>';
-                                    }
-                                    dataHtml+=+ '<td>' + item.taskDate + '</td><td>' + item.note + '</td></tr>';
-                                });
+                                form.render('checkbox');
                             }
                         });
                     }else{
@@ -135,6 +139,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
             obj.msg = 1;
             return verify(obj);
         }
+        return false;
     });
 
     form.on('submit(demo2)', function (data) {
@@ -144,7 +149,16 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     });
 
     form.on('submit(demo3)', function (data) {
-        $.post('task/charged.json',data.field,function (result) {
+        var checkboxList = $('div.layui-layer .load_content input[type="checkbox"][name="ids"]');
+        var checkIds=[],unCheckIds=[];
+        $.each(checkboxList,function (i, item) {
+            if($(this).is(":checked")){
+                checkIds.push($(this).val())
+            }else{
+                unCheckIds.push($(this).val())
+            }
+        });
+        $.post('task/charged.json',{'unCheckIds':unCheckIds,'checkIds':checkIds},function (result) {
             if(result.code == 200){
                 $(".layui-form input[name='sign']").val(0);
                 layer.close(kkindex);
@@ -156,10 +170,11 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         });
+        return false;
     });
 
     function verify(objParam) {
-        var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('declare/complete1.json',objParam,function (result) {
             var code = result.code;
             if (code == 200) {
@@ -177,12 +192,11 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         },'json');
-        layer.close(tjindex);
         return false;
     }
 
     function renderDate() {
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post("declare/pool.json", function (result) {
             var code = result.code,
                 listData = result.data;
@@ -194,7 +208,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                     $.each(listData, function (i, item) {
                         var debit=Number(item.late)+Number(item.otherDebit)+Number(item.partyDue)+Number(item.loan)+Number(item.other)+Number(item.otherEl);
                         dataHtml += '<tr>'
-                            + '<td data-id="' + item.deptId + '"><a href="index/'+item.deptId+'> ' + item.deptName + '</a></td>'
+                            + '<td data-id="' + item.deptId + '"><a href="index/'+item.deptId+'"> ' + item.deptName + '</a></td>'
                             + '<td>' + item.grossPay + '</td>'
                             + '<td>' + item.subWork + '</td>'
                             + '<td>' + item.allowance + '</td>'
@@ -232,6 +246,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                     dataHtml = '<tr><td colspan="10">暂无数据</td></tr>';
                 }
                 $(".news_content").html(dataHtml);
+                layer.closeAll();
             } else {
                 layer.close(cxindex)
                 var msg = result.msg;
@@ -242,7 +257,6 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex)
     }
 
 });

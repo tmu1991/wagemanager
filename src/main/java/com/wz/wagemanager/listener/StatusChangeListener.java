@@ -6,6 +6,8 @@ import com.wz.wagemanager.service.DeclareService;
 import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.tools.BeanUtils;
 import org.activiti.engine.delegate.*;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -17,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StatusChangeListener implements TaskListener {
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void notify (DelegateTask delegateTask) {
         String processInstanceId = delegateTask.getProcessInstanceId ();
         SysDeclare declare = getDeclareService ().findByProcessInstanceId (processInstanceId);

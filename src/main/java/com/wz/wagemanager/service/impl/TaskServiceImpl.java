@@ -1,10 +1,10 @@
 package com.wz.wagemanager.service.impl;
 
-import com.wz.wagemanager.dao.TaskRepository;
-import com.wz.wagemanager.entity.ActForm;
-import com.wz.wagemanager.entity.ActSalary;
-import com.wz.wagemanager.entity.ActTask;
-import com.wz.wagemanager.entity.SysUser;
+import com.wz.wagemanager.annotation.OperInfo;
+import com.wz.wagemanager.annotation.OperationType;
+import com.wz.wagemanager.dao.ActTaskRepository;
+import com.wz.wagemanager.dao.HiTaskRepository;
+import com.wz.wagemanager.entity.*;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
@@ -23,27 +23,21 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author WindowsTen
  */
-@Service
+@Service("taskServiceImpl")
 @Transactional (rollbackFor = Exception.class)
 public class TaskServiceImpl implements TaskService {
 
     @Resource
-    private TaskRepository taskRepository;
+    private ActTaskRepository taskRepository;
 
     @Override
     public Page<ActTask> findByPage(Pageable pageable) {
         return taskRepository.findAll(pageable);
-    }
-
-    @Override
-    public List<ActTask> findBySalaryId (String salaryId) {
-        return taskRepository.findBySalaryId (salaryId);
     }
 
     @Override
@@ -52,8 +46,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public BigDecimal sumBySalaryAndType (String salaryId, Integer type) {
-        return taskRepository.sumBySalaryAndType (salaryId,type);
+    public BigDecimal sumByTypeAndWorkNo (Integer type,String workNo) {
+        return taskRepository.sumByTypeAndWorkNo (type,workNo);
+    }
+
+    @Override
+    public List<ActTask> findByWorkNo (String workNo) {
+        return taskRepository.findByWorkNo (workNo);
     }
 
     @Override
@@ -63,12 +62,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    @OperInfo (type = OperationType.UPDATE,desc = "添加/修改员工扣款记录")
     public void save(ActTask task) {
         taskRepository.save(task);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    @OperInfo (type = OperationType.UPDATE,desc = "添加/修改员工扣款记录")
     public void save(List<ActTask> tasks) {
         taskRepository.save(tasks);
     }
@@ -90,10 +91,16 @@ public class TaskServiceImpl implements TaskService {
     public List<ActTask> findByDeptId (String deptId) {
         return taskRepository.findByDeptId (deptId);
     }
-
+    @OperInfo
     @Override
-    public void charged (String deptId, List<String> ids) {
-        taskRepository.updateStatus (ids,0);
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    public void charged (List<String> checkIds, List<String> unCheckIds) {
+        if(!CollectionUtils.isEmpty (checkIds)){
+            taskRepository.updateStatus (checkIds,0);
+        }
+        if(!CollectionUtils.isEmpty (checkIds)){
+            taskRepository.updateStatus (unCheckIds,1);
+        }
     }
 
     @Resource
@@ -113,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
 
         //更新工资表的借款和扣款记录
         ActSalary salary = actSalaryService.findByWorkNo (form.getWorkNo());
-        Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户" + salary.getYear ()+ "年" + salary.getMonth () + "月工资记录不存在，请添加工资记录后再添加借款记录", salary);
+        Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户工资记录不存在，请添加工资记录后再添加借款记录", salary);
         boolean isChange=false;
         if(form.getLate ()!=null&&form.getLate().compareTo(salary.getLate()) != 0){
             salary.setLate(form.getLate());
@@ -160,11 +167,11 @@ public class TaskServiceImpl implements TaskService {
                     actTask.setDeptName (form.getDeptName ());
                     actTask.setUsername (form.getUsername ());
                     actTask.setWorkNo (form.getWorkNo ());
-                    actTask.setSalaryId (salary.getId ());
                 }
                 if(actTask == null || actTask.getAmount ().compareTo (BigDecimal.ZERO) == 0){
                     taskRepository.delete (actTask);
                 }else{
+                    actTask.setStatus (0);
                     taskList.add (actTask);
                 }
                 isTask=true;
@@ -172,9 +179,9 @@ public class TaskServiceImpl implements TaskService {
             if(isTask){
                 isChange=true;
                 taskRepository.save (taskList);
-                BigDecimal bigDecimal = sumBySalaryAndType (salary.getId (), 1);
+                BigDecimal bigDecimal = sumByTypeAndWorkNo (1,form.getWorkNo ());
                 salary.setOtherDebit (bigDecimal==null?BigDecimal.ZERO:bigDecimal);
-                BigDecimal decimal = sumBySalaryAndType (salary.getId (), 0);
+                BigDecimal decimal = sumByTypeAndWorkNo (0,form.getWorkNo ());
                 salary.setLoan (decimal==null?BigDecimal.ZERO:decimal);
             }
         }
@@ -196,5 +203,25 @@ public class TaskServiceImpl implements TaskService {
             return true;
         }
         return note1.equals (note2);
+    }
+
+
+    @Resource
+    private HiTaskRepository hiTaskRepository;
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    public void saveHi (List<HiTask> tasks) {
+        hiTaskRepository.save (tasks);
+    }
+
+    @Override
+    public List<ActTask> findByStatus (Integer status,String deptId) {
+        return taskRepository.findByStatusAndDeptId (status,deptId);
+    }
+
+    @Override
+    public void deleteByStatus (Integer status,String deptId) {
+        taskRepository.deleteByStatusAndDeptId (status,deptId);
     }
 }

@@ -30,11 +30,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 //            throw new UsernameNotFoundException("用户不存在");
             throw new HandThrowException("请核实用户名和部门");
         }
-//        for(SysUser sysUser:users){
-//            if(deptId.equals(sysUser.getSysDept().getId())){
-//                return sysUser;
-//            }
-//        }
+        if(user.getStatus () == 0){
+            throw new HandThrowException ("账号已被禁用");
+        }
+        if("ROLE_EMP".equals (user.getSysRole ().getRoleAlias ())){
+            throw new HandThrowException ("普通用户无权限");
+        }
         return user;
     }
 

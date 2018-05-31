@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    @OperInfo (type = OperationType.UPDATE,desc = "修改员工信息")
     public void updateUserByProperties (SysUser sysUser) throws IllegalAccessException {
         SysUser user = getUserById (sysUser.getId ());
         CommonUtils.copyProperties (sysUser,user,updateProperties);
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
+    @OperInfo
     public void deleteUser(String id) {
         userRepository.delete(id);
     }
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService{
     public SysUser getUserByUsernameAndWorkNo(String username, String workNo) {
         return userRepository.findByUsernameAndWorkNo (username,workNo);
     }
-
+    @OperInfo
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void batchInsert(List<SysUser> list) {
@@ -100,13 +102,13 @@ public class UserServiceImpl implements UserService{
         criteraMap.put("username",username);
         return userRepository.findAll(CriteriaUtils.getSpe(criteraMap),pageRequest);
     }
-
+    @OperInfo
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void removeByIds(String[] ids) {
         userRepository.deleteByIdIn(ids);
     }
-
+    @OperInfo
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void insertUser(SysUser sysUser) {

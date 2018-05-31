@@ -27,6 +27,7 @@
     margin-top: 5px;
 }
 .btn-btn{
+    margin-left:0px !important;
     text-align: center !important;
 }
 #test8{
@@ -42,11 +43,13 @@
 .layui-form-label{
     width:110px !important;
 }
-
-
-/*.div-loan{*/
-    /*width:15% !important;*/
-/*}*/
 .layui-col-md10{
     width: 90%;
+}
+a.news_del{
+    margin-top: 1px;
+    margin-left:0px !important;
+}
+.layui-form-item{
+    margin-bottom: 2px;
 }

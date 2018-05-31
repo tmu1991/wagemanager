@@ -26,6 +26,7 @@
 				<img class="layui-upload-img" id="demo1">
 				<p id="demoText"></p>
 			</div>
+			<a th:href="@{/task/download}" style="margin-bottom: 2px" sec:authorize="hasAnyRole('ROLE_LAW')" type="button" class="layui-btn">导出扣款模板</a>
 		</div>
 		<!--<input  type="file" onchange="xlsFile(this)"  id="xlf" value="" />-->
 		<!--<input  type="file" onchange="xlsFile(this)"  id="xlf" value="导入员工考勤" />-->

@@ -1,10 +1,13 @@
 package com.wz.wagemanager.service.impl;
 
+import com.wz.wagemanager.annotation.OperInfo;
+import com.wz.wagemanager.annotation.OperationType;
 import com.wz.wagemanager.dao.ActSalaryRepository;
 import com.wz.wagemanager.dao.DeclareRepository;
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.SalaryArea;
 import com.wz.wagemanager.entity.SysDeclare;
+import com.wz.wagemanager.entity.SysLog;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
 import com.wz.wagemanager.tools.Assert;
@@ -35,8 +38,7 @@ import java.util.List;
 public class ActSalaryServiceImpl implements ActSalaryService {
     @Resource
     private ActSalaryRepository actSalaryRepository;
-    @Resource
-    private DeclareRepository declareRepository;
+
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void save (ActSalary salary) {
@@ -45,7 +47,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void save (List<ActSalary> salaries) {
+    public void save (List<ActSalary> salaries, SysLog sysLog) {
         actSalaryRepository.save (salaries);
     }
 
@@ -72,13 +74,15 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void removeByIdIn (String[] ids) {
+    @OperInfo (type = OperationType.UPDATE,desc = "删除工资记录")
+    public void removeByIdIn (String[] ids, SysLog sysLog) {
         actSalaryRepository.removeByIdIn (ids);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void update (ActSalary salary) throws IllegalAccessException {
+    @OperInfo (type = OperationType.UPDATE,desc = "修改工资信息")
+    public void update (ActSalary salary, SysLog sysLog) throws IllegalAccessException {
         ActSalary actSalary = findById(salary.getId());
         CommonUtils.copyProperties(salary,actSalary,updateProperties);
         CommonUtils.calSalary (salary,null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
@@ -99,6 +103,11 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Override
     public List<ActSalary> findByDeclareId (String declareId) {
         return actSalaryRepository.findByDeclareId(declareId);
+    }
+
+    @Override
+    public void deleteByDeclareId (String declareId) {
+        actSalaryRepository.deleteByDeclareId (declareId);
     }
 
     private static final List<String> updateProperties= Arrays.asList ("coeff","base","seniority","busTravel","subDay","allowance","bonus");

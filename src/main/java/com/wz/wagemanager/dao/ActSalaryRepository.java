@@ -44,5 +44,7 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
             "from ActSalary a where a.declareId in (?1) group by a.deptId")
     List<SalaryArea> findGroupByDept(List<String> ids);
 
+    void deleteByDeclareId(String declareId);
+
 
 }

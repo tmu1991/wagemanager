@@ -5,7 +5,7 @@
     <title>员工管理</title>
     <link rel="stylesheet" th:href="@{layui/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{css/font_eolqem241z66flxr.css}" media="all"/>
-    <link rel="stylesheet" th:href="@{css/news.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{css/task.css}" media="all"/>
 </head>
 <body class="childrenBody">
 <div style="margin-top: 10px;margin-left: 10px;margin-right: 5px;">
@@ -36,9 +36,9 @@
         </div>
     </div>
     <div class="layui-inline"> <a class="layui-btn search_btn">查询</a></div>
-    <div  class="layui-btn-group demoTable layui-inline">
+    <div style="text-align: right;" class="layui-btn-group demoTable layui-inline">
         <button id="addEmplpyeeBtn" class="layui-btn layui-btn-normal" data-type="insert">添加</button>
-        <button id="delAll" class="layui-btn layui-btn-danger" data-type="delAll">全部删除</button>
+        <button style="margin-left: 2px !important;" id="delAll" class="layui-btn layui-btn-danger" data-type="delAll">全部删除</button>
     </div>
     </blockquote>
 
@@ -102,7 +102,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <div class="layui-input-block">
+            <div style="text-align: center;" class="layui-input-block">
                 <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
@@ -111,6 +111,6 @@
 </div>
 </div>
 <script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>
-<script th:src="@{js/user.js}" src="../static/js/user.js">
+<script th:src="@{js/user.js}" src="../static/js/user.js"></script>
 </body>
 </html>

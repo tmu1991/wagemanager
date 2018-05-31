@@ -1,32 +1,16 @@
 package com.wz.wagemanager.controller;
 
-import com.wz.wagemanager.entity.SysRole;
 import com.wz.wagemanager.entity.SysUser;
-import com.wz.wagemanager.security.CustomUsernamePasswordToken;
 import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.service.RoleService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.impl.interceptor.LogInterceptor;
-import org.activiti.engine.impl.interceptor.RetryInterceptor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.MediaType;
-import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

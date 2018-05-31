@@ -16,9 +16,6 @@
 .layui-btn{
     margin-left:0px !important;
 }
-table.layui-btn+.layui-btn{
-    margin-top: 5px;
-}
 .btn-btn{
     text-align: center !important;
 }

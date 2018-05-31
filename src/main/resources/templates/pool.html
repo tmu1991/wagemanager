@@ -78,28 +78,29 @@
     </div>
 
     <div class="layui-row" id="test2" style="display: none;">
-    <div class="layui-form task_list">
-        <table class="layui-table">
-            <thead>
-            <tr>
-                <th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></th>
-                <th>员工姓名</th>
-                <th>考勤编号</th>
-                <th>金额</th>
-                <th>类型</th>
-                <th>日期</th>
-                <th>备注</th>
-            </tr>
-            </thead>
-            <tbody class="news_content"></tbody>
-        </table>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <input id="deptId" name="deptId" hidden="hidden">
-                <button class="layui-btn" lay-submit="" lay-filter="demo3">扣款</button>
+        <div style="margin-left: 1%;margin-right: 1%;width: 98%;height: 100%;" class="layui-col-md10">
+        <div class="layui-form task_list">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></th>
+                    <th>员工姓名</th>
+                    <th>考勤编号</th>
+                    <th>金额</th>
+                    <th>类型</th>
+                    <th>日期</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody class="load_content"></tbody>
+            </table>
+            <div class="layui-form-item">
+                <div style="margin-right: 10px;text-align: right;" class="layui-input-block">
+                    <input id="deptId" name="deptId" hidden="hidden">
+                    <button class="layui-btn" lay-submit="" lay-filter="demo3">扣款</button>
+                </div>
             </div>
-        </div>
-    </div>
+        </div></div>
     </div>
 </div>
 <script th:src="@{layui/layui.js}" src="../static/layui/layui.js"></script>

@@ -6,7 +6,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
     renderDate(1);
 
     function renderDate(num){
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         table.render({
             elem:'#demo',
             page:false,
@@ -32,6 +32,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 statusCode: 200 //成功的状态码，默认：0
             },
             done:function(res, curr, count) {
+                layer.closeAll();
                 var page=res.page;
                 laypage.render({
                     elem: 'page',
@@ -49,6 +50,5 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             //,size: 'lg' //尺寸
 
         });
-        layer.close(cxindex)
     }
 });

@@ -9,5 +9,6 @@ import java.lang.annotation.*;
 public @interface OperInfo {
     //操作描述，使用SPEL表达式
     String desc() default "";
-    OperationType type();
+    OperationType type() default OperationType.QUERY;
+    boolean argsAble() default true;
 }

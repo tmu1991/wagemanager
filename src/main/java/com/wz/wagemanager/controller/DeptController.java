@@ -1,22 +1,14 @@
 package com.wz.wagemanager.controller;
 
 import com.wz.wagemanager.entity.SysDept;
-import com.wz.wagemanager.entity.SysRole;
-import com.wz.wagemanager.entity.SysUser;
-import com.wz.wagemanager.security.CustomUsernamePasswordToken;
 import com.wz.wagemanager.service.DeptService;
-import com.wz.wagemanager.tools.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import com.wz.wagemanager.tools.BaseExceptionController;
+import com.wz.wagemanager.tools.PageBean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @RestController

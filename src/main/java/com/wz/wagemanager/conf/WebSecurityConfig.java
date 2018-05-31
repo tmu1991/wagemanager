@@ -25,10 +25,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider authenticationProvider(){
         return new LoginAuthenticationProvider(customUserDetailsService());
     }
-    @Bean
-    public AjaxSessionInformationExpiredStrategy ajaxSessionInformationExpiredStrategy(){
-        return new AjaxSessionInformationExpiredStrategy();
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

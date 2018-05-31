@@ -59,7 +59,7 @@ public class DateUtil {
         if(year == null || year == 0){
             return "";
         }
-        return String.valueOf (year) + "年" + month + "月";
+        return String.valueOf (year) + "-" + month;
     }
     public static int getYear(String date) throws ParseException {
         return Integer.parseInt (date.substring (0,date.indexOf ("年")));

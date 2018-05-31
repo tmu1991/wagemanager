@@ -9,11 +9,12 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
     $("body").on("click", ".chakan", function () {
         var _this = $(this);
         $('.commentList').html('');
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('declare/comment.json',{'processInstanceId':_this.attr("data-id")},function (result) {
             var code = result.code,
                 listData = result.data;
             if (code == 200) {
+                layer.closeAll();
                 $.each(listData,function (index, item) {
                     var count=index+1;
                     var startTime=item.startTime?item.startTime:'';
@@ -49,13 +50,12 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex)
     });
     //提交工资审批
     $("body").on("click", ".tijiao", function () {
         var _this = $(this);
         layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
-            var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
+            var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.4});
             $.post('declare/start.json', {'declareId': _this.attr("data-id")}, function (result) {
                 var code = result.code;
                 if (code == 200) {
@@ -72,7 +72,6 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                     }
                 }
             });
-            layer.close(tjindex)
         })
 //                deleteBatch(_this.attr("data-id"));
     });
@@ -81,7 +80,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
     $("body").on("click", ".shenhe", function () {
         var _this = $(this);
         layer.confirm('确定提交？', {icon: 3, title: '提示信息'}, function () {
-            var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.8});
+            var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.4});
             $.post('declare/complete.json', {'declareId':_this.attr('data-id'),'processInstanceId': _this.next().attr("data-id")}, function (result) {
                 var code = result.code;
                 if (code == 200) {
@@ -98,13 +97,12 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                     }
                 }
             });
-            layer.close(tjindex)
         })
 //                deleteBatch(_this.attr("data-id"));
     });
 
     function renderDate(curPage) {
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post("declare/list.json", {"curPage": curPage}, function (result) {
             var code = result.code,
                 listData = result.data,
@@ -112,47 +110,79 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             if (code == 200) {
                 //渲染数据
                 var dataHtml = '';
-                if (listData.length != 0) {
+                var total = listData.length;
+                if (total != 0) {
+                    var lastItem = listData[total-1];
+                    var indexCount=1;
+                    if(!lastItem.declareDate){
+                        indexCount=2;
+                    }
                     $.each(listData, function (i, item) {
-                        var declareDate='';
-                        if(item.declareDate){
-                            declareDate=item.declareDate;
-                        }
-                        var count=i+1;
-                        dataHtml += '<tr>'
-                            + '<td>' + count + '</td>';
-                        if(item.status==2){
-                            dataHtml+= '<td>' + item.declareName + '</td>'
+                        if(i == (total -1) && indexCount == 2){
+                            var itemHtml='';
+                            itemHtml += '<tr>'
+                                + '<td>1</td>'
+                                + '<td>' + item.declareName + '</td>'
+                                + '<td></td>'
+                                + '<td>' + item.user.username + '</td>';
+                            if (item.status == 0) {
+                                itemHtml += '<td>未提交</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm tijiao" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-sm layui-btn-disabled" disabled="disabled" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            } else if(item.status==1) {
+                                itemHtml += '<td>审核中</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn  layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }else if(item.status==2) {
+                                itemHtml += '<td>审核通过</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }else if(item.status==3) {
+                                itemHtml += '<td>调整中</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm shenhe" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }
+                            dataHtml = itemHtml+dataHtml;
                         }else {
-                            dataHtml+= '<td><a href="index/'+item.dept.id+'">' + item.declareName + '</a></td>';
-                        }
-                        dataHtml+= '<td>' + declareDate + '</td>'
-                        + '<td>' + item.user.username + '</td>';
-                            
-                        if (item.status == 0) {
-                            dataHtml += '<td>未提交</td><td>'
-                                + '<button class="layui-btn layui-btn-sm tijiao" data-id="'+item.id+'">提交</button>'
-                                + '&nbsp;&nbsp;<button class="layui-btn layui-btn-sm layui-btn-disabled" disabled="disabled" data-id="'+item.processInstanceId+'">查看</button>'
-                                + '</td>'
-                                + '</tr>';
-                        } else if(item.status==1) {
-                            dataHtml += '<td>审核中</td><td>'
-                                + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
-                                + '&nbsp;&nbsp;<button class="layui-btn  layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
-                                + '</td>'
-                                + '</tr>';
-                        }else if(item.status==2) {
-                            dataHtml += '<td>审核通过</td><td>'
-                                + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
-                                + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
-                                + '</td>'
-                                + '</tr>';
-                        }else if(item.status==3) {
-                            dataHtml += '<td>调整中</td><td>'
-                                + '<button class="layui-btn layui-btn-sm shenhe" data-id="'+item.id+'">提交</button>'
-                                + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
-                                + '</td>'
-                                + '</tr>';
+                            var count=i+indexCount;
+                            dataHtml += '<tr>'
+                                + '<td>' + count + '</td>'
+                                + '<td>' + item.declareName + '</td>'
+                                + '<td>' + item.declareDate + '</td>'
+                                + '<td>' + item.user.username + '</td>';
+                            if (item.status == 0) {
+                                dataHtml += '<td>未提交</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm tijiao" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-sm layui-btn-disabled" disabled="disabled" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            } else if(item.status==1) {
+                                dataHtml += '<td>审核中</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn  layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }else if(item.status==2) {
+                                dataHtml += '<td>审核通过</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm  layui-btn-disabled" disabled="disabled" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }else if(item.status==3) {
+                                dataHtml += '<td>调整中</td><td>'
+                                    + '<button class="layui-btn layui-btn-sm shenhe" data-id="'+item.id+'">提交</button>'
+                                    + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="'+item.processInstanceId+'">查看</button>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }
                         }
                     });
                 } else {
@@ -172,6 +202,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                         }
                     }
                 })
+                layer.closeAll();
             } else {
                 layer.close(cxindex)
                 var msg = result.msg;
@@ -182,6 +213,5 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 }
             }
         });
-        layer.close(cxindex)
     }
 });

@@ -1,8 +1,6 @@
 package com.wz.wagemanager.tools;
 
-import com.wz.wagemanager.entity.SysRole;
 import com.wz.wagemanager.entity.SysUser;
-import com.wz.wagemanager.security.CustomUsernamePasswordToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;

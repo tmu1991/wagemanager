@@ -37,7 +37,7 @@
 				<div class="layui-side-scroll">
 					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
 					<ul class="layui-nav layui-nav-tree" lay-filter="test">
-						<li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_DEPT','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item">
+						<li sec:authorize="hasAnyRole('ROLE_DEPT','ROLE_CAP','ROLE_EXE','ROLE_GE_MANAGER','ROLE_FIN','ROLE_LAW')" class="layui-nav-item">
 							<a class="" href="javascript:;">管理操作</a>
 							<dl class="layui-nav-child">
 								<dd id='history.html'>

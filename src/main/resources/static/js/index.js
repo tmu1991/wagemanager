@@ -130,7 +130,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
 
     //监听提交
     form.on('submit(demo1)', function(data){
-        var tjindex = layer.msg('更新中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('更新中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('/salary/update.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
@@ -183,8 +183,8 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
 
     $("body").on("click", ".loan_edit", function () {  //编辑
         var tr = $(this).parents('tr');
-        var salaryId = tr.find('td.pkid').attr('data-id');
-        $.post("/task/salary.json",{"salaryId":salaryId},function (result) {
+        var workNo = tr.find('td.id').text();
+        $.post("/task/salary.json",{"workNo":workNo},function (result) {
             if(result.code == 200){
             var htmlStr='<div class="layui-col-md10">' +
                 '                <form style="margin-top: 10px;margin-bottom: 20px" class="layui-form" lay-filter="loanForm" id="loanForm">' +
@@ -231,7 +231,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 '                <div class="layui-form-item loanList"><label class="layui-form-label">扣&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;款：</label>';
             var count=0;
             var data={
-                "id": salaryId
+                "id": tr.find('td.pkid').attr('data-id')
                 ,"username": tr.find('td.username').text()
                 ,"workNo": tr.find('td.id').text()
                 ,"late": tr.find('td.cd').text()
@@ -327,7 +327,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
 
     //监听提交
     form.on('submit(demo2)', function(data){
-        var tjindex = layer.msg('更新中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('更新中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('/task/update.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
@@ -399,7 +399,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
     function deleteBatch(ids) {
         layer.confirm('确定删除选中的信息？', {icon: 3, title: '提示信息'}, function () {
             console.log(ids)
-            var scindex = layer.msg('删除中，请稍候', {icon: 16, time: false, shade: 0.8});
+            var scindex = layer.msg('删除中，请稍候', {icon: 16, time: false, shade: 0.4});
             //删除数据
             $.post("/salary/delete.json", {'ids': ids}, function (result) {
                 var code = result.code;
@@ -484,7 +484,11 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                             Number(item.other) +
                             Number(item.otherEl)
                         );
-                        newCell.find('.sj').text(item.payroll);
+                        if(item.payroll<0){
+                            newCell.find('.sj').html('<span style="color: red;">'+item.payroll+'</span>');
+                        }else{
+                            newCell.find('.sj').text(item.payroll);
+                        }
                         newCell.find('.ka').text(item.creditCard);
                         box.append(newCell);
                     });
@@ -509,6 +513,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                             }
                         }
                     })
+                    layer.closeAll();
                 } else {
                     layer.close(index);
                     box.append("暂无数据");
@@ -517,7 +522,6 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 layer.close(index);
             }
         });
-        layer.close(index);
     }
 
     function tj(arr) {

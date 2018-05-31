@@ -84,7 +84,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
         index = layer.open({
             type: 1,
             title: "添加员工",
-            skin: 'layui-layer-lan',
+            skin: 'layui-layer-molv',
             area: ["50%"],
             content: $('#test').html(),
             shadeClose:true,
@@ -105,7 +105,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
 
     //监听提交
     form.on('submit(demo1)', function(data){
-        var tjindex = layer.msg('操作中，请稍候',{icon: 16,time:false,shade:0.8});
+        var tjindex = layer.msg('操作中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post('user/insert.json',data.field,function (result) {
             var code = result.code;
             if (code == 200) {
@@ -140,7 +140,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
 
 //            });
     function renderDate(curPage,username,deptId,roleId) {
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.post("user/list.json", {"curPage": curPage,"username":username,"deptId":deptId,"roleId":roleId}, function (result) {
             var code = result.code,
                 listData = result.data,
@@ -201,28 +201,27 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                         }
                     }
                 })
+                layer.closeAll();
             } else {
                 layer.close(cxindex);
                 var msg = result.msg;
                 if (msg) {
-                    lay.alert(msg);
+                    layer.alert(msg);
                 } else {
-                    lay.alert('查询数据失败');
+                    layer.alert('查询数据失败');
                 }
             }
         });
-        layer.close(cxindex);
     }
 
     function deleteBatch(ids) {
         layer.confirm('确定删除选中的信息？', {icon: 3, title: '提示信息'}, function () {
-            var scindex = layer.msg('删除中，请稍候', {icon: 16, time: false, shade: 0.8});
+            var scindex = layer.msg('删除中，请稍候', {icon: 16, time: false, shade: 0.4});
             //删除数据
             $.post("user/delete.json", {'ids': ids}, function (result) {
                 var code = result.code;
                 $('.news_list thead input[type="checkbox"]').prop("checked", false);
                 form.render();
-                layer.close(scindex);
                 if (code == 200) {
                     layer.closeAll();
                     layer.msg("删除成功");
@@ -235,7 +234,6 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                     layer.msg("删除失败，请重试");
                 }
             });
-            layer.close(scindex);
         })
     }
 

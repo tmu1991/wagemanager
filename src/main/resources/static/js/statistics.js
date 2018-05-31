@@ -16,7 +16,7 @@ layui.use(['table','jquery','layer','laydate'],function () {
     });//绑定元素
 
     function renderDate(year,month) {
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.ajax({
             url:"salary/statistics.json",
             data:{"year":year,"month":month},
@@ -31,6 +31,9 @@ layui.use(['table','jquery','layer','laydate'],function () {
                         allowance=0,insurance=0,
                         incomeTax=0,accuFund=0,payroll=0;
                     if (listData.length != 0) {
+                        if(!$("#dateMonth").val()){
+                            $("#dateMonth").val(result.msg);
+                        }
                         $.each(listData,function (i, item) {
                             dataHtml+="<tr>" +
                                 "<td>"+item.deptName+"</td>" +
@@ -51,9 +54,9 @@ layui.use(['table','jquery','layer','laydate'],function () {
                             payroll+=item.payroll;
                         });
                     }
-                    $(".sum_time").text(result.msg);
                     $(".news_content").html(dataHtml);
                     $(".statistics_sum").html("<td>合计</td><td>"+grossPay+"</td><td>"+subWork+"</td><td>"+allowance+"</td><td>"+insurance+"</td><td>"+incomeTax+"</td><td>"+accuFund+"</td><td>"+payroll+"</td>");
+                    layer.closeAll();
                 }else{
                     layer.close(cxindex)
                     var msg = result.msg;
@@ -68,6 +71,5 @@ layui.use(['table','jquery','layer','laydate'],function () {
                 alert("获取数据失败");
             }
         });
-        layer.close(cxindex)
     }
 });

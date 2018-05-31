@@ -31,7 +31,7 @@ public class PageUtil {
         List<Sort.Order> orders=new ArrayList<>(sortFields.length);
         final Sort.Direction direction = "asc".equals(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
         for (String sortField : sortFields) {
-            orders.add(new Sort.Order(direction, sortField).nullsFirst());
+            orders.add(new Sort.Order(direction, sortField).nullsLast ());
         }
         return new Sort(orders);
     }

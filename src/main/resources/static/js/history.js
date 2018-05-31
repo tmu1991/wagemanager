@@ -19,7 +19,7 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
 
     function renderDate(curPage,year,month) {
         var deptId = $(".deptInfo").attr('content');
-        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
+        var cxindex = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         $.ajax({
             url:"salary/history.json",
             type:"post",
@@ -30,10 +30,12 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
                     page = result.page;
                 if (code == 200) {
                     layer.closeAll();
-                    $(".date").text(result.msg);
                     //渲染数据
                     var dataHtml = '';
                     if (listData.length != 0) {
+                        if(!$("#dateMonth").val()){
+                            $("#dateMonth").val(result.msg);
+                        }
                         $.each(listData,function (i, item) {
                             var fine=item.late+item.otherDebit+item.partyDue+item.loan+item.other;
                             dataHtml+="<tr><td>"+item.workNo+"</td><td>"+item.deptName+"</td><td>"+item.username+"</td><td>"+item.base+"</td><td>"+item.dailyWage+
@@ -63,17 +65,16 @@ layui.use(['laydate','table','jquery', 'layer','laypage'],function () {
                     layer.close(cxindex);
                     var msg = result.msg;
                     if (msg) {
-                        lay.alert(msg);
+                        layer.alert(msg);
                     } else {
-                        lay.alert('查询数据失败');
+                        layer.alert('查询数据失败');
                     }
                 }
             },
             error: function(data){
                 layer.close(cxindex);
-                alert("获取数据失败");
+                layer.alert("获取数据失败");
             }
         });
-        layer.close(cxindex);
     }
 });
