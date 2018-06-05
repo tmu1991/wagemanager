@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -33,6 +35,8 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
 
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);
 
+    @Modifying
+    @Transactional
     void removeByIdIn(String[] ids);
 
     List<ActSalary> findByDeclareId(String declareId);
@@ -44,6 +48,8 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
             "from ActSalary a where a.declareId in (?1) group by a.deptId")
     List<SalaryArea> findGroupByDept(List<String> ids);
 
+    @Modifying
+    @Transactional
     void deleteByDeclareId(String declareId);
 
 

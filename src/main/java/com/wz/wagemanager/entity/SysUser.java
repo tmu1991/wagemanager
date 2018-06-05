@@ -1,6 +1,7 @@
 package com.wz.wagemanager.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.wz.wagemanager.annotation.ParmDesc;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +32,7 @@ public class SysUser implements UserDetails {
     @Column(name = "id",length = 32)
     private String id;
     @Column
+    @ParmDesc(desc = "姓名")
     private String username;
     @JSONField(serialize = false)
     private String password;
@@ -53,6 +55,7 @@ public class SysUser implements UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
     /**用户状态 0表示禁用 1正常*/
+    @ParmDesc(desc = "用户状态")
     private Integer status;
     //optional是否可以为空
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH },fetch = FetchType.EAGER)
@@ -66,17 +69,21 @@ public class SysUser implements UserDetails {
 //    private String roleId;
 //    @Column(name = "dept_id")
 //    private String deptId;
-
+    @ParmDesc(desc = "基本工资")
     private BigDecimal base;
     //工龄工资
+    @ParmDesc(desc = "工龄工资")
     private BigDecimal seniority;
     //考勤编号
+    @ParmDesc(desc = "考勤编号")
     @Column(name = "work_no",unique = true)
     private String workNo;
     //自定义编号
+    @ParmDesc(desc = "自定义编号")
     @Column(name = "custom_no")
     private String customNo;
     //银行卡号
+    @ParmDesc(desc = "银行卡号")
     @Column(name = "credit_card")
     private String creditCard;
 

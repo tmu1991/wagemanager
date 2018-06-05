@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Transient;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface UserRepository extends JpaRepository<SysUser,String>,JpaSpecifi
 
 //    Collection<GrantedAuthority> loadUserAuthorities(String username);
 
+    @Modifying
+    @Transactional
     void updateUser(SysUser sysUser);
 
     SysUser findByUsernameAndWorkNo(String username, String workNo);
@@ -33,8 +36,8 @@ public interface UserRepository extends JpaRepository<SysUser,String>,JpaSpecifi
     List<SysUser> findAllBySysDept(String deptId, Pageable pageRequest);
 
     @Modifying
-    @Transient
-    void deleteByIdIn(String[] ids);
+    @Transactional
+    void removeByIdIn(String[] ids);
 
 
     //    void batchInsert(List<SysUser> list);

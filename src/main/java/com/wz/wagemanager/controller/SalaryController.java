@@ -46,7 +46,7 @@ public class SalaryController extends BaseExceptionController {
             @ModelAttribute ActSalary actSalary
     ) throws ParseException, InstantiationException, IllegalAccessException, NoSuchFieldException, UnsupportedEncodingException {
 //        ActSalary actSalary = CommonUtils.toEntity (form, ActSalary.class);
-        actSalaryService.update (actSalary,new SysLog ());
+        actSalaryService.update (actSalary);
         return new PageBean<> ();
     }
 
@@ -55,7 +55,7 @@ public class SalaryController extends BaseExceptionController {
             @RequestParam (value = "ids") String ids
     ) throws ParseException {
         Assert.assertNotNull ("员工不能为空", ids);
-        actSalaryService.removeByIdIn (ids.split (","),new SysLog ());
+        actSalaryService.removeByIdIn (ids.split (","));
         return new PageBean<> ();
     }
 
@@ -156,7 +156,7 @@ public class SalaryController extends BaseExceptionController {
                         .user (sessionUser).dept (sysDept).status (0).build ();
                 declareService.save (declare);
             }else{
-                Assert.assertTrue (declareName+"尚未审核完成,请完成后再提交",declareName.equals (declare.getDeclareName ()));
+                Assert.assertTrue (declare.getDeclareName ()+"尚未审核完成,请完成后再提交",declareName.equals (declare.getDeclareName ()));
             }
             for (ActWork actWork : UploadUtils.actList (filePath)) {
                 SysUser sysUser = userService.findByWorkNo (actWork.getWorkNo ());
@@ -175,15 +175,17 @@ public class SalaryController extends BaseExceptionController {
                 CommonUtils.calSalary (actSalary, sysUser, dateNum);
                 saveList.add (actSalary);
             }
-            actSalaryService.save (saveList,new SysLog ());
+            actSalaryService.save (saveList);
         } finally {
             dest.delete ();
         }
         return new PageBean ();
     }
+
     private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
     private String declareName (int year, int month, String deptName) {
         return year + "年" + month + "月" + deptName + "工资申请";
+//        return deptName + "("+year + "-" + month +")";
     }
 
 }

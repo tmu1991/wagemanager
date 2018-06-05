@@ -19,6 +19,8 @@ public class SysLog {
     @Column(name = "id",length = 32)
     private String id;
     private String username;
+    @Column(name = "work_no")
+    private String workNo;
     @Column(name = "oper_name")
     private String operName;
     @Column(name = "start_time")

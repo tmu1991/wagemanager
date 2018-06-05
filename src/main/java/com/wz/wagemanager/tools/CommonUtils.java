@@ -1,16 +1,14 @@
 package com.wz.wagemanager.tools;
 
+import com.wz.wagemanager.annotation.ParmDesc;
 import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.SysUser;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class CommonUtils {
 
@@ -42,15 +40,40 @@ public class CommonUtils {
         return bigDecimal!=null&&bigDecimal.compareTo(BigDecimal.ZERO)!=0;
     }
 
-    public static <T> void copyProperties(T original, T novel,List<String> properties) throws IllegalAccessException {
+    public static <T> Map<String, Object> copyProperties(T original, T novel, List<String> properties) throws IllegalAccessException {
         Class<?> aClass = original.getClass ();
         Field[] declaredFields = aClass.getDeclaredFields();
+        Map<String,Object> params=null;
+        Object o1,o2;
+        Class<?> type;
         for(Field declaredField:declaredFields){
             declaredField.setAccessible(true);
+            o1 = declaredField.get (original);
+            o2 = declaredField.get (novel);
             if(!properties.contains (declaredField.getName ())){
-                declaredField.set(original,declaredField.get(novel));
+                declaredField.set(original, o2);
+            }else{
+                if(declaredField.isAnnotationPresent (ParmDesc.class)){
+                    if(o1 != null && !o1.equals (o2)){
+                        if(params == null){
+                            params=new HashMap<> ();
+                        }
+                        params.put (declaredField.getAnnotation (ParmDesc.class).desc (),o1);
+                    }
+                    if(o1 == null && o2 != null){
+                        type = declaredField.getType ();
+                        if(type.equals (BigDecimal.class)){
+                            params.put (declaredField.getAnnotation (ParmDesc.class).desc (),0);
+                        }else if(type.equals (String.class)){
+                            params.put (declaredField.getAnnotation (ParmDesc.class).desc (),"");
+                        }else{
+                            params.put (declaredField.getAnnotation (ParmDesc.class).desc (),null);
+                        }
+                    }
+                }
             }
         }
+        return params;
     }
     public static <T> List<T> castEntity(List<Object[]> list, Class<T> clazz,String[] properties) throws Exception {
         List<T> returnList = new ArrayList<>();
@@ -112,7 +135,7 @@ public class CommonUtils {
         actSalary.setDailyWage(getDailyWage(actSalary,dateNum));
         actSalary.setWorkTotal(getWorkTotal(actSalary));
         actSalary.setGrossPay(getGrossPay(actSalary));
-        actSalary.setIncomeTax(getIncomeTax(actSalary).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros ());
+        actSalary.setIncomeTax(getIncomeTax(actSalary).setScale(2, BigDecimal.ROUND_HALF_UP));
         actSalary.setPayroll(getPayroll(actSalary));
         actSalary.setUpdateDate (new Date());
     }
@@ -122,7 +145,7 @@ public class CommonUtils {
     private static BigDecimal getPayroll(ActSalary actSalary){
         return actSalary.getGrossPay().subtract(actSalary.getInsurance()).subtract(actSalary.getAccuFund()).subtract(actSalary.getIncomeTax())
                 .add(actSalary.getBonus()).subtract(actSalary.getLate()).subtract(actSalary.getOtherDebit()).subtract(actSalary.getPartyDue())
-                .subtract(actSalary.getLoan()).subtract(actSalary.getOther()).subtract (actSalary.getOtherEl ()).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros ();
+                .subtract(actSalary.getLoan()).subtract(actSalary.getOther()).subtract (actSalary.getOtherEl ()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
     private static BigDecimal getIncomeTax(ActSalary actSalary){
         BigDecimal grossPay = actSalary.getGrossPay();
@@ -152,15 +175,15 @@ public class CommonUtils {
      * @return
      */
     private static BigDecimal getAllowance(ActSalary actSalary){
-        return actSalary.getAllowance().multiply(actSalary.getAttendance()).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros ();
+        return actSalary.getAllowance().multiply(actSalary.getAttendance()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     private static BigDecimal getGrossPay(ActSalary actSalary){
         return actSalary.getDailyWage().multiply(actSalary.getWorkTotal()).add(actSalary.getSeniority()).add(actSalary.getSubDay().multiply(actSalary.getSubWork()))
-                .add(actSalary.getAllowance()).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros ();
+                .add(actSalary.getAllowance()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
     private static BigDecimal getWorkTotal(ActSalary actSalary){
-        return actSalary.getAttendance ().add(actSalary.getBusTravel()).add(actSalary.getHoliday()).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros ();
+        return actSalary.getAttendance ().add(actSalary.getBusTravel()).add(actSalary.getHoliday()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
@@ -170,6 +193,6 @@ public class CommonUtils {
      * @return
      */
     private static BigDecimal getDailyWage(ActSalary actSalary,int dateNum){
-        return actSalary.getBase().multiply(actSalary.getCoeff()).divide(new BigDecimal(String.valueOf(dateNum)),SCALE,BigDecimal.ROUND_HALF_UP).stripTrailingZeros ();
+        return actSalary.getBase().multiply(actSalary.getCoeff()).divide(new BigDecimal(String.valueOf(dateNum)),SCALE,BigDecimal.ROUND_HALF_UP);
     }
 }

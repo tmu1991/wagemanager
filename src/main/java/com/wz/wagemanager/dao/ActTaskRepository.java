@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,8 +25,11 @@ public interface ActTaskRepository extends JpaRepository<ActTask,String>,JpaSpec
     List<ActTask> findByStatusAndDeptId(Integer status,String deptId);
 
     @Modifying
+    @Transactional
     @Query(value = "update ActTask a set a.status=?2 where a.id in ?1")
     void updateStatus(List<String> ids,Integer status);
 
+    @Modifying
+    @Transactional
     void deleteByStatusAndDeptId(Integer status,String deptId);
 }

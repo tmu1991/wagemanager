@@ -454,40 +454,41 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         newCell.find('.id').text(item.workNo);
                         newCell.find('.workname').text(item.deptName);
                         newCell.find('.username').text(item.username);
-                        newCell.find('.money').text(item.base);
-                        newCell.find('.num').text(item.coeff);
-                        newCell.find('.dayMoney').text(item.dailyWage);
-                        newCell.find('.cq').text(item.attendance);
-                        newCell.find('.cx').text(item.busTravel);
-                        newCell.find('.gx').text(item.holiday);
-                        newCell.find('.hj').text(item.workTotal);
-                        newCell.find('.workmoney').text(item.seniority);
-                        newCell.find('.toworkday').text(item.subDay);
-                        newCell.find('.toworkmoney').text(item.subWork);
-                        newCell.find('.jt').text(item.allowance);
-                        newCell.find('.getMoney').text(item.grossPay);
-                        newCell.find('.four').text(item.insurance);
-                        newCell.find('.yj').text(item.accuFund);
-                        newCell.find('.gs').text(item.incomeTax);
-                        newCell.find('.jj').text(item.bonus);
-                        newCell.find('.cd').text(item.late);
-                        newCell.find('.qt').text(item.otherDebit);
-                        newCell.find('.df').text(item.partyDue);
-                        newCell.find('.jk').text(item.loan);
-                        newCell.find('.qt1').text(item.other);
-                        newCell.find('.qt2').text(item.otherEl);
+                        newCell.find('.money').text(Number(item.base).toFixed(2));
+                        newCell.find('.num').text(Number(item.coeff).toFixed(2));
+                        newCell.find('.dayMoney').text(Number(item.dailyWage).toFixed(2));
+                        newCell.find('.cq').text(Number(item.attendance).toFixed(2));
+                        newCell.find('.cx').text(Number(item.busTravel).toFixed(2));
+                        newCell.find('.gx').text(Number(item.holiday).toFixed(2));
+                        newCell.find('.hj').text(Number(item.workTotal).toFixed(2));
+                        newCell.find('.workmoney').text(Number(item.seniority).toFixed(2));
+                        newCell.find('.toworkday').text(Number(item.subDay).toFixed(2));
+                        newCell.find('.toworkmoney').text(Number(item.subWork).toFixed(2));
+                        newCell.find('.jt').text(Number(item.allowance).toFixed(2));
+                        newCell.find('.getMoney').text(Number(item.grossPay).toFixed(2));
+                        newCell.find('.four').text(Number(item.insurance).toFixed(2));
+                        newCell.find('.yj').text(Number(item.accuFund).toFixed(2));
+                        newCell.find('.gs').text(Number(item.incomeTax).toFixed(2));
+                        newCell.find('.jj').text(Number(item.bonus).toFixed(2));
+                        newCell.find('.cd').text(Number(item.late).toFixed(2));
+                        newCell.find('.qt').text(Number(item.otherDebit).toFixed(2));
+                        newCell.find('.df').text(Number(item.partyDue).toFixed(2));
+                        newCell.find('.jk').text(Number(item.loan).toFixed(2));
+                        newCell.find('.qt1').text(Number(item.other).toFixed(2));
+                        newCell.find('.qt2').text(Number(item.otherEl).toFixed(2));
                         newCell.find('.fj').text(
-                            Number(item.late) +
-                            Number(item.otherDebit) +
-                            Number(item.partyDue) +
-                            Number(item.loan) +
-                            Number(item.other) +
-                            Number(item.otherEl)
+                            Number(item.late).toFixed(2) +
+                            Number(item.otherDebit).toFixed(2) +
+                            Number(item.partyDue).toFixed(2) +
+                            Number(item.loan).toFixed(2) +
+                            Number(item.other).toFixed(2) +
+                            Number(item.otherEl).toFixed(2)
                         );
-                        if(item.payroll<0){
-                            newCell.find('.sj').html('<span style="color: red;">'+item.payroll+'</span>');
+                        var payroll=Number(item.payroll).toFixed(2);
+                        if(payroll<0){
+                            newCell.find('.sj').html('<span style="color: red;">'+payroll+'</span>');
                         }else{
-                            newCell.find('.sj').text(item.payroll);
+                            newCell.find('.sj').text(payroll);
                         }
                         newCell.find('.ka').text(item.creditCard);
                         box.append(newCell);

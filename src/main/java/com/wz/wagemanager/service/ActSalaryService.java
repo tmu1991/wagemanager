@@ -18,7 +18,9 @@ import java.util.List;
 public interface ActSalaryService {
 
     void save(ActSalary salary);
-    void save(List<ActSalary> salaries, SysLog sysLog);
+
+    void save(List<ActSalary> salaries);
+
     Page<ActSalary> findByDeptId(String deptId, Pageable pageable);
 
     ActSalary findByYearAndMonthAndWorkNo(int year, int month, String workNo);
@@ -28,13 +30,11 @@ public interface ActSalaryService {
     List<SalaryArea> findByGroupDept(List<String> ids) throws Exception;
 
 
-    void removeByIdIn(String[] ids, SysLog sysLog);
+    void removeByIdIn(String[] ids);
 
-    void update(ActSalary salary, SysLog sysLog) throws IllegalAccessException;
+    void update(ActSalary salary) throws IllegalAccessException;
 
     ActSalary findById(String id);
-
-    void deleteAll(List<ActSalary> actSalaries);
 
     List<ActSalary> findByDeclareId(String declareId);
 

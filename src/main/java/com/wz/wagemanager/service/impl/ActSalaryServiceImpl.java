@@ -1,18 +1,19 @@
 package com.wz.wagemanager.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wz.wagemanager.annotation.OperInfo;
 import com.wz.wagemanager.annotation.OperationType;
 import com.wz.wagemanager.dao.ActSalaryRepository;
 import com.wz.wagemanager.dao.DeclareRepository;
-import com.wz.wagemanager.entity.ActSalary;
-import com.wz.wagemanager.entity.SalaryArea;
-import com.wz.wagemanager.entity.SysDeclare;
-import com.wz.wagemanager.entity.SysLog;
+import com.wz.wagemanager.entity.*;
 import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.DeclareService;
+import com.wz.wagemanager.service.LogService;
 import com.wz.wagemanager.tools.Assert;
 import com.wz.wagemanager.tools.CommonUtils;
 import com.wz.wagemanager.tools.DateUtil;
+import com.wz.wagemanager.tools.LogUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author WindowsTen
@@ -39,15 +39,20 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Resource
     private ActSalaryRepository actSalaryRepository;
 
+    @Resource
+    private LogService logService;
+
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void save (ActSalary salary) {
+//        SysLog log = LogUtils.getLog (salary.getId ());
         actSalaryRepository.save (salary);
+//        LogUtils.save (logService,log,salary);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void save (List<ActSalary> salaries, SysLog sysLog) {
+    public void save (List<ActSalary> salaries) {
         actSalaryRepository.save (salaries);
     }
 
@@ -74,30 +79,29 @@ public class ActSalaryServiceImpl implements ActSalaryService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    @OperInfo (type = OperationType.UPDATE,desc = "删除工资记录")
-    public void removeByIdIn (String[] ids, SysLog sysLog) {
+    public void removeByIdIn (String[] ids) {
+        List<Map<String, Object>> mapList = Arrays.stream (ids).filter (StringUtils::isNotBlank)
+                .map (id -> getOperMap (findById (id))).collect (Collectors.toList ());
         actSalaryRepository.removeByIdIn (ids);
+        new LogUtils (logService).save (OperationType.DELETE,null,mapList);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    @OperInfo (type = OperationType.UPDATE,desc = "修改工资信息")
-    public void update (ActSalary salary, SysLog sysLog) throws IllegalAccessException {
+    public void update (ActSalary salary) throws IllegalAccessException {
         ActSalary actSalary = findById(salary.getId());
-        CommonUtils.copyProperties(salary,actSalary,updateProperties);
-        CommonUtils.calSalary (salary,null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
-        actSalaryRepository.save (salary);
+        Map<String, Object> properties = CommonUtils.copyProperties (salary, actSalary, updateProperties);
+        if(properties != null){
+            CommonUtils.calSalary (salary,null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
+            actSalaryRepository.save (salary);
+            new LogUtils (logService).save (OperationType.UPDATE,properties,getOperMap (actSalary));
+        }
+
     }
 
     @Override
     public ActSalary findById (String id) {
         return actSalaryRepository.findOne (id);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void deleteAll (List<ActSalary> actSalaries) {
-        actSalaryRepository.delete (actSalaries);
     }
 
     @Override
@@ -111,4 +115,13 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     }
 
     private static final List<String> updateProperties= Arrays.asList ("coeff","base","seniority","busTravel","subDay","allowance","bonus");
+
+    private Map<String,Object> getOperMap(ActSalary actSalary){
+        Map<String,Object> map= new HashMap<> (4);
+        map.put ("年份",actSalary.getYear ());
+        map.put ("月份",actSalary.getMonth ());
+        map.put ("员工姓名",actSalary.getUsername ());
+        map.put ("工号",actSalary.getWorkNo ());
+        return map;
+    }
 }

@@ -14,13 +14,10 @@ public interface UserService{
     SysUser getUserById(String id);
 
     void updateUser(SysUser sysUser);
+
     void updateUserByProperties(SysUser sysUser) throws IllegalAccessException;
 
     void insertUser(SysUser sysUser);
-
-    void deleteUser(String id);
-
-    SysUser getUserByUsernameAndWorkNo(String username, String workNo);
 
     void batchInsert(List<SysUser> list);
 

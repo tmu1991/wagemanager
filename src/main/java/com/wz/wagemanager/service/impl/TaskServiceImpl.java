@@ -6,12 +6,10 @@ import com.wz.wagemanager.dao.ActTaskRepository;
 import com.wz.wagemanager.dao.HiTaskRepository;
 import com.wz.wagemanager.entity.*;
 import com.wz.wagemanager.service.ActSalaryService;
+import com.wz.wagemanager.service.LogService;
 import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.service.UserService;
-import com.wz.wagemanager.tools.Assert;
-import com.wz.wagemanager.tools.CommonUtils;
-import com.wz.wagemanager.tools.DateUtil;
-import com.wz.wagemanager.tools.ExcelUtil;
+import com.wz.wagemanager.tools.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,9 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author WindowsTen
@@ -74,17 +74,25 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(tasks);
     }
 
+    @Resource
+    private LogService logService;
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void upload (String filePath) throws Exception {
-        ExcelUtil.readForm (filePath).forEach (this::oprForm);
+        List<Map<String,Object>> listMap=new ArrayList<> ();
+        ExcelUtil.readForm (filePath).forEach (actForm -> {
+            Map<String, Object> objectMap = this.oprForm (actForm);
+            listMap.add (objectMap);
+        });
+        new LogUtils (logService).save (OperationType.ADD,listMap,null);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void update (ActForm actForm) {
-        this.oprForm (actForm);
+        Map<String, Object> objectMap = this.oprForm (actForm);
+        new LogUtils (logService).save (OperationType.ADD,objectMap,null);
     }
 
     @Override
@@ -108,7 +116,7 @@ public class TaskServiceImpl implements TaskService {
     @Resource
     private UserService userService;
 
-    private void oprForm(ActForm form) {
+    private Map<String, Object> oprForm(ActForm form) {
 
         //根据工号取到用户
         SysUser user = userService.findByWorkNo(form.getWorkNo());
@@ -121,26 +129,33 @@ public class TaskServiceImpl implements TaskService {
         //更新工资表的借款和扣款记录
         ActSalary salary = actSalaryService.findByWorkNo (form.getWorkNo());
         Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户工资记录不存在，请添加工资记录后再添加借款记录", salary);
+        Map<String,Object> argsMap=new HashMap<> ();
         boolean isChange=false;
         if(form.getLate ()!=null&&form.getLate().compareTo(salary.getLate()) != 0){
+            argsMap.put ("迟到/早退",form.getLate ());
             salary.setLate(form.getLate());
             isChange = true;
         }
         if(form.getDue() != null&&form.getDue().compareTo(salary.getPartyDue()) != 0){
+            argsMap.put ("党费",form.getLate ());
             salary.setPartyDue(form.getDue());
             isChange = true;
         }
         if(form.getOther() != null&&form.getOther().compareTo(salary.getOther()) != 0){
+            argsMap.put ("其他",form.getLate ());
             salary.setOther(form.getOther());
             isChange = true;
         }
         if(form.getOtherEl() != null&&form.getOtherEl().compareTo(salary.getOtherEl()) != 0){
+            argsMap.put ("其他1",form.getLate ());
             salary.setOtherEl(form.getOtherEl());
             isChange = true;
         }
 
         List<ActTask> formTask = form.getTasks ();
         if(!CollectionUtils.isEmpty (formTask)){
+            List<ActTask> loanList=new ArrayList<> ();
+            List<ActTask> otherList=new ArrayList<> ();
             List<ActTask> taskList=new ArrayList<> ();
             boolean isTask=false;
             for(ActTask actTask:formTask){
@@ -168,13 +183,24 @@ public class TaskServiceImpl implements TaskService {
                     actTask.setUsername (form.getUsername ());
                     actTask.setWorkNo (form.getWorkNo ());
                 }
-                if(actTask == null || actTask.getAmount ().compareTo (BigDecimal.ZERO) == 0){
+                if(actTask.getType ()==0){
+                    loanList.add (actTask);
+                }else{
+                    otherList.add (actTask);
+                }
+                if(actTask != null && actTask.getAmount ().compareTo (BigDecimal.ZERO) == 0){
                     taskRepository.delete (actTask);
                 }else{
                     actTask.setStatus (0);
                     taskList.add (actTask);
                 }
                 isTask=true;
+            }
+            if(!CollectionUtils.isEmpty (loanList)){
+                argsMap.put ("借款",loanList);
+            }
+            if(!CollectionUtils.isEmpty (otherList)){
+                argsMap.put ("其他扣款",otherList);
             }
             if(isTask){
                 isChange=true;
@@ -189,6 +215,7 @@ public class TaskServiceImpl implements TaskService {
             CommonUtils.calSalary(salary, null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
             actSalaryService.save (salary);
         }
+        return argsMap;
     }
 
     private boolean conNote(String note1,String note2){

@@ -34,7 +34,7 @@ public class UserController extends BaseExceptionController {
         SysUser user = userService.getUserById (userId);
         Assert.assertNotNull ("用户不存在",user);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
-        Assert.assertTrue ("密码错误",password!=null&&passwordEncoder.matches(password,user.getPassword()));
+        Assert.assertTrue ("原始密码错误",password!=null&&passwordEncoder.matches(password,user.getPassword()));
         Assert.assertTrue ("两次密码不相等",newPassword.equals (repeatPsd));
         user.setPassword (passwordEncoder.encode (newPassword));
         userService.updateUser (user);
@@ -68,32 +68,10 @@ public class UserController extends BaseExceptionController {
         userService.removeByIds(ids.split(","));
         return new PageBean();
     }
-    @Resource
-    private RoleService roleService;
-    @Resource
-    private DeptService deptService;
-    private static final String defaultPassword="123456";
+
+
     @PostMapping(value = "insert.json")
     public PageBean insertDept(@ModelAttribute SysUser user){
-        String id = user.getId();
-        if(StringUtils.isBlank(id)){
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
-            user.setPassword (passwordEncoder.encode (defaultPassword));
-            user.setCreateDate(new Date());
-            user.setCreateUser(ContextHolderUtils.getPrincipal().getUsername());
-        }else{
-            SysUser sysUser = userService.getUserById(id);
-            sysUser.setUsername(user.getUsername());
-            sysUser.setWorkNo(user.getWorkNo());
-            sysUser.setUpdateDate(new Date());
-            sysUser.setUpdateUser(ContextHolderUtils.getPrincipal().getUsername());
-            sysUser.setStatus(user.getStatus());
-            sysUser.setSysDept(user.getSysDept());
-            sysUser.setSysRole(user.getSysRole());
-            user=sysUser;
-        }
-        user.setSysRole(roleService.findRoleById(user.getSysRole().getId()));
-        user.setSysDept(deptService.findById(user.getSysDept().getId()));
         userService.insertUser (user);
         return new PageBean();
     }
