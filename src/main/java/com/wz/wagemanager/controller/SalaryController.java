@@ -67,7 +67,7 @@ public class SalaryController extends BaseExceptionController {
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) throws ParseException {
         Assert.assertNotNull ("部门号不能为空", deptId);
-        org.springframework.data.domain.Page<ActSalary> salaryPage = actSalaryService.findByDeptId (deptId, PageUtil.pageable (curPage, pageSize,GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD));
+        org.springframework.data.domain.Page<ActSalary> salaryPage = actSalaryService.findByDeptId (deptId, PageUtil.pageable (curPage, pageSize,"asc","payroll"));
         return new PageBean<> (PageUtil.getPage (salaryPage.getTotalElements (), pageSize, curPage), salaryPage.getContent ());
     }
 
