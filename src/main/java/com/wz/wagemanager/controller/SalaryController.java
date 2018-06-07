@@ -182,6 +182,14 @@ public class SalaryController extends BaseExceptionController {
         return new PageBean ();
     }
 
+    @PostMapping("loan.json")
+    public PageBean<Integer> loan(
+            @RequestParam(value = "declareId")String declareId,
+            @RequestParam(value = "deptId")String deptId
+    ) {
+        return new PageBean<>(actSalaryService.findLoanStatus (declareId,deptId));
+    }
+
     private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
     private String declareName (int year, int month, String deptName) {
         return year + "年" + month + "月" + deptName + "工资申请";

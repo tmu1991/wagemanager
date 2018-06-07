@@ -102,13 +102,14 @@ public class TaskServiceImpl implements TaskService {
     @OperInfo
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void charged (List<String> checkIds, List<String> unCheckIds) {
+    public void charged (List<String> checkIds, List<String> unCheckIds,String declareId,String deptId) {
         if(!CollectionUtils.isEmpty (checkIds)){
             taskRepository.updateStatus (checkIds,0);
         }
         if(!CollectionUtils.isEmpty (checkIds)){
             taskRepository.updateStatus (unCheckIds,1);
         }
+        actSalaryService.updateLoanStatus(declareId,deptId);
     }
 
     @Resource
@@ -154,8 +155,8 @@ public class TaskServiceImpl implements TaskService {
 
         List<ActTask> formTask = form.getTasks ();
         if(!CollectionUtils.isEmpty (formTask)){
-            List<ActTask> loanList=new ArrayList<> ();
-            List<ActTask> otherList=new ArrayList<> ();
+            List<Map<String,Object>> loanList=new ArrayList<> ();
+            List<Map<String,Object>> otherList=new ArrayList<> ();
             List<ActTask> taskList=new ArrayList<> ();
             boolean isTask=false;
             for(ActTask actTask:formTask){
@@ -184,9 +185,9 @@ public class TaskServiceImpl implements TaskService {
                     actTask.setWorkNo (form.getWorkNo ());
                 }
                 if(actTask.getType ()==0){
-                    loanList.add (actTask);
+                    loanList.add (getLoanMap (actTask));
                 }else{
-                    otherList.add (actTask);
+                    otherList.add (getLoanMap (actTask));
                 }
                 if(actTask != null && actTask.getAmount ().compareTo (BigDecimal.ZERO) == 0){
                     taskRepository.delete (actTask);
@@ -216,6 +217,15 @@ public class TaskServiceImpl implements TaskService {
             actSalaryService.save (salary);
         }
         return argsMap;
+    }
+
+    private Map<String,Object> getLoanMap(ActTask actTask){
+        Map<String,Object> loanMap=new HashMap<> ();
+        loanMap.put ("员工名称",actTask.getUsername ());
+        loanMap.put ("考勤编号",actTask.getWorkNo ());
+        loanMap.put ("借款金额",actTask.getAmount ());
+        loanMap.put ("借款日期",actTask.getTaskDate ());
+        return loanMap;
     }
 
     private boolean conNote(String note1,String note2){

@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Root;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,13 +91,19 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void update (ActSalary salary) throws IllegalAccessException {
         ActSalary actSalary = findById(salary.getId());
+        if(salary.getAllowance ()!=null){
+            salary.setAllowance (getAllowance (salary.getAllowance (),actSalary.getAttendance ()));
+        }
         Map<String, Object> properties = CommonUtils.copyProperties (salary, actSalary, updateProperties);
         if(properties != null){
             CommonUtils.calSalary (salary,null, DateUtil.getDateNum (salary.getYear (),salary.getMonth ()));
             actSalaryRepository.save (salary);
             new LogUtils (logService).save (OperationType.UPDATE,properties,getOperMap (actSalary));
         }
+    }
 
+    private BigDecimal getAllowance(BigDecimal allowance,BigDecimal attendance){
+        return allowance.multiply(attendance).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -112,6 +119,16 @@ public class ActSalaryServiceImpl implements ActSalaryService {
     @Override
     public void deleteByDeclareId (String declareId) {
         actSalaryRepository.deleteByDeclareId (declareId);
+    }
+
+    @Override
+    public void updateLoanStatus (String declareId, String deptId) {
+        actSalaryRepository.updateLoanStatus (declareId,deptId);
+    }
+
+    @Override
+    public Integer findLoanStatus (String declareId, String deptId) {
+        return actSalaryRepository.findLoanStatus (declareId,deptId);
     }
 
     private static final List<String> updateProperties= Arrays.asList ("coeff","base","seniority","busTravel","subDay","allowance","bonus");

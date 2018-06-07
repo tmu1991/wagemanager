@@ -60,10 +60,7 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
             type: 1,
             title: "审批意见",
             area: ["40%", '50%'],
-            content: $("#test1").html(),
-            cancel:function () {
-                $(".layui-form input[name='sign']").val(1);
-            }
+            content: $("#test1").html()
         });
         form.val("userForm",{
             'declareId':$(this).attr('data-id'),
@@ -82,63 +79,84 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
     });
 
     var kkindex;
+
+    form.on('submit(demo5)', function (data) {
+        var obj = data.field;
+        obj.msg = 1;
+        return verify(obj);
+    });
     //监听提交
     form.on('submit(demo1)', function (data) {
         var obj = data.field;
-        console.log($(".layui-form input[name='sign']").val());
-        if($(".layui-form input[name='sign']").val() == 1){
-            $.post('task/dept.json',{"deptId":obj.deptId},function (result) {
-                var code = result.code,
-                    data = result.data;
-                if(code == 200){
-                    if(data.length>0){
-                        var dataHtml='';
-                        $.each(data, function (i, item) {
-                            dataHtml += '<tr>'
-                                + '<td>';
-                            if(item.status==0){
-                                dataHtml+='<input checked value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+        var tjindex = layer.msg('提交中，请稍候',{icon: 16,time:false,shade:0.4});
+        $.post('salary/loan.json',{"declareId":obj.declareId,"deptId":obj.deptId},function (result) {
+            if(result.code==200){
+                if(result.data==0){
+                    $.post('task/dept.json',{"deptId":obj.deptId},function (result) {
+                        var code = result.code,
+                            data = result.data;
+                        if(code == 200){
+                            if(data.length>0){
+                                var dataHtml='';
+                                $.each(data, function (i, item) {
+                                    dataHtml += '<tr>'
+                                        + '<td>';
+                                    if(item.status==0){
+                                        dataHtml+='<input checked value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                                    }else{
+                                        dataHtml+='<input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                                    }
+                                    dataHtml+='</td>'
+                                        + '<td>' + item.username + '</td>'
+                                        + '<td>' + item.workNo + '</td>'
+                                        + '<td>' + item.amount + '</td>';
+                                    if(item.type == 0){
+                                        dataHtml+='<td>借款</td>';
+                                    }else{
+                                        dataHtml+='<td>其他扣款</td>';
+                                    }
+                                    dataHtml+= '<td>' + item.taskDate + '</td><td>' + item.note + '</td></tr>';
+                                });
+                                $(".load_content").html(dataHtml);
+                                $("#deptId").val(obj.deptId);
+                                kkindex = layer.open({
+                                    type: 1,
+                                    title: "待扣款明细",
+                                    area: ["60%"],
+                                    content: $("#test2").html(),
+                                    success:function () {
+                                        form.render('checkbox');
+                                    }
+                                });
+                                layer.close(tjindex);
                             }else{
-                                dataHtml+='<input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose">';
+                                layer.close(tjindex);
+                                obj.msg = 1;
+                                return verify(obj);
                             }
-                            dataHtml+='</td>'
-                                + '<td>' + item.username + '</td>'
-                                + '<td>' + item.workNo + '</td>'
-                                + '<td>' + item.amount + '</td>';
-                            if(item.type == 0){
-                                dataHtml+='<td>借款</td>';
+                        }else{
+                            layer.close(tjindex);
+                            if(result.msg){
+                                layer.alert(result.msg);
                             }else{
-                                dataHtml+='<td>其他扣款</td>';
+                                layer.alert('查询扣款失败');
                             }
-                            dataHtml+= '<td>' + item.taskDate + '</td><td>' + item.note + '</td></tr>';
-                        });
-                        $(".load_content").html(dataHtml);
-                        $("#deptId").val(obj.deptId);
-                        kkindex = layer.open({
-                            type: 1,
-                            title: "待扣款明细",
-                            area: ["60%"],
-                            content: $("#test2").html(),
-                            success:function () {
-                                form.render('checkbox');
-                            }
-                        });
-                    }else{
-                        obj.msg = 1;
-                        return verify(obj);
-                    }
+                        }
+                    })
                 }else{
-                    if(result.msg){
-                        layer.alert(result.msg);
-                    }else{
-                        layer.alert('查询扣款失败');
-                    }
+                    layer.close(tjindex);
+                    obj.msg = 1;
+                    return verify(obj);
                 }
-            })
-        }else{
-            obj.msg = 1;
-            return verify(obj);
-        }
+            }else{
+                layer.close(tjindex);
+                if(result.msg){
+                    layer.alert(result.msg);
+                }else{
+                    layer.alert('查询扣款失败');
+                }
+            }
+        });
         return false;
     });
 
@@ -158,11 +176,13 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 unCheckIds.push($(this).val())
             }
         });
-        $.post('task/charged.json',{'unCheckIds':unCheckIds,'checkIds':checkIds},function (result) {
+        var declareId = $('.info-input > input[name="declareId"]').val();
+        var deptId = $('.info-input > input[name="deptId"]').val();
+        $.post('task/charged.json',{'unCheckIds':unCheckIds,'checkIds':checkIds,'deptId':deptId,'declareId':declareId},function (result) {
             if(result.code == 200){
-                $(".layui-form input[name='sign']").val(0);
                 layer.close(kkindex);
             }else{
+                layer.close(kkindex);
                 if(result.msg){
                     layer.alert(result.msg);
                 }else{

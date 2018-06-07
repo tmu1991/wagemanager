@@ -1,28 +1,19 @@
 package com.wz.wagemanager.controller;
 
 import com.wz.wagemanager.entity.ActForm;
-import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.ActTask;
-import com.wz.wagemanager.entity.SysUser;
-import com.wz.wagemanager.service.ActSalaryService;
 import com.wz.wagemanager.service.TaskService;
-import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
-import org.activiti.engine.impl.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,8 +33,8 @@ public class TaskController extends BaseExceptionController {
             @RequestParam(value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) int curPage
     ) {
-            Page<ActTask> taskPage = taskService.findByPage(PageUtil.pageable(curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER, DEFAULT_SORT_FIELD));
-            return new PageBean<>(PageUtil.getPage(taskPage.getTotalElements(), pageSize, curPage), taskPage.getContent());
+        Page<ActTask> taskPage = taskService.findByPage(PageUtil.pageable(curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER, DEFAULT_SORT_FIELD));
+        return new PageBean<>(PageUtil.getPage(taskPage.getTotalElements(), pageSize, curPage), taskPage.getContent());
     }
 
     @PostMapping("upload.json")
@@ -75,16 +66,18 @@ public class TaskController extends BaseExceptionController {
 
     @PostMapping("charged.json")
     public PageBean charged(
-            @RequestParam(value = "unCheckIds",required = false)List<String> unCheckIds,
-            @RequestParam(value = "checkIds",required = false)List<String> checkIds
+            @RequestParam(value = "unCheckIds[]",required = false)List<String> unCheckIds,
+            @RequestParam(value = "checkIds[]",required = false)List<String> checkIds,
+            @RequestParam(value = "deptId")String deptId,
+            @RequestParam(value = "declareId")String declareId
     ) {
-        taskService.charged(checkIds,unCheckIds);
+        taskService.charged(checkIds,unCheckIds,declareId,deptId);
         return new PageBean<>();
     }
 
     @RequestMapping("download")
     public void download(HttpServletResponse response) throws IOException {
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "static/xls/loanTemplate.xls");
+        File file = ResourceUtils.getFile("classpath:static/xls/loanTemplate.xls");
         try (OutputStream toClient = new BufferedOutputStream (response.getOutputStream ());
              BufferedInputStream fis = new BufferedInputStream (new FileInputStream (file))) {
             byte[] buffer = new byte[fis.available ()];

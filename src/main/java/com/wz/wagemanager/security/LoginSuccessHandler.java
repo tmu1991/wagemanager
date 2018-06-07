@@ -49,7 +49,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         try {
             user.setLoginTime (new Date());
             user.setLoginIp(getIpAddress(request));
-            this.userService.insertUser (user);
+            this.userService.updateLoginInfo (user);
         } catch (DataAccessException e) {
             if(logger.isWarnEnabled()){
                 logger.info("无法更新用户登录信息至数据库");

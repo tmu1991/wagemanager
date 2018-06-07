@@ -52,5 +52,13 @@ public interface ActSalaryRepository extends JpaRepository<ActSalary,String>,Jpa
     @Transactional
     void deleteByDeclareId(String declareId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "update ActSalary a set a.hasLoan=1 where a.declareId=?1 and a.deptId=?2")
+    void updateLoanStatus(String declareId, String deptId);
+
+    @Query(value = "select a.hasLoan from ActSalary a where a.declareId=?1 and a.deptId=?2")
+    Integer findLoanStatus(String declareId, String deptId);
+
 
 }

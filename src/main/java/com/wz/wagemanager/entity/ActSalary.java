@@ -148,4 +148,8 @@ public class ActSalary {
     @Column(name = "declare_id",length = 32)
     private String declareId;
 
+    //默认是0 表示未扣款 1表示已扣款
+    @Column(name = "has_loan",length = 1)
+    private Integer hasLoan;
+
 }

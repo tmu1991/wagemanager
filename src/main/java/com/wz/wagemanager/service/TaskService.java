@@ -32,7 +32,7 @@ public interface TaskService {
 
     List<ActTask> findByDeptId(String deptId);
 
-    void charged (List<String> checkIds, List<String> unCheckIds);
+    void charged (List<String> checkIds, List<String> unCheckIds,String declareId,String deptId);
 
     void saveHi(List<HiTask> tasks);
 

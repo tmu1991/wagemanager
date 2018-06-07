@@ -59,17 +59,17 @@
             <form style="margin-top: 5px;" class="layui-form" lay-filter="userForm">
                 <div style="margin-top: 5px;" class="layui-form-item">
                     <label style="width: 80px !important;" class="layui-form-label">审批意见：</label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-block info-input">
                         <input name="declareId" class="declareId" value="" hidden="hidden"/>
                         <input name="deptId" value="" hidden="hidden"/>
-                        <input sec:authorize="hasAnyRole('ROLE_FIN')" name="sign" value="1" hidden="hidden"/>
                         <textarea required lay-verify="required" placeholder="请输入" name="comment"
                                   class="layui-textarea comment"></textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit="" lay-filter="demo1">审核通过</button>
+                        <button sec:authorize="hasRole('ROLE_GE_MANAGER')" class="layui-btn" lay-submit="" lay-filter="demo5">审核通过</button>
+                        <button sec:authorize="hasRole('ROLE_FIN')" class="layui-btn" lay-submit="" lay-filter="demo1">审核通过</button>
                         <button class="layui-btn layui-btn-primary" lay-submit="" lay-filter="demo2">驳回</button>
                     </div>
                 </div>

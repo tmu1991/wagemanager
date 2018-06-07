@@ -143,6 +143,11 @@ public class UserServiceImpl implements UserService{
         new LogUtils (logService).save (OperationType.ADD,getOperMap (sysUser),null);
     }
 
+    @Override
+    public void updateLoginInfo(SysUser sysUser){
+        userRepository.save (sysUser);
+    }
+
     private static final String defaultPassword="123456";
 
     private static final List<String> updateProperties= Arrays.asList ("username","workNo","sysDept","sysRole","status");

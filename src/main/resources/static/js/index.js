@@ -30,15 +30,15 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 }
             }
         }
-        ,error: function(){
-            layer.close(uploadIndex);
-            //演示失败状态，并实现重传
-            var demoText = $('#demoText');
-            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
-            demoText.find('.demo-reload').on('click', function(){
-                uploadInst1.upload();
-            });
-        }
+        // ,error: function(){
+        //     layer.close(uploadIndex);
+        //     //演示失败状态，并实现重传
+        //     var demoText = $('#demoText');
+        //     demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+        //     demoText.find('.demo-reload').on('click', function(){
+        //         uploadInst1.upload();
+        //     });
+        // }
     });
 
     var uploadInst2 = upload.render({ //允许上传的文件后缀
@@ -63,15 +63,15 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 }
             }
         }
-        ,error: function(){
-            layer.close(uploadIndex);
-            //演示失败状态，并实现重传
-            var demoText = $('#demoText');
-            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
-            demoText.find('.demo-reload').on('click', function(){
-                uploadInst2.upload();
-            });
-        }
+        // ,error: function(){
+        //     layer.close(uploadIndex);
+        //     //演示失败状态，并实现重传
+        //     var demoText = $('#demoText');
+        //     demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+        //     demoText.find('.demo-reload').on('click', function(){
+        //         uploadInst2.upload();
+        //     });
+        // }
     });
 
     $("body").on('change','.layui-input' ,function () {
@@ -92,7 +92,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             icon: 1,
             title: "修改员工工资",
             skin: 'layui-layer-molv',
-            area: ["50%",'85%'],
+            area: ["50%"],
             btnAlign: 'c',
             content: $('#addBox').html(),
             success:function (layero, index) {
@@ -105,6 +105,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"seniority": tr.find('td.workmoney').text()
                     ,"busTravel": tr.find('td.cx').text()
                     ,"subDay": tr.find('td.toworkday').text()
+                    ,"subWork": tr.find('td.toworkmoney').text()
                     ,"allowance": tr.find('td.jt').text()
                     ,"bonus": tr.find('td.jj').text()
                 });
@@ -120,6 +121,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"seniority": ''
                     ,"busTravel": ''
                     ,"subDay": ''
+                    ,"subWork": ''
                     ,"allowance": ''
                     ,"bonus": ''
                 });
@@ -254,7 +256,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                 htmlStr+='<div class="layui-input-block" style="margin-bottom: 5px">' +
                     '<div class="layui-input-inline div-loan" style="width: 15%;">' +
                     '<input name="tasks['+count+'].id" value="'+item.id+'" hidden="hidden">' +
-                    '<input type="text" name="tasks['+count+'].amount" value="'+item.amount+'" class="layui-input">' +
+                    '<input placeholder="扣款金额" type="text" name="tasks['+count+'].amount" value="'+item.amount+'" class="layui-input">' +
                     '</div>' +
                     '<div class="layui-input-inline div-loan" style="width: 20%;">' +
                     '<select class="layui-select" name="tasks['+count+'].type">' +
@@ -274,7 +276,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             htmlStr+='<div class="layui-input-block" style="margin-left: 110px;margin-bottom: 5px">' +
                 '<div class="layui-input-inline div-loan" style="width: 15%;">' +
                 '<input name="tasks['+count+'].id" hidden="hidden">' +
-                '<input type="text" name="tasks['+count+'].amount" class="layui-input">' +
+                '<input placeholder="扣款金额" type="text" name="tasks['+count+'].amount" class="layui-input">' +
                 '</div>' +
                 '<div class="layui-input-inline div-loan" style="width: 20%;">' +
                 '<select class="layui-select" name="tasks['+count+'].type">' +
@@ -457,10 +459,10 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         newCell.find('.money').text(Number(item.base).toFixed(2));
                         newCell.find('.num').text(Number(item.coeff).toFixed(2));
                         newCell.find('.dayMoney').text(Number(item.dailyWage).toFixed(2));
-                        newCell.find('.cq').text(Number(item.attendance).toFixed(2));
-                        newCell.find('.cx').text(Number(item.busTravel).toFixed(2));
-                        newCell.find('.gx').text(Number(item.holiday).toFixed(2));
-                        newCell.find('.hj').text(Number(item.workTotal).toFixed(2));
+                        newCell.find('.cq').text(item.attendance);
+                        newCell.find('.cx').text(item.busTravel);
+                        newCell.find('.gx').text(item.holiday);
+                        newCell.find('.hj').text(item.workTotal);
                         newCell.find('.workmoney').text(Number(item.seniority).toFixed(2));
                         newCell.find('.toworkday').text(Number(item.subDay).toFixed(2));
                         newCell.find('.toworkmoney').text(Number(item.subWork).toFixed(2));

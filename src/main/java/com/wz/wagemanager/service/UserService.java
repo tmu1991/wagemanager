@@ -28,4 +28,6 @@ public interface UserService{
     Page<SysUser> findByPage(String deptId, String roleId, String username, Pageable pageRequest);
 
     void removeByIds(String[] ids);
+
+    void updateLoginInfo(SysUser sysUser);
 }

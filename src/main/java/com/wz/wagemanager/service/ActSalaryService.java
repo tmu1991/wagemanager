@@ -40,5 +40,7 @@ public interface ActSalaryService {
 
     void deleteByDeclareId(String declareId);
 
+    void updateLoanStatus (String declareId, String deptId);
 
+    Integer findLoanStatus(String declareId, String deptId);
 }

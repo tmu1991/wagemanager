@@ -36,10 +36,12 @@ import java.util.stream.Collectors;
 @RequestMapping("declare")
 @RestController
 public class DeclareController extends BaseExceptionController{
+
     @Resource
     private DeclareService declareService;
     @Resource
     private ActSalaryService actSalaryService;
+
     @RequestMapping(value = "start.json")
     public PageBean startDeclare(
             @RequestParam(value = "declareId")String declareId
@@ -62,6 +64,7 @@ public class DeclareController extends BaseExceptionController{
 
     @Resource
     private TaskService taskService;
+
     @RequestMapping(value = "task.json")
     public PageBean<List<SysDeclare>> queryTask(
             @RequestParam(value="curPage",defaultValue = GlobalConstant.DEFUALT_CUR_PAGE)Integer curPage,

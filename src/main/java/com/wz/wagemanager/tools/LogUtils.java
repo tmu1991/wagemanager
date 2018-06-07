@@ -55,18 +55,21 @@ public class LogUtils {
     }
 
     public void save(OperationType type,Object args,Object operNames){
-        SysUser sysUser = ContextHolderUtils.getPrincipal ();
-        SysLog log = SysLog.builder ().startTime (sysUser.getLoginTime ()).operation (type.getType ())
-                .username (sysUser.getUsername ()).workNo (sysUser.getWorkNo ()).createTime (new Date ()).build ();
-        log.setEndTime (new Date ());
-        if(args!=null && !"".equals (args)){
-            log.setArgs (paramToStr (args));
+        try{
+            SysUser sysUser = ContextHolderUtils.getPrincipal ();
+            SysLog log = SysLog.builder ().startTime (sysUser.getLoginTime ()).operation (type.getType ())
+                    .username (sysUser.getUsername ()).workNo (sysUser.getWorkNo ()).createTime (new Date ()).build ();
+            log.setEndTime (new Date ());
+            if(args!=null && !"".equals (args)){
+                log.setArgs (paramToStr (args));
+            }
+            if(operNames !=null &&!"".equals (operNames)){
+                log.setOperName (paramToStr (operNames));
+            }
+            this.logService.save (log);
+        }catch (Exception e){
+            e.printStackTrace ();
         }
-        if(operNames !=null &&!"".equals (operNames)){
-            log.setOperName (paramToStr (operNames));
-        }
-        this.logService.save (log);
     }
-
 
 }

@@ -147,6 +147,7 @@ public class CommonUtils {
                 .add(actSalary.getBonus()).subtract(actSalary.getLate()).subtract(actSalary.getOtherDebit()).subtract(actSalary.getPartyDue())
                 .subtract(actSalary.getLoan()).subtract(actSalary.getOther()).subtract (actSalary.getOtherEl ()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
+
     private static BigDecimal getIncomeTax(ActSalary actSalary){
         BigDecimal grossPay = actSalary.getGrossPay();
         BigDecimal taxIncome = grossPay.subtract (BigDecimal.valueOf (3500)).subtract (actSalary.getAccuFund ()).subtract (actSalary.getInsurance ());
