@@ -80,19 +80,21 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void upload (String filePath) throws Exception {
-        List<Map<String,Object>> listMap=new ArrayList<> ();
-        ExcelUtil.readForm (filePath).forEach (actForm -> {
-            Map<String, Object> objectMap = this.oprForm (actForm);
-            listMap.add (objectMap);
-        });
-        new LogUtils (logService).save (OperationType.ADD,listMap,null);
+        Map<String,Object> argsMap=new HashMap<> (6);
+        ExcelUtil.readForm (filePath).forEach (actForm -> this.oprForm (actForm,argsMap));
+        if(argsMap.size ()>0){
+            new LogUtils (logService).save (OperationType.UPDATE,argsMap);
+        }
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void update (ActForm actForm) {
-        Map<String, Object> objectMap = this.oprForm (actForm);
-        new LogUtils (logService).save (OperationType.ADD,objectMap,null);
+        Map<String,Object> argsMap=new HashMap<> (6);
+        this.oprForm (actForm,argsMap);
+        if(argsMap.size ()>0){
+            new LogUtils (logService).save (OperationType.UPDATE,argsMap);
+        }
     }
 
     @Override
@@ -117,7 +119,7 @@ public class TaskServiceImpl implements TaskService {
     @Resource
     private UserService userService;
 
-    private Map<String, Object> oprForm(ActForm form) {
+    private Map<String, Object> oprForm(ActForm form,Map<String,Object> argsMap) {
 
         //根据工号取到用户
         SysUser user = userService.findByWorkNo(form.getWorkNo());
@@ -130,7 +132,7 @@ public class TaskServiceImpl implements TaskService {
         //更新工资表的借款和扣款记录
         ActSalary salary = actSalaryService.findByWorkNo (form.getWorkNo());
         Assert.assertNotNull("工号[" + form.getWorkNo() + "]的用户工资记录不存在，请添加工资记录后再添加借款记录", salary);
-        Map<String,Object> argsMap=new HashMap<> ();
+
         boolean isChange=false;
         if(form.getLate ()!=null&&form.getLate().compareTo(salary.getLate()) != 0){
             argsMap.put ("迟到/早退",form.getLate ());
@@ -155,8 +157,6 @@ public class TaskServiceImpl implements TaskService {
 
         List<ActTask> formTask = form.getTasks ();
         if(!CollectionUtils.isEmpty (formTask)){
-            List<Map<String,Object>> loanList=new ArrayList<> ();
-            List<Map<String,Object>> otherList=new ArrayList<> ();
             List<ActTask> taskList=new ArrayList<> ();
             boolean isTask=false;
             for(ActTask actTask:formTask){
@@ -185,8 +185,20 @@ public class TaskServiceImpl implements TaskService {
                     actTask.setWorkNo (form.getWorkNo ());
                 }
                 if(actTask.getType ()==0){
+                    Object obj = argsMap.get ("借款");
+                    if(obj == null){
+                        obj = new ArrayList<Map<String,Object>> ();
+                        argsMap.put ("借款",obj);
+                    }
+                    List<Map<String,Object>> loanList= (List<Map<String, Object>>) obj;
                     loanList.add (getLoanMap (actTask));
                 }else{
+                    Object obj = argsMap.get ("其他扣款");
+                    if(obj == null){
+                        obj = new ArrayList<Map<String,Object>> ();
+                        argsMap.put ("其他扣款",obj);
+                    }
+                    List<Map<String,Object>> otherList= (List<Map<String, Object>>) obj;
                     otherList.add (getLoanMap (actTask));
                 }
                 if(actTask != null && actTask.getAmount ().compareTo (BigDecimal.ZERO) == 0){
@@ -196,12 +208,6 @@ public class TaskServiceImpl implements TaskService {
                     taskList.add (actTask);
                 }
                 isTask=true;
-            }
-            if(!CollectionUtils.isEmpty (loanList)){
-                argsMap.put ("借款",loanList);
-            }
-            if(!CollectionUtils.isEmpty (otherList)){
-                argsMap.put ("其他扣款",otherList);
             }
             if(isTask){
                 isChange=true;
@@ -220,11 +226,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Map<String,Object> getLoanMap(ActTask actTask){
-        Map<String,Object> loanMap=new HashMap<> ();
+        Map<String,Object> loanMap=new HashMap<> (4);
         loanMap.put ("员工名称",actTask.getUsername ());
         loanMap.put ("考勤编号",actTask.getWorkNo ());
-        loanMap.put ("借款金额",actTask.getAmount ());
-        loanMap.put ("借款日期",actTask.getTaskDate ());
+        loanMap.put ("金额",actTask.getAmount ());
+        loanMap.put ("日期",actTask.getTaskDate ());
         return loanMap;
     }
 

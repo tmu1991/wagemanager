@@ -54,6 +54,9 @@ public class LogUtils {
         return paramToStr (params);
     }
 
+    public void save(OperationType type,Object args){
+        save (type,args,null);
+    }
     public void save(OperationType type,Object args,Object operNames){
         try{
             SysUser sysUser = ContextHolderUtils.getPrincipal ();

@@ -5,13 +5,13 @@ import com.wz.wagemanager.entity.ActTask;
 import com.wz.wagemanager.service.TaskService;
 import com.wz.wagemanager.tools.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.util.ResourceUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
@@ -77,9 +77,9 @@ public class TaskController extends BaseExceptionController {
 
     @RequestMapping("download")
     public void download(HttpServletResponse response) throws IOException {
-        File file = ResourceUtils.getFile("classpath:static/xls/loanTemplate.xls");
+        InputStream inputStream = ClassUtils.class.getClassLoader ().getResourceAsStream ("static/xls/loanTemplate.xls");
         try (OutputStream toClient = new BufferedOutputStream (response.getOutputStream ());
-             BufferedInputStream fis = new BufferedInputStream (new FileInputStream (file))) {
+             BufferedInputStream fis = new BufferedInputStream (inputStream)) {
             byte[] buffer = new byte[fis.available ()];
             fis.read (buffer);
             // 清空response

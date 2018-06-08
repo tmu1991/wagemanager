@@ -122,6 +122,10 @@ public class ExcelUtil {
         Cell cell = row.getCell ( index );
         if ( cell != null ) {
             cell.setCellType(Cell.CELL_TYPE_STRING);
+            String stringCellValue = cell.getStringCellValue ();
+            if(StringUtils.isBlank (stringCellValue)){
+                return null;
+            }
             return Integer.parseInt (cell.getStringCellValue ());
         }
         return null;
@@ -132,7 +136,11 @@ public class ExcelUtil {
         Cell cell = row.getCell ( index );
         if ( cell != null ) {
             cell.setCellType(Cell.CELL_TYPE_STRING);
-            return new BigDecimal (cell.getStringCellValue ());
+            String stringCellValue = cell.getStringCellValue ();
+            if(StringUtils.isBlank (stringCellValue)){
+                return null;
+            }
+            return new BigDecimal (stringCellValue);
         }
         return null;
     }
