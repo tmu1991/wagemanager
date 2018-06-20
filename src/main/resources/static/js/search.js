@@ -6,18 +6,18 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
 
     //查询
     $(".search_btn").click(function(){
-        var workNo = $(".workNo").val();
+        var IDNumber = $(".IDNumber").val();
         var userName=$(".userName").val();
-        if(!workNo && !userName){
+        if(!IDNumber && !userName){
             layer.msg('查询内容不能为空');
         }else{
-            renderDate(1,workNo,userName);
+            renderDate(1,IDNumber,userName);
         }
     });
 
     renderDate(1);
 
-    function renderDate(num,workNo,userName){
+    function renderDate(num,IDNumber,userName){
         layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         table.render({
             elem:'#demo',
@@ -25,14 +25,15 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             cols: [[
                 {field:'year',width:65,fixed:'left','title':'年份',rowspan:2},
                 {field:'month',width:60,fixed:'left','title':'月份',rowspan:2},
+                {field:'IDNumber',width:90,fixed:'left','title':'身份证号',rowspan:2},
                 {field:'workNo',width:90,fixed:'left','title':'考勤编号',rowspan:2},
                 {field:'deptName', width:120,'title':'部门',rowspan:2},
                 {field:'username',width: 100,'title':'姓名',rowspan:2},
                 {field: 'base',width: 100,'title':'基本工资',rowspan:2},
                 {field:'coeff',width:80,'title':'系数',rowspan:2},
                 {field:'dailyWage', width:100,'title':'日工资',rowspan:2},
-                {align:'center',colspan:'4','title':'计资天数'},
-//                        {field:'workDay',width:90,'title':'出勤天数'},
+                {align:'center',colspan:'5','title':'计资天数'},
+//                        {field:'workDay',width:90,'title':'考勤天数'},
                 {field: 'seniority',width: 100,'title':'工龄工资',rowspan:2},
                 {field:'subDay', width:120,'title':'顶班天数',rowspan:2},
                 {field:'subWork',width: 100,'title':'顶班工资',rowspan:2},
@@ -45,9 +46,11 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                 {field: 'fj',align:'center', width:120,'title':'罚金',colspan:6},
                 {field: 'fj1',width: 120,'title':'罚金',rowspan:2},
                 {field:'payroll',width: 100,'title':'实际工资',rowspan:2},
-                {field: 'creditCard',width: 100,'title':'银行卡号',rowspan:2}
+                {field: 'creditCard',width: 100,'title':'银行卡号',rowspan:2},
+                {field: 'remark',width: 100,'title':'备注',rowspan:2}
             ],[
-                {field:'attendance', width:80,'title':'出勤'},
+                {field:'attendance', width:80,'title':'考勤'},
+                {field:'repairWork', width:80,'title':'补勤'},
                 {field:'busTravel',width: 80,'title':'出差'},
                 {field: 'holiday',width: 80,'title':'公休'},
                 {field: 'workTotal',width: 80,'title':'合计'},
@@ -63,7 +66,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             url: "salary/search.json",
             method:"post",
             where:{
-                "workNo": workNo,
+                "IDNumber": IDNumber,
                 "userName": userName,
                 "curPage":num
             },

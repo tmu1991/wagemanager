@@ -20,10 +20,9 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author WindowsTen
@@ -160,10 +159,9 @@ public class TaskServiceImpl implements TaskService {
             List<ActTask> taskList=new ArrayList<> ();
             boolean isTask=false;
             for(ActTask actTask:formTask){
-                if(actTask.getAmount () == null){
-                    continue;
-                }
-                Assert.assertTrue ("扣款日期不能为空", org.apache.commons.lang3.StringUtils.isNotBlank (actTask.getTaskDate ()));
+                Assert.assertNotNull ("扣款金额不能为空",actTask.getAmount ());
+                Assert.assertTrue ("扣款日期不能为空且不能超过当月", compareDate (actTask.getTaskDate ()));
+                Assert.assertTrue ("扣款类型不能为空",actTask.getType ()!=null);
                 actTask.setTaskDate (actTask.getTaskDate ().trim ());
                 if(org.apache.commons.lang3.StringUtils.isNotBlank (actTask.getNote ())){
                     actTask.setNote (actTask.getNote ().trim ());
@@ -178,7 +176,6 @@ public class TaskServiceImpl implements TaskService {
                     taskDateAndWorkNoAndType.setNote (actTask.getNote ());
                     actTask=taskDateAndWorkNoAndType;
                 }else{
-                    Assert.assertTrue ("扣款金额不能为空",actTask.getAmount ()!=null);
                     actTask.setDeptId (form.getDeptId ());
                     actTask.setDeptName (form.getDeptName ());
                     actTask.setUsername (form.getUsername ());
@@ -223,6 +220,18 @@ public class TaskServiceImpl implements TaskService {
             actSalaryService.save (salary);
         }
         return argsMap;
+    }
+
+    private static boolean compareDate(String taskDate){
+        try {
+            return new SimpleDateFormat ("yyyy-MM-dd").parse (taskDate).compareTo (new Date ())<0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static void main (String[] args) {
+        System.out.println (compareDate (null));
     }
 
     private Map<String,Object> getLoanMap(ActTask actTask){

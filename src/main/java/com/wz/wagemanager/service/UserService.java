@@ -13,7 +13,7 @@ public interface UserService{
 
     SysUser getUserById(String id);
 
-    void updateUser(SysUser sysUser);
+    void updateUser(SysUser sysUser,boolean logAble);
 
     void updateUserByProperties(SysUser sysUser) throws IllegalAccessException;
 

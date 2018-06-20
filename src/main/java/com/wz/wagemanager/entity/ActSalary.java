@@ -43,13 +43,17 @@ public class ActSalary {
     @Column(name = "daily_wage")
     private BigDecimal dailyWage;
 
-    @ParmDesc(desc = "出勤")
+    @ParmDesc(desc = "考勤")
     private BigDecimal attendance;
+
+    @ParmDesc(desc = "补勤")
+    @Column(name = "repair_work")
+    private BigDecimal repairWork;
 
     @ParmDesc(desc = "出差")
     @Column(name = "bus_travel")
-
     private BigDecimal busTravel;
+
     @ParmDesc(desc = "公休")
     private BigDecimal holiday;
     //工时合计
@@ -119,6 +123,10 @@ public class ActSalary {
     @Column(name = "credit_card")
     private String creditCard;
 
+    @ParmDesc(desc = "身份证号")
+    @Column(name = "id_number",length = 18)
+    private String IDNumber;
+
     public ActSalary(){
         this.accuFund=BigDecimal.ZERO;
         this.allowance=BigDecimal.ZERO;
@@ -143,6 +151,7 @@ public class ActSalary {
         this.subWork=BigDecimal.ZERO;
         this.workTotal=BigDecimal.ZERO;
         this.otherEl=BigDecimal.ZERO;
+        this.repairWork=BigDecimal.ZERO;
     }
 
     @Column(name = "declare_id",length = 32)
@@ -151,5 +160,8 @@ public class ActSalary {
     //默认是0 表示未扣款 1表示已扣款
     @Column(name = "has_loan",length = 1)
     private Integer hasLoan;
+
+    @ParmDesc(desc = "备注")
+    private String remark;
 
 }

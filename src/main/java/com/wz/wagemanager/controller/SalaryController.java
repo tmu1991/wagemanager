@@ -115,67 +115,28 @@ public class SalaryController extends BaseExceptionController {
 
     @PostMapping ("search.json")
     public PageBean<List<HiSalary>> getSalaryByUser (
-            @RequestParam (name = "workNo", required = false) String workNo,
+            @RequestParam (name = "IDNumber", required = false) String IDNumber,
             @RequestParam (name = "userName", required = false) String userName,
             @RequestParam (value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) Integer curPage,
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) throws Exception {
         Pageable pageable = PageUtil.pageable (curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
-        org.springframework.data.domain.Page<HiSalary> salaries = hiSalaryService.findByWorkNoOrUsername (workNo, userName, pageable);
+        org.springframework.data.domain.Page<HiSalary> salaries = hiSalaryService.findByIDNumberOrUsername (IDNumber, userName, pageable);
         return new PageBean<> (PageUtil.getPage (salaries.getTotalElements (), pageSize, curPage), salaries.getContent ());
     }
-
-    @Resource
-    private DeclareService declareService;
 
     @PostMapping ("upload.json")
     @ResponseBody
     public PageBean upload (
             @RequestParam ("file") MultipartFile file
     ) throws Exception {
-        SysUser sessionUser = ContextHolderUtils.getPrincipal ();
-        SysDept sysDept = sessionUser.getSysDept ();
-//        Assert.assertTrue ("存在未完成工资审批,请完成后重试",
-//                CollectionUtils.isEmpty (declareService.findNotComplete (sysDept)));
         String  originalFilename= UploadUtils.fileVerify (file);
         String filePath = DataUtil.getFilePath (originalFilename);
         String dateStr=UploadUtils.getDateStr (originalFilename);
         File dest = DataUtil.getFile (filePath);
         file.transferTo (dest);
         try {
-            Date date = DateUtil.getDate (dateStr);
-            Integer year = DateUtil.getYear (date);
-            Integer month = DateUtil.getMonth (date);
-            int dateNum = DateUtil.getDateNum (year, month);
-            List<ActSalary> saveList = new ArrayList<> ();
-            SysDeclare declare = declareService.findModifiable (sysDept);
-            String declareName = declareName (year, month, sysDept.getDeptName ());
-            if(declare == null){
-                declare = SysDeclare.builder ()
-                        .declareName (declareName)
-                        .user (sessionUser).dept (sysDept).status (0).build ();
-                declareService.save (declare);
-            }else{
-                Assert.assertTrue (declare.getDeclareName ()+"尚未审核完成,请完成后再提交",declareName.equals (declare.getDeclareName ()));
-            }
-            for (ActWork actWork : UploadUtils.actList (filePath)) {
-                SysUser sysUser = userService.findByWorkNo (actWork.getWorkNo ());
-                Assert.assertNotNull ("工号为[" + actWork.getWorkNo () + "]的员工不存在,请联系管理员添加后重试", sysUser);
-                Assert.assertTrue ("部门[" + actWork.getDeptName () + "]与当前用户部门不符", sysDept.getDeptName ().equals (actWork.getDeptName ()));
-                ActSalary actSalary = actSalaryService.findByYearAndMonthAndWorkNo (year, month, sysUser.getWorkNo ());
-                if (actSalary == null) {
-                    actSalary = new ActSalary ();
-                    actSalary.setMonth (month);
-                    actSalary.setYear (year);
-                    actSalary.setDeclareId (declare.getId ());
-                }
-                if (StringUtils.isNotBlank (actWork.getReality ())) {
-                    actSalary.setAttendance (new BigDecimal (actWork.getReality ()));
-                }
-                CommonUtils.calSalary (actSalary, sysUser, dateNum);
-                saveList.add (actSalary);
-            }
-            actSalaryService.save (saveList);
+            actSalaryService.upload (filePath,dateStr);
         } finally {
             dest.delete ();
         }
@@ -191,9 +152,6 @@ public class SalaryController extends BaseExceptionController {
     }
 
     private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
-    private String declareName (int year, int month, String deptName) {
-        return year + "年" + month + "月" + deptName + "工资申请";
-//        return deptName + "("+year + "-" + month +")";
-    }
+
 
 }

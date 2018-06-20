@@ -131,9 +131,12 @@ public class CommonUtils {
             actSalary.setBase(sysUser.getBase());
             actSalary.setSeniority(sysUser.getSeniority());
             actSalary.setCreditCard(sysUser.getCreditCard());
+            actSalary.setIDNumber (sysUser.getIDNumber ());
         }
-        actSalary.setDailyWage(getDailyWage(actSalary,dateNum));
-        actSalary.setWorkTotal(getWorkTotal(actSalary));
+        BigDecimal workTotal = getWorkTotal(actSalary);
+        Assert.assertFalse ("计资天数不能超过当月天数",workTotal.compareTo (new BigDecimal (dateNum))>0);
+        actSalary.setDailyWage(getDailyWage (actSalary, dateNum));
+        actSalary.setWorkTotal(workTotal);
         actSalary.setGrossPay(getGrossPay(actSalary));
         actSalary.setIncomeTax(getIncomeTax(actSalary).setScale(2, BigDecimal.ROUND_HALF_UP));
         actSalary.setPayroll(getPayroll(actSalary));
@@ -179,12 +182,23 @@ public class CommonUtils {
         return actSalary.getAllowance().multiply(actSalary.getAttendance()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
+    /**
+     *
+     * @param actSalary
+     * @return
+     */
     private static BigDecimal getGrossPay(ActSalary actSalary){
         return actSalary.getDailyWage().multiply(actSalary.getWorkTotal()).add(actSalary.getSeniority()).add(actSalary.getSubDay().multiply(actSalary.getSubWork()))
                 .add(actSalary.getAllowance()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
+
+    /**
+     * 工时合计
+     * @param actSalary
+     * @return
+     */
     private static BigDecimal getWorkTotal(ActSalary actSalary){
-        return actSalary.getAttendance ().add(actSalary.getBusTravel()).add(actSalary.getHoliday()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return actSalary.getAttendance ().add(actSalary.getBusTravel()).add(actSalary.getHoliday().add (actSalary.getRepairWork ())).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     /**

@@ -17,7 +17,7 @@ public interface HiSalaryService {
     Page<HiSalary> findByPage(int year, int month,String deptId, Pageable page);
 
     Integer countByYearAndMonth(int year, int month);
-    Page<HiSalary> findByWorkNoOrUsername(String workNo, String username, Pageable page);
+    Page<HiSalary> findByIDNumberOrUsername(String idNumber, String username, Pageable page);
 //    Integer countByWorkNoOrUsername(String workNo, String username);
     HiSalary findByYearAndMonthAndUserId(int year, int month, String userId);
     List<SalaryArea> findByGroupDept(int year, int month) throws Exception;

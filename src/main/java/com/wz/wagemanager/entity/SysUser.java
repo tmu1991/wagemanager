@@ -87,6 +87,13 @@ public class SysUser implements UserDetails {
     @Column(name = "credit_card")
     private String creditCard;
 
+    @ParmDesc(desc = "身份证号")
+    @Column(name = "id_number",length = 18)
+    private String IDNumber;
+
+    @ParmDesc(desc = "津贴")
+    private BigDecimal allowance;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.sysRole.getRoleAlias()));

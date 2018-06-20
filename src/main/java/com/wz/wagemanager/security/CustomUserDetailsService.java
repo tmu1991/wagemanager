@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 //            throw new UsernameNotFoundException("用户不存在");
             throw new HandThrowException("请核实用户名和部门");
         }
-        if(user.getStatus () == 0){
+        if(user.getStatus () == null || user.getStatus () == 0){
             throw new HandThrowException ("账号已被禁用");
         }
         if("ROLE_EMP".equals (user.getSysRole ().getRoleAlias ())){

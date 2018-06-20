@@ -40,8 +40,13 @@ public class HiSalary {
     //日工资
     @Column(name = "daily_wage")
     private BigDecimal dailyWage;
-    @ParmDesc(desc = "出勤")
+    @ParmDesc(desc = "考勤")
     private BigDecimal attendance;
+
+    @ParmDesc(desc = "补勤")
+    @Column(name = "repair_work")
+    private BigDecimal repairWork;
+
     @ParmDesc(desc = "出差")
     @Column(name = "bus_travel")
     private BigDecimal busTravel;
@@ -114,4 +119,10 @@ public class HiSalary {
     @Column(name = "credit_card")
     private String creditCard;
 
+    @ParmDesc(desc = "身份证号")
+    @Column(name = "id_number",length = 18)
+    private String IDNumber;
+
+    @ParmDesc(desc = "备注")
+    private String remark;
 }

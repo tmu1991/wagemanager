@@ -43,4 +43,6 @@ public interface ActSalaryService {
     void updateLoanStatus (String declareId, String deptId);
 
     Integer findLoanStatus(String declareId, String deptId);
+
+    void upload(String filePath,String dateStr) throws Exception;
 }

@@ -104,10 +104,12 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"base": tr.find('td.money').text()
                     ,"seniority": tr.find('td.workmoney').text()
                     ,"busTravel": tr.find('td.cx').text()
+                    ,"repairWork": tr.find('td.bq').text()
                     ,"subDay": tr.find('td.toworkday').text()
                     ,"subWork": tr.find('td.toworkmoney').text()
-                    ,"allowance": tr.find('td.jt').text()
+                    ,"allowance": getJT(tr.find('td.jt').text(),tr.find('td.cq').text(),tr.find('td.bq').text())
                     ,"bonus": tr.find('td.jj').text()
+                    ,"remark":tr.find('td.bz').text()
                 });
                 form.render(null,'indexForm');
             },
@@ -124,11 +126,16 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                     ,"subWork": ''
                     ,"allowance": ''
                     ,"bonus": ''
+                    ,"remark":''
                 });
                 $('.addBox input').removeClass("changered");
             }
         });
     });
+    
+    function getJT(jt,kq,bq) {
+        return Number(Number(jt)/(Number(kq)+Number(bq))).toFixed(2);
+    }
 
     //监听提交
     form.on('submit(demo1)', function(data){
@@ -454,6 +461,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         var newCell = cell.clone(true);
                         newCell.find('.pkid').attr("data-id", item.id);
                         newCell.find('.id').text(item.workNo);
+                        newCell.find('.idnumber').text(item.IDNumber);
                         newCell.find('.workname').text(item.deptName);
                         newCell.find('.username').text(item.username);
                         newCell.find('.money').text(Number(item.base).toFixed(2));
@@ -463,6 +471,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         newCell.find('.cx').text(item.busTravel);
                         newCell.find('.gx').text(item.holiday);
                         newCell.find('.hj').text(item.workTotal);
+                        newCell.find('.bq').text(item.repairWork);
                         newCell.find('.workmoney').text(Number(item.seniority).toFixed(2));
                         newCell.find('.toworkday').text(Number(item.subDay).toFixed(2));
                         newCell.find('.toworkmoney').text(Number(item.subWork).toFixed(2));
@@ -479,12 +488,12 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         newCell.find('.qt1').text(Number(item.other).toFixed(2));
                         newCell.find('.qt2').text(Number(item.otherEl).toFixed(2));
                         newCell.find('.fj').text(
-                            Number(item.late).toFixed(2) +
-                            Number(item.otherDebit).toFixed(2) +
-                            Number(item.partyDue).toFixed(2) +
-                            Number(item.loan).toFixed(2) +
-                            Number(item.other).toFixed(2) +
-                            Number(item.otherEl).toFixed(2)
+                            Number(Number(item.late) +
+                                Number(item.otherDebit) +
+                                Number(item.partyDue) +
+                                Number(item.loan) +
+                                Number(item.other) +
+                                Number(item.otherEl)).toFixed(2)
                         );
                         var payroll=Number(item.payroll).toFixed(2);
                         if(payroll<0){
@@ -493,6 +502,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                             newCell.find('.sj').text(payroll);
                         }
                         newCell.find('.ka').text(item.creditCard);
+                        newCell.find('.bz').text(item.remark);
                         box.append(newCell);
                     });
                     //合计当前页面

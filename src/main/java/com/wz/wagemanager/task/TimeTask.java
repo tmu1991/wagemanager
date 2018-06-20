@@ -18,8 +18,8 @@ public class TimeTask {
     public void seniorityTask(){
         userService.findAll().forEach(sysUser -> {
             BigDecimal seniority = sysUser.getSeniority();
-            sysUser.setSeniority(seniority.add(new BigDecimal("70")));
-            userService.insertUser(sysUser);
+            sysUser.setSeniority(seniority.add(new BigDecimal("30")));
+            userService.updateUser (sysUser,false);
         });
     }
 //    @Scheduled(cron = "0 0 0 6 * *")

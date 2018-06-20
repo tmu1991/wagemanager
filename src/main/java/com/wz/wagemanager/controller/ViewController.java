@@ -76,7 +76,7 @@ public class ViewController {
         Assert.assertTrue ("原始密码错误",password!=null&&passwordEncoder.matches(password,user.getPassword()));
         Assert.assertTrue ("两次密码不相等",newPassword.equals (repeatPsd));
         user.setPassword (passwordEncoder.encode (newPassword));
-        userService.updateUser (user);
+        userService.updateUser (user,true);
         return "redirect:logout.html";
     }
 }

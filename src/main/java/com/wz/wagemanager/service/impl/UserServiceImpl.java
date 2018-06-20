@@ -48,9 +48,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
-    public void updateUser(SysUser sysUser) {
+    public void updateUser(SysUser sysUser,boolean logAble) {
         userRepository.save (sysUser);
-        new LogUtils (logService).save (OperationType.UPDATE,"重置密码",null);
+        if(logAble){
+            new LogUtils (logService).save (OperationType.UPDATE,"重置密码",null);
+        }
+
     }
 
     @Override

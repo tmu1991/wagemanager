@@ -20,7 +20,7 @@
 			<span class="timer"></span>
 		</p>
 		<div class="layui-upload">
-			<button th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" name="file" type="button" class="layui-btn" id="test8">导入员工考勤表</button>
+			<button th:if="${dept.status==1}" sec:authorize="hasRole('ROLE_STAT')" name="file" type="button" class="layui-btn" id="test8">导入员工考勤表</button>
 			<button sec:authorize="hasAnyRole('ROLE_LAW')" name="file" type="button" class="layui-btn" id="test9">导入扣款明细表</button>
 			<div class="layui-upload-list" hidden="hidden">
 				<img class="layui-upload-img" id="demo1">
@@ -34,13 +34,14 @@
 			<thead>
 				<tr>
 					<th rowspan="2"></th>
+					<th rowspan="2">身份证号</th>
 					<th rowspan="2">考勤编号</th>
 					<th rowspan="2">部门</th>
 					<th rowspan="2">姓名</th>
 					<th rowspan="2">基本工资</th>
 					<th class="ying" rowspan="2">系数</th>
 					<th rowspan="2">日工资</th>
-					<th colspan="4">计资天数</th>
+					<th colspan="5">计资天数</th>
 					<th rowspan="2">工龄工资</th>
 					<th rowspan="2">顶班天数</th>
 					<th rowspan="2">顶班工资</th>
@@ -54,11 +55,13 @@
 					<th style="cursor: pointer;" class="yinchang1 fj" rowspan="2" hidden="hidden">罚金</th>
 					<th rowspan="2">实际工资</th>
 					<th rowspan="2">银行卡号</th>
-					<th  th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" rowspan="2">操作</th>
+					<th th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT','ROLE_CAP')" rowspan="2">操作</th>
 					<th sec:authorize="hasAnyRole('ROLE_LAW')" rowspan="2">操作</th>
+					<th rowspan="2">备注</th>
 				</tr>
 				<tr>
-					<th>出勤</th>
+					<th>考勤</th>
+					<th>补勤</th>
 					<th>出差</th>
 					<th>公休</th>
 					<th>合计</th>
@@ -76,6 +79,7 @@
 			<tfoot>
 				<tr>
 					<td>合计</td>
+					<td></td>
 					<td class="idhj"></td>
 					<td class="worknamehj"></td>
 					<td class="usernamehj"></td>
@@ -83,6 +87,7 @@
 					<td class="numhj"></td>
 					<td class="dayMoneyhj"></td>
 					<td class="cqhj"></td>
+					<td class="bqhj"></td>
 					<td class="cxhj"></td>
 					<td class="gxhj"></td>
 					<td class="hjhj"></td>
@@ -108,7 +113,7 @@
 					<td hidden="hidden" class="kkdate"></td>
 					<td hidden="hidden" class="jknote"></td>
 					<td hidden="hidden" class="kknote"></td>
-					<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')" class="dehj">
+					<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT','ROLE_CAP')" class="dehj">
 						<div class="btn-btn">
 						<a th:if="${dept.status==1}" id="delAll" data-type="delAll" class="layui-btn layui-btn-danger layui-btn-sm" data-id="'+item.id+'"><i class="layui-icon">&#xe640;</i>全部删除</a>
 						</div>
@@ -117,12 +122,14 @@
 					</td>
 					<td sec:authorize="hasAnyRole('ROLE_LAW')">
 					</td>
+					<td></td>
 				</tr>
 			</tfoot>
 		</table>
 		<table id="eg" style="display: none;">
 			<tr>
 				<td class="pkid"><input type="checkbox" name="item" /></td>
+				<td class="idnumber"></td>
 				<td class="id"></td>
 				<td class="workname"></td>
 				<td class="username"></td>
@@ -130,6 +137,7 @@
 				<td class="num"></td>
 				<td class="dayMoney"></td>
 				<td class="cq"></td>
+				<td class="bq"></td>
 				<td class="cx"></td>
 				<td class="gx"></td>
 				<td class="hj"></td>
@@ -151,7 +159,7 @@
 				<td class="fj" hidden="hidden"></td>
 				<td class="sj"></td>
 				<td class="ka"></td>
-				<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT')">
+				<td th:if="${dept.status==1}" sec:authorize="hasAnyRole('ROLE_STAT','ROLE_CAP')">
 					<div class="btn-btn">
 					<a class="layui-btn layui-btn-sm news_edit"><i class="layui-icon">&#xe642;</i>编辑</a>
 					<a class="layui-btn layui-btn-danger layui-btn-sm news_del"><i class="layui-icon">&#xe640;</i>删除</a>
@@ -162,6 +170,7 @@
 				<td sec:authorize="hasAnyRole('ROLE_LAW')">
 					<a class="layui-btn layui-btn-sm loan_edit"><i class="layui-icon">&#xe642;</i>编辑</a>
 				</td>
+				<td class="bz"></td>
 			</tr>
 		</table>
 		<div id="page"></div>
@@ -202,7 +211,13 @@
 						<input type="text" lay-verify="required" name="seniority" class="layui-input">
 					</div>
 				</div>
-					<div class="layui-form-item">
+				<div class="layui-form-item">
+					<label class="layui-form-label">补&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;勤：</label>
+					<div class="layui-input-block">
+						<input type="text" lay-verify="required" name="repairWork" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
 					<label class="layui-form-label">出&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;差：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="busTravel" class="layui-input">
@@ -230,6 +245,12 @@
 					<label class="layui-form-label">奖&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金：</label>
 					<div class="layui-input-block">
 						<input type="text" lay-verify="required" name="bonus" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：</label>
+					<div class="layui-input-block">
+						<input type="text" name="remark" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-form-item">
