@@ -12,6 +12,8 @@ import com.wz.wagemanager.service.LogService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
