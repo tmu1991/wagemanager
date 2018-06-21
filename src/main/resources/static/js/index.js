@@ -92,7 +92,9 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
             icon: 1,
             title: "修改员工工资",
             skin: 'layui-layer-molv',
-            area: ["50%"],
+            area:['60%','90%'],
+            scrollbar: true,
+            // maxmin: true,
             btnAlign: 'c',
             content: $('#addBox').html(),
             success:function (layero, index) {
@@ -461,7 +463,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                         var newCell = cell.clone(true);
                         newCell.find('.pkid').attr("data-id", item.id);
                         newCell.find('.id').text(item.workNo);
-                        newCell.find('.idnumber').text(item.IDNumber);
+                        newCell.find('.idnumber').text(item.iDNumber);
                         newCell.find('.workname').text(item.deptName);
                         newCell.find('.username').text(item.username);
                         newCell.find('.money').text(Number(item.base).toFixed(2));
@@ -525,7 +527,7 @@ layui.use(['form', 'layer', 'laydate', 'jquery', 'laypage','upload'], function (
                                 renderDate(obj.curr);
                             }
                         }
-                    })
+                    });
                     layer.closeAll();
                 } else {
                     layer.close(index);

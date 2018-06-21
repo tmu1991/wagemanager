@@ -108,3 +108,58 @@ p {
 input{
     margin-left: 20px;
 }
+.news_search{ padding:10px 10px; }
+.news_search .layui-inline{ margin:5px 5px 5px 0; }
+.layui-table,.layui-table th{
+    text-align:center;
+}
+.news_list .layui-btn,.news_list .layui-btn+.layui-btn{ margin:2px 5px; }
+.news_list .layui-form-switch{ margin-top:0; }
+
+/*分页*/
+#page{ text-align:right; }
+
+.layui-layer-page{
+    position: relative;
+    overflow: visible !important;
+}
+.changered{
+    color:red !important;
+}
+.news_list .layui-btn{
+    margin-left:0px !important;
+}
+#delAll{
+    margin-left: 0px !important;
+
+}
+.news_list table.layui-btn+.layui-btn{
+    margin-top: 5px;
+}
+.btn-btn{
+    margin-left:0px !important;
+    text-align: center !important;
+}
+#test8{
+    margin-bottom: 2px !important;
+}
+#test9{
+    margin-bottom: 2px !important;
+}
+.layui-table th{
+    font-weight: bold !important;
+    color: #333 !important;
+}
+.layui-form-label{
+    width:110px !important;
+}
+.layui-col-md10{
+    width: 90%;
+}
+a.news_del{
+    margin-top: 1px;
+    margin-left:0px !important;
+}
+.layui-form-item{
+    margin-bottom: 2px;
+}

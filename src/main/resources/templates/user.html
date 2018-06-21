@@ -48,6 +48,7 @@
             <tr>
                 <th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></th>
                 <th>员工姓名</th>
+                <th>身份证号</th>
                 <th>考勤编号</th>
                 <th>员工部门</th>
                 <th>员工角色</th>
@@ -64,8 +65,8 @@
 
 <!--需要弹出的添加员工界面 -->
 <div class="layui-row" id="test" hidden="hidden">
-<div class="layui-col-md10">
-    <form style="margin-top: 5px;" class="layui-form" lay-filter="userForm" id="addEmployeeForm" >
+<div overflow="auto;" class="layui-col-md10">
+    <form style="margin-top: 5px;margin-bottom: 15px;" class="layui-form" lay-filter="userForm" id="addEmployeeForm" >
         <div class="layui-form-item">
             <label class="layui-form-label">员工姓名：</label>
             <div class="layui-input-block">

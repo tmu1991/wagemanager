@@ -115,13 +115,13 @@ public class SalaryController extends BaseExceptionController {
 
     @PostMapping ("search.json")
     public PageBean<List<HiSalary>> getSalaryByUser (
-            @RequestParam (name = "IDNumber", required = false) String IDNumber,
+            @RequestParam (name = "iDNumber", required = false) String iDNumber,
             @RequestParam (name = "userName", required = false) String userName,
             @RequestParam (value = "curPage", defaultValue = GlobalConstant.DEFUALT_CUR_PAGE) Integer curPage,
             @RequestParam (value = "pageSize", defaultValue = GlobalConstant.DEFAULT_PAGE_SIZE) Integer pageSize
     ) throws Exception {
         Pageable pageable = PageUtil.pageable (curPage, pageSize, GlobalConstant.DEFAULT_SORT_ORDER,DEFAULT_SORT_FIELD);
-        org.springframework.data.domain.Page<HiSalary> salaries = hiSalaryService.findByIDNumberOrUsername (IDNumber, userName, pageable);
+        org.springframework.data.domain.Page<HiSalary> salaries = hiSalaryService.findByIDNumberOrUsername (iDNumber, userName, pageable);
         return new PageBean<> (PageUtil.getPage (salaries.getTotalElements (), pageSize, curPage), salaries.getContent ());
     }
 

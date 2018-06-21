@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,7 +26,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-public class SysUser implements UserDetails {
+public class SysUser implements UserDetails,Serializable {
     @Id
     @GeneratedValue(generator="uuid")
     @GenericGenerator (name="uuid",strategy="uuid")
@@ -89,7 +90,7 @@ public class SysUser implements UserDetails {
 
     @ParmDesc(desc = "身份证号")
     @Column(name = "id_number",length = 18)
-    private String IDNumber;
+    private String iDNumber;
 
     @ParmDesc(desc = "津贴")
     private BigDecimal allowance;

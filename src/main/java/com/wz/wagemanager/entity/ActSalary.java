@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 @Entity
 @Table (name = "act_salary")
 @AllArgsConstructor (access = AccessLevel.PUBLIC)
-public class ActSalary {
+public class ActSalary implements Serializable{
     @Id
     @GeneratedValue (generator="uuid")
     @GenericGenerator (name="uuid",strategy="uuid")
@@ -125,7 +126,7 @@ public class ActSalary {
 
     @ParmDesc(desc = "身份证号")
     @Column(name = "id_number",length = 18)
-    private String IDNumber;
+    private String iDNumber;
 
     public ActSalary(){
         this.accuFund=BigDecimal.ZERO;

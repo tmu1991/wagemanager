@@ -26,7 +26,7 @@ public class StringFormatSerializer implements ObjectSerializer {
             out.writeNull(SerializerFeature.WriteNullStringAsEmpty);
             return;
         }
-        if(fieldName.equals ("creditCard")||fieldName.equals ("IDNumber")){
+        if("creditCard".equals (fieldName) || "IDNumber".equals (fieldName)){
             out.writeString(formatStr ((String) object));
         }else{
             out.writeString((String) object);

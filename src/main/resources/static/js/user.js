@@ -64,10 +64,10 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                 /* 渲染表单 */
                 $('input.primaryKey').val(_parent.find('td:eq(0) input').val());
                 $('input.username').val(_parent.find('td:eq(1)').text());
-                $('input.workNo').val(_parent.find('td:eq(2)').text());
-                $('select.modDept').val(_parent.find('td:eq(3)').attr('data-id'));
-                $('select.modRole').val(_parent.find('td:eq(4)').attr('data-id'));
-                var value = _parent.find('td:eq(6)').attr('data-id');
+                $('input.workNo').val(_parent.find('td:eq(3)').text());
+                $('select.modDept').val(_parent.find('td:eq(4)').attr('data-id'));
+                $('select.modRole').val(_parent.find('td:eq(5)').attr('data-id'));
+                var value = _parent.find('td:eq(7)').attr('data-id');
                 if(value == 1){
                     $('.status').prop('checked',true).val(value);
                 }else{
@@ -152,7 +152,7 @@ layui.use(['form', 'layer', 'jquery', 'laypage'], function () {
                     $.each(listData, function (i, item) {
                         dataHtml += '<tr>'
                             + '<td><input value="' + item.id + '" type="checkbox" name="ids" lay-skin="primary" lay-filter="choose"></td>'
-                            + '<td>' + item.username + '</td><td>' + item.workNo + '</td>';
+                            + '<td>' + item.username + '</td><td>' + item.iDNumber + '</td><td>' + item.workNo + '</td>';
                         var dept = item.sysDept, role = item.sysRole;
                         if (dept && dept != null) {
                             dataHtml += '<td data-id="' + dept.id + '">' + dept.deptName + '</td>';

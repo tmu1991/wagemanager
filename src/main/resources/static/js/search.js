@@ -6,18 +6,18 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
 
     //查询
     $(".search_btn").click(function(){
-        var IDNumber = $(".IDNumber").val();
-        var userName=$(".userName").val();
-        if(!IDNumber && !userName){
+        var idNumber = $("input[name='iDNumber']").val();
+        var userName=$("input[name='userName']").val();
+        if(!idNumber && !userName){
             layer.msg('查询内容不能为空');
         }else{
-            renderDate(1,IDNumber,userName);
+            renderDate(1,idNumber,userName);
         }
     });
 
     renderDate(1);
 
-    function renderDate(num,IDNumber,userName){
+    function renderDate(num,idNumber,userName){
         layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.4});
         table.render({
             elem:'#demo',
@@ -25,10 +25,10 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             cols: [[
                 {field:'year',width:65,fixed:'left','title':'年份',rowspan:2},
                 {field:'month',width:60,fixed:'left','title':'月份',rowspan:2},
-                {field:'IDNumber',width:90,fixed:'left','title':'身份证号',rowspan:2},
+                {field:'iDNumber',width:100,fixed:'left','title':'身份证号',rowspan:2},
                 {field:'workNo',width:90,fixed:'left','title':'考勤编号',rowspan:2},
-                {field:'deptName', width:120,'title':'部门',rowspan:2},
-                {field:'username',width: 100,'title':'姓名',rowspan:2},
+                {field:'deptName', width:120,fixed:'left','title':'部门',rowspan:2},
+                {field:'username',width: 100,fixed:'left','title':'姓名',rowspan:2},
                 {field: 'base',width: 100,'title':'基本工资',rowspan:2},
                 {field:'coeff',width:80,'title':'系数',rowspan:2},
                 {field:'dailyWage', width:100,'title':'日工资',rowspan:2},
@@ -66,7 +66,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
             url: "salary/search.json",
             method:"post",
             where:{
-                "IDNumber": IDNumber,
+                "iDNumber": idNumber,
                 "userName": userName,
                 "curPage":num
             },
@@ -92,7 +92,7 @@ layui.use(['form', 'layer','table', 'jquery', 'laypage'], function () {
                     layout: ['count', 'prev', 'page', 'next', 'skip'],
                     jump: function (obj, first) {
                         if (!first) {
-                            renderDate(obj.curr,$(".workNo").val(),$(".userName").val());
+                            renderDate(obj.curr,idNumber,userName);
                         }
                     }
                 });

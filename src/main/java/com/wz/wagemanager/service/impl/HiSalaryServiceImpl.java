@@ -61,7 +61,7 @@ public class HiSalaryServiceImpl implements HiSalaryService {
     @Override
     public Page<HiSalary> findByIDNumberOrUsername(String idNumber,String username, Pageable page){
         Map<String,Object> speMap=new HashMap<> (2);
-        speMap.put ("IDNumber",idNumber);
+        speMap.put ("iDNumber",idNumber);
         speMap.put ("username",username);
         return salaryRepository.findAll(CriteriaUtils.getSpe (speMap), page);
     }

@@ -121,7 +121,7 @@ public class HiSalary {
 
     @ParmDesc(desc = "身份证号")
     @Column(name = "id_number",length = 18)
-    private String IDNumber;
+    private String iDNumber;
 
     @ParmDesc(desc = "备注")
     private String remark;

@@ -56,4 +56,6 @@ public interface HiSalaryRepository extends JpaRepository<HiSalary,String>,JpaSp
 
 //    @Query()
 //    List<HiSalary> findHiSalariesByUsernameOrWorkNo(String queryStr);
+
+    List<HiSalary> findByWorkNo(String workNo);
 }
