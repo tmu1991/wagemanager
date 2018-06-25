@@ -178,6 +178,11 @@
 			<version>6.0.0</version>
 		</dependency>
 		<!--activiti 结束-->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.23</version>
+		</dependency>
 	</dependencies>
 
 	<build>
