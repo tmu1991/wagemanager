@@ -111,5 +111,20 @@ public class DeclareServiceImpl implements DeclareService {
         return declareRepository.findByDeptAndStatusIn (sysDept,declareNotComplete);
     }
 
+    @Override
+    public List<SysDeclare> findByYearAndMonth (Integer year, Integer month) {
+
+        return declareRepository.findByYearAndMonthAndStatusIsNot (year,month,0);
+    }
+
+    @Override
+    public Integer findMaxYear () {
+        return declareRepository.findMaxYear (0);
+    }
+
+    @Override
+    public Integer findMaxMonth (Integer year) {
+        return declareRepository.findMaxMonth (year,0);
+    }
 
 }

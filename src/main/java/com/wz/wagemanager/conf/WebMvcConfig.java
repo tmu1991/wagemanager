@@ -25,5 +25,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController ("/task.html").setViewName ("task");
         registry.addViewController ("/list.html").setViewName ("list");
         registry.addViewController ("/pool.html").setViewName ("pool");
+        registry.addViewController ("/down.html").setViewName ("down");
     }
 }

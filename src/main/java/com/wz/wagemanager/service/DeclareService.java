@@ -32,4 +32,10 @@ public interface DeclareService {
     SysDeclare findModifiable(SysDept dept);
 
     List<SysDeclare> findNotComplete(SysDept sysDept);
+
+    List<SysDeclare> findByYearAndMonth(Integer year,Integer month);
+
+    Integer findMaxYear ();
+
+    Integer findMaxMonth (Integer year);
 }

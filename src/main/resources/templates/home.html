@@ -96,6 +96,9 @@
 								<dd sec:authorize="hasRole('ROLE_STAT')" id='list.html'>
 									<a href="javascript:;">工资查看</a>
 								</dd>
+								<dd sec:authorize="hasRole('ROLE_FIN')" id='down.html'>
+									<a href="javascript:;">工资查看</a>
+								</dd>
 								<dd id='task.html' sec:authorize="hasAnyRole('ROLE_DIRE','ROLE_MANAGER','ROLE_CAP','ROLE_EXE','ROLE_LAW')">
 									<a href="javascript:;">待审核工资<!--<span class="layui-badge"></span>--></a>
 								</dd>

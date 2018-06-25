@@ -186,7 +186,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
         String declareName = declareName (year, month, sysDept.getDeptName ());
         if(declare == null){
             declare = SysDeclare.builder ()
-                    .declareName (declareName)
+                    .declareName (declareName).year (year).month (month)
                     .user (sessionUser).dept (sysDept).status (0).build ();
             declareService.save (declare);
         }else{

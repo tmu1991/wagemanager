@@ -9,20 +9,21 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
-
+import org.springframework.util.ResourceUtils;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 /**
  * Excel文件操作工具类，包括读、写等功能
  *
@@ -296,4 +297,31 @@ public class ExcelUtil {
         }
         return result.toString();
     }
+
+    private static final String TEMPLATE = "salaryTemplate.ftl";
+
+    public static String xmlToExcel (Map<String, Object> root, String fileName) throws IOException, TemplateException {
+        fileName = DataUtil.getFilePath (fileName);
+        File file = new File (fileName);
+        if (! file.getParentFile ().exists ()) {
+            file.getParentFile ().mkdirs ();
+        }
+        //初始化参数
+        Configuration cfg = new Configuration (Configuration.VERSION_2_3_23);
+//        String templatePath = ClassUtils.class.getClassLoader ().getResource ("static/xls").getPath ().replace ("%20"," ");
+//        InputStream inputStream = ClassUtils.class.getClassLoader ().getResourceAsStream ("static/xls/loanTemplate.xls");
+//        String templatePath = ResourceUtils.getFile ("classpath:ftl").getParent ();
+        cfg.setClassForTemplateLoading(ClassUtils.getUserClass (ExcelUtil.class), "/");
+//        cfg.setDirectoryForTemplateLoading (new File ("classpath:/static/xls/"));
+        cfg.setDefaultEncoding ("UTF-8");
+        cfg.setClassicCompatible (true);
+        cfg.setNumberFormat ("#.##");
+        cfg.setTemplateUpdateDelayMilliseconds (0);
+        cfg.setTemplateExceptionHandler (TemplateExceptionHandler.RETHROW_HANDLER);
+        Template template = cfg.getTemplate (TEMPLATE);
+        FileWriter fw = new FileWriter (file);
+        template.process (root, fw);
+        return fileName;
+    }
+
 }

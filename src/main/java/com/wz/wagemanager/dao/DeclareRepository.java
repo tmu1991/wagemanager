@@ -34,4 +34,11 @@ public interface DeclareRepository extends JpaRepository<SysDeclare,String>{
 
     List<SysDeclare> findByDeptAndStatusIn(SysDept dept, Integer[] strings);
 
+    List<SysDeclare> findByYearAndMonthAndStatusIsNot(Integer year,Integer month,Integer status);
+
+    @Query(value = "select max(year) from sys_declare WHERE status!=?1",nativeQuery = true)
+    Integer findMaxYear(Integer status);
+    @Query(value = "select max(month) from sys_declare WHERE year=?1 and status!=?2",nativeQuery = true)
+    Integer findMaxMonth(int year,Integer status);
+
 }

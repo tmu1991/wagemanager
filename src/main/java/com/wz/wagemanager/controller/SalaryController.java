@@ -5,7 +5,10 @@ import com.wz.wagemanager.annotation.OperationType;
 import com.wz.wagemanager.entity.*;
 import com.wz.wagemanager.service.*;
 import com.wz.wagemanager.tools.*;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,10 +18,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -150,8 +154,63 @@ public class SalaryController extends BaseExceptionController {
     ) {
         return new PageBean<>(actSalaryService.findLoanStatus (declareId,deptId));
     }
+    @Autowired
+    private DeptService deptService;
+    @GetMapping("download.json")
+    public void download(
+            @RequestParam(value = "year")Integer year,
+            @RequestParam(value = "month")Integer month,
+            @RequestParam(value = "deptId")String deptId,
+            HttpServletResponse response
+    ) throws IOException, TemplateException {
+        SysDept sysDept = deptService.findById (deptId);
+        Assert.assertNotNull ("部门不存在",sysDept);
+        Map<String,Object> root = new HashMap<> (4);
+        root.put ("year",year);
+        root.put ("month",month);
+        root.put ("deptName", sysDept.getDeptName ());
+        root.put("salaries", hiSalaryService.findByDeptIdAndYearAndMonth (deptId,year,month));
+//        freeMarkerConfigurer.getConfiguration().setClassForTemplateLoading(getClass(), "/");
+//        Template template = freeMarkerConfigurer.getConfiguration().getTemplate("salaryTemplate.ftl");
+        // 告诉浏览器用什么软件可以打开此文件
+//        response.setCharacterEncoding ("utf-8");
+//        response.setContentType ("application/octet-stream");
+        //防止文件名乱码
+//        String fileName=new String(file.getName ().getBytes(),"ISO8859-1");
+        // 下载文件的默认名称
+//        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+//        template.process(root, new OutputStreamWriter(response.getOutputStream()));
+        String filePath = ExcelUtil.xmlToExcel (root, year+month+"/"+sysDept.getDeptName ()+"("+year+"-"+month+").xls");
+        downloadFile (new File (filePath),response);
+    }
+
+//    @Autowired
+//    private FreeMarkerConfigurer freeMarkerConfigurer;
+
+    private void downloadFile (File file, HttpServletResponse response) {
+        try (OutputStream toClient = new BufferedOutputStream (response.getOutputStream ());
+             BufferedInputStream fis = new BufferedInputStream (new FileInputStream (file.getPath ()))) {
+            // 以流的形式下载文件。
+            byte[] buffer = new byte[fis.available ()];
+            fis.read (buffer);
+            // 清空response
+            response.reset ();
+            response.setCharacterEncoding ("utf-8");
+            response.setContentType ("application/octet-stream");
+            //防止文件名乱码
+            String fileName=new String(file.getName ().getBytes(),"ISO8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+            toClient.write (buffer);
+            toClient.flush ();
+        } catch (IOException ex) {
+            ex.printStackTrace ();
+        }finally {
+            file.delete ();
+        }
+    }
 
     private static final String[] DEFAULT_SORT_FIELD=new String[]{ "year", "month"};
+
 
 
 }

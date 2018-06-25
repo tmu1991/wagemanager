@@ -1,5 +1,9 @@
 package com.wz.wagemanager;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.ValueFilter;
+import com.wz.wagemanager.entity.ActSalary;
 import com.wz.wagemanager.entity.ActWork;
 import com.wz.wagemanager.entity.SysUser;
 import com.wz.wagemanager.service.DeclareService;
@@ -8,6 +12,8 @@ import com.wz.wagemanager.service.RoleService;
 import com.wz.wagemanager.service.UserService;
 import com.wz.wagemanager.tools.DataUtil;
 import com.wz.wagemanager.tools.ExcelUtil;
+import com.wz.wagemanager.tools.PageBean;
+import com.wz.wagemanager.tools.StringFormatSerializer;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.apache.commons.lang3.RandomUtils;
@@ -28,9 +34,9 @@ import java.util.stream.Collectors;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class WagemanagerApplicationTests {
-	private static final String[] WORD_PROPERTIES = new String[]{"deptName", "workNo", "customNo", "username", "arrive", "reality"};
-@Resource
-private DeptService deptService;
+	private static final String[] WORD_PROPERTIES = new String[] {"deptName", "workNo", "customNo", "username", "arrive", "reality"};
+	@Resource
+	private DeptService deptService;
 	@Resource
 	private UserService userService;
 	@Resource
@@ -94,81 +100,119 @@ private DeptService deptService;
 //	}
 
 	@Test
-	public void testUser(){
-		Page<SysUser> byPage = userService.findByPage(null, null, null,new PageRequest(0, 10));
-		System.out.println(byPage.getTotalElements());
-		System.out.println(byPage.getTotalPages());
-		byPage.getContent().forEach(System.out::println);
+	public void testUser () {
+		Page<SysUser> byPage = userService.findByPage (null, null, null, new PageRequest (0, 10));
+		System.out.println (byPage.getTotalElements ());
+		System.out.println (byPage.getTotalPages ());
+		byPage.getContent ().forEach (System.out::println);
 	}
 
 	@Test
-	public void insert() throws Exception {
-		String filePath="D:\\Desktop\\wagemanager\\wzwork\\xls\\2017-12.xls";
-		List<SysUser> users=new ArrayList<>();
-		ExcelUtil.readExcel(filePath, 1, 0, WORD_PROPERTIES, ActWork.class)
-				.forEach(actWork -> {
-					SysUser user=new SysUser();
-					user.setUsername(DataUtil.deleteStrSpace(actWork.getUsername()));
-					user.setCustomNo(actWork.getCustomNo().replace(".0",""));
-					user.setWorkNo(actWork.getWorkNo().replace(".0",""));
-					user.setBase(randomBD());
-					user.setCreditCard(randomCard());
-					user.setSysDept(deptService.getDeptByDeptName(actWork.getDeptName()));
-					user.setSysRole(roleService.findRoleById("3"));
-					BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
+	public void insert () throws Exception {
+		String filePath = "D:\\Desktop\\wagemanager\\wzwork\\xls\\2017-12.xls";
+		List<SysUser> users = new ArrayList<> ();
+		ExcelUtil.readExcel (filePath, 1, 0, WORD_PROPERTIES, ActWork.class)
+				.forEach (actWork -> {
+					SysUser user = new SysUser ();
+					user.setUsername (DataUtil.deleteStrSpace (actWork.getUsername ()));
+					user.setCustomNo (actWork.getCustomNo ().replace (".0", ""));
+					user.setWorkNo (actWork.getWorkNo ().replace (".0", ""));
+					user.setBase (randomBD ());
+					user.setCreditCard (randomCard ());
+					user.setSysDept (deptService.getDeptByDeptName (actWork.getDeptName ()));
+					user.setSysRole (roleService.findRoleById ("3"));
+					BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder (4);
 					user.setPassword (passwordEncoder.encode ("123456"));
-					user.setStatus(1);
-					users.add(user);
+					user.setStatus (1);
+					users.add (user);
 				});
-		userService.batchInsert(users);
+		userService.batchInsert (users);
 	}
 
-	private BigDecimal randomBD(){
-		return BigDecimal.valueOf(RandomUtils.nextLong(1000,10000));
+	private BigDecimal randomBD () {
+		return BigDecimal.valueOf (RandomUtils.nextLong (1000, 10000));
 	}
 
-	private String randomCard(){
-		int len=16;
-		String card="";
-		for(int i=0;i<len;i++){
-			card+=RandomUtils.nextInt(0,9);
+	private String randomCard () {
+		int len = 16;
+		String card = "";
+		for (int i = 0; i < len; i++) {
+			card += RandomUtils.nextInt (0, 9);
 		}
 		return card;
 	}
+
 	@Resource
 	private DeclareService declareService;
+
 	@Test
-	public void test(){
-		declareService.findNotComplete(deptService.findById("2")).forEach(System.out::println);
+	public void test () {
+		declareService.findNotComplete (deptService.findById ("2")).forEach (System.out::println);
 	}
+
 	@Test
-	public void testUser1(){
-		SysUser user=new SysUser();
-		user.setUsername("law");
-		user.setBase(randomBD());
-		user.setCreditCard(randomCard());
-		user.setSysRole(roleService.findRoleById("4028809d635c8d2f01635c8daa390004"));
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
+	public void testUser1 () {
+		SysUser user = new SysUser ();
+		user.setUsername ("law");
+		user.setBase (randomBD ());
+		user.setCreditCard (randomCard ());
+		user.setSysRole (roleService.findRoleById ("4028809d635c8d2f01635c8daa390004"));
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder (4);
 		user.setPassword (passwordEncoder.encode ("123456"));
-		user.setStatus(1);
+		user.setStatus (1);
 		userService.insertUser (user);
 	}
+
 	@Resource
 	private RepositoryService repositoryService;
 	@Resource
 	private RuntimeService runtimeService;
+
 	@Test
-	public void testRemove(){
-		repositoryService.deleteDeployment("50001",true);
-		repositoryService.deleteDeployment("47501",true);
-		repositoryService.deleteDeployment("45001",true);
-		repositoryService.deleteDeployment("42501",true);
-		repositoryService.deleteDeployment("40001",true);
-		repositoryService.deleteDeployment("37501",true);
-		repositoryService.deleteDeployment("32501",true);
-		repositoryService.deleteDeployment("22501",true);
-		runtimeService.deleteProcessInstance("32505","");
-		runtimeService.deleteProcessInstance("32513","");
-		runtimeService.deleteProcessInstance("35001","");
+	public void testRemove () {
+		repositoryService.deleteDeployment ("50001", true);
+		repositoryService.deleteDeployment ("47501", true);
+		repositoryService.deleteDeployment ("45001", true);
+		repositoryService.deleteDeployment ("42501", true);
+		repositoryService.deleteDeployment ("40001", true);
+		repositoryService.deleteDeployment ("37501", true);
+		repositoryService.deleteDeployment ("32501", true);
+		repositoryService.deleteDeployment ("22501", true);
+		runtimeService.deleteProcessInstance ("32505", "");
+		runtimeService.deleteProcessInstance ("32513", "");
+		runtimeService.deleteProcessInstance ("35001", "");
 	}
+
+	public static void main (String[] args) {
+		SerializeConfig serializeConfig = SerializeConfig.globalInstance;
+//		serializeConfig.put (String.class, StringFormatSerializer.instance);
+		serializeConfig.addFilter (Object.class,(ValueFilter) (object, name, value) -> {
+			if ("creditCard".equals (name) || "IDNumber".equals (name)) {
+				return formatStr (value.toString ());
+			} else {
+				return value;
+			}
+		});
+//		String jsonString = JSONObject.toJSONString (new PageBean<> (ActSalary.builder ().creditCard ("121324332525").build ()), serializeConfig);
+		String jsonString = JSONObject.toJSONString (new PageBean<> (ActSalary.builder ().creditCard ("121324332525").build ()),
+				(ValueFilter) (object, name, value) -> {
+					if ("creditCard".equals (name) || "IDNumber".equals (name)) {
+						return formatStr (value.toString ());
+					} else {
+						return value;
+					}
+				}
+		);
+		System.out.println (jsonString);
+	}
+
+	private static String formatStr (String object) {
+		if (object.length () <= 4) {
+			return object;
+		}
+		object = object.substring (object.length () - 4, object.length ());
+		return "******" + object;
+	}
+
 }
+

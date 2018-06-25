@@ -56,4 +56,7 @@ public class SysDeclare {
     @Transient
     private String taskId;
 
+    private Integer year;
+    private Integer month;
+
 }

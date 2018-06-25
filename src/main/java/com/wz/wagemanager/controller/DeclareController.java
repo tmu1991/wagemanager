@@ -176,4 +176,21 @@ public class DeclareController extends BaseExceptionController{
         return new PageBean<> (processEntities);
     }
 
+    @PostMapping(value="down.json")
+    public PageBean<List<SysDeclare>> downList(
+            @RequestParam (value = "year", required = false) Integer year,
+            @RequestParam (value = "month", required = false) Integer month
+    ){
+        if(year == null){
+            year = declareService.findMaxYear ();
+        }
+        if(year == null){
+            return null;
+        }
+        if(month == null){
+            month = declareService.findMaxMonth (year);
+        }
+        return new PageBean<> (DateUtil.toDateString (year, month),declareService.findByYearAndMonth (year,month));
+    }
+
 }
