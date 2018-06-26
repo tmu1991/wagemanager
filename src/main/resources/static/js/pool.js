@@ -224,9 +224,16 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                 //渲染数据
                 var dataHtml = '';
                 if (listData.length != 0) {
-                    var grossPay=0,subWork=0,allowance=0,insurance=0,accuFund=0,incomeTax=0,debitTotal=0,payroll=0;
+                    var grossPay=0,subWork=0,allowance=0,insurance=0,accuFund=0,incomeTax=0,
+                        lateTotal=0,
+                        otherDebitTotal=0,
+                        partyDueTotal=0,
+                        loanTotal=0,
+                        otherTotal=0,
+                        otherElTotal=0,
+                        payroll=0;
                     $.each(listData, function (i, item) {
-                        var debit=Number(item.late)+Number(item.otherDebit)+Number(item.partyDue)+Number(item.loan)+Number(item.other)+Number(item.otherEl);
+                        // var debit=Number()+Number()+Number(item.partyDue)+Number(item.loan)+Number(item.other)+Number(item.otherEl);
                         dataHtml += '<tr>'
                             + '<td data-id="' + item.deptId + '"><a href="index/'+item.deptId+'"> ' + item.deptName + '</a></td>'
                             + '<td>' + item.grossPay + '</td>'
@@ -235,7 +242,12 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                             + '<td>' + item.insurance + '</td>'
                             + '<td>' + item.accuFund + '</td>'
                             + '<td>' + item.incomeTax + '</td>'
-                            + '<td>' + debit + '</td>'
+                            + '<td>' + item.late + '</td>'
+                            + '<td>' + item.otherDebit + '</td>'
+                            + '<td>' + item.partyDue + '</td>'
+                            + '<td>' + item.loan + '</td>'
+                            + '<td>' + item.other + '</td>'
+                            + '<td>' + item.otherEl + '</td>'
                             + '<td>' + item.payroll + '</td>'
                             + '<td class=""><button class="layui-btn layui-btn-sm shenhe" data-id="' + item.declareId + '">审核</button>'
                             + '&nbsp;&nbsp;<button class="layui-btn layui-btn-normal layui-btn-sm chakan" data-id="' + item.declareId + '">查看</button>'
@@ -247,7 +259,13 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                         insurance+=item.insurance;
                         accuFund+=item.accuFund;
                         incomeTax+=item.incomeTax;
-                        debitTotal+=Number(debit);
+                        lateTotal+=item.late;
+                        otherDebitTotal+=item.otherDebit;
+                        partyDueTotal+=item.partyDue;
+                        loanTotal+=item.loan;
+                        otherTotal+=item.other;
+                        otherElTotal+=item.otherEl;
+                        // debitTotal+=Number(debit);
                         payroll+=item.payroll;
                     });
                     dataHtml+='<tr>' +
@@ -258,7 +276,12 @@ layui.use(['form', 'layer', 'table', 'jquery', 'laypage'], function () {
                         '<td>'+insurance+'</td>' +
                         '<td>'+accuFund+'</td>' +
                         '<td>'+incomeTax+'</td>' +
-                        '<td>'+debitTotal+'</td>' +
+                        '<td>'+lateTotal+'</td>' +
+                        '<td>'+otherDebitTotal+'</td>' +
+                        '<td>'+partyDueTotal+'</td>' +
+                        '<td>'+loanTotal+'</td>' +
+                        '<td>'+otherTotal+'</td>' +
+                        '<td>'+otherElTotal+'</td>' +
                         '<td>'+payroll+'</td>' +
                         '<td></td>' +
                         '</tr>';

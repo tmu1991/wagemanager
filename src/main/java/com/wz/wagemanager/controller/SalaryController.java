@@ -170,16 +170,6 @@ public class SalaryController extends BaseExceptionController {
         root.put ("month",month);
         root.put ("deptName", sysDept.getDeptName ());
         root.put("salaries", hiSalaryService.findByDeptIdAndYearAndMonth (deptId,year,month));
-//        freeMarkerConfigurer.getConfiguration().setClassForTemplateLoading(getClass(), "/");
-//        Template template = freeMarkerConfigurer.getConfiguration().getTemplate("salaryTemplate.ftl");
-        // 告诉浏览器用什么软件可以打开此文件
-//        response.setCharacterEncoding ("utf-8");
-//        response.setContentType ("application/octet-stream");
-        //防止文件名乱码
-//        String fileName=new String(file.getName ().getBytes(),"ISO8859-1");
-        // 下载文件的默认名称
-//        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
-//        template.process(root, new OutputStreamWriter(response.getOutputStream()));
         String filePath = ExcelUtil.xmlToExcel (root, year+month+"/"+sysDept.getDeptName ()+"("+year+"-"+month+").xls");
         downloadFile (new File (filePath),response);
     }

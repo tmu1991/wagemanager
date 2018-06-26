@@ -156,7 +156,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
         return actSalaryRepository.findLoanStatus (declareId,deptId);
     }
 
-    private static final List<String> updateProperties= Arrays.asList ("coeff","repairWork","base","seniority","busTravel","subDay","allowance","bonus");
+    private static final List<String> updateProperties= Arrays.asList ("coeff","repairWork","base","seniority","busTravel","subDay","subWork","allowance","bonus","remark");
 
     private Map<String,Object> getOperMap(ActSalary actSalary){
         Map<String,Object> map= new HashMap<> (4);

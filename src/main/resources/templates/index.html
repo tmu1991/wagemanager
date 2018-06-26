@@ -10,6 +10,14 @@
 		<link th:href="@{/css/index.css}" type="text/css" rel="stylesheet">
 		<!--<link rel="stylesheet" th:href="@{/css/font_eolqem241z66flxr.css}" media="all"/>-->
 		<!--<link rel="stylesheet" th:href="@{/css/news.css}" media="all"/>-->
+		<style>
+			tr{
+				white-space: nowrap !important;
+				overflow: hidden !important;
+				text-overflow: ellipsis !important;
+				width: 100% !important;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -170,7 +178,7 @@
 				<td sec:authorize="hasAnyRole('ROLE_LAW')">
 					<a class="layui-btn layui-btn-sm loan_edit"><i class="layui-icon">&#xe642;</i>编辑</a>
 				</td>
-				<td class="bz"></td>
+				<td class="bz" style="overflow:hidden"></td>
 			</tr>
 		</table>
 		<div id="page"></div>
