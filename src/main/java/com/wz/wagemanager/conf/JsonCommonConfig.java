@@ -22,7 +22,7 @@ public class JsonCommonConfig {
         fastConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
         //添加fastjson的配置信息 比如 ：是否要格式化返回的json数据
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializeFilters (new SerializeFilter[] {(ValueFilter) (object, name, value) -> {
+        fastJsonConfig.setSerializeFilters ((ValueFilter) (object, name, value) -> {
             if (value == null || "".equals (value)) {
                 return value;
             }
@@ -30,7 +30,7 @@ public class JsonCommonConfig {
                 return formatStr (value);
             }
             return value;
-        }});
+        });
         fastJsonConfig.setSerializerFeatures(
                 //禁止循环引用
                 SerializerFeature.DisableCircularReferenceDetect,

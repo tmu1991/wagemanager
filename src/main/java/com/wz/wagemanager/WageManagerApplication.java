@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
 @SpringBootApplication
-//@EnableCaching
+@EnableCaching
 @EnableScheduling
 @ComponentScan(basePackages = {"com.wz.wagemanager"})
 public class WageManagerApplication implements CommandLineRunner{
