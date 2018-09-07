@@ -104,7 +104,7 @@ public class ActSalaryServiceImpl implements ActSalaryService {
             sysUser.setSeniority (salary.getSeniority ());
             userUpdate=true;
         }
-        if(userUpdate){
+        if(userUpdate || isUpdate(sysUser,salary)){
             userService.updateUser (sysUser,false);
         }
         Map<String, Object> properties = CommonUtils.copyProperties (salary, actSalary, updateProperties);
@@ -113,6 +113,18 @@ public class ActSalaryServiceImpl implements ActSalaryService {
             actSalaryRepository.save (salary);
             new LogUtils (logService).save (OperationType.UPDATE,properties,getOperMap (actSalary));
         }
+    }
+
+    private boolean isUpdate(SysUser sysUser,ActSalary salary){
+        if(sysUser == null || salary == null){
+            return true;
+        }
+        return !compareTo(sysUser.getBase(),salary.getBase())
+            &&!compareTo(sysUser.getSeniority(),salary.getSeniority());
+    }
+
+    private boolean compareTo(BigDecimal original,BigDecimal current){
+        return original!=null&&current!=null&&original.compareTo(current)==0;
     }
     private BigDecimal getAttendance(BigDecimal attendance,BigDecimal repairWork){
         if(repairWork==null){

@@ -4,6 +4,7 @@ import com.wz.wagemanager.entity.SysDept;
 import com.wz.wagemanager.service.DeptService;
 import com.wz.wagemanager.tools.BaseExceptionController;
 import com.wz.wagemanager.tools.PageBean;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,10 +18,17 @@ public class DeptController extends BaseExceptionController {
     @Resource
     private DeptService deptService;
 
-    @GetMapping("all.json")
+    @GetMapping("first.json")
     public PageBean<List<SysDept>> findAll(
     ){
-        return new PageBean<> (deptService.findAll());
+        return new PageBean<> (deptService.findFirst());
+    }
+
+    @GetMapping("second.json")
+    public PageBean<List<SysDept>> findAll(
+        @Param("parentId")String parentId
+    ){
+        return new PageBean<> (deptService.findByParent(parentId));
     }
 
 

@@ -18,4 +18,8 @@ public interface DeptService {
     Page<SysDept> findByPage(Pageable pageable);
 
     void deleteById(String deptId);
+
+    List<SysDept> findFirst();
+
+    List<SysDept> findByParent(String parentId);
 }

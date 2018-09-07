@@ -33,5 +33,8 @@ public class SysDept {
     @Column(name = "status",length = 1)
     private Integer status;
 
+    @Column(name = "parent_id")
+    private String parentId;
+
 
 }

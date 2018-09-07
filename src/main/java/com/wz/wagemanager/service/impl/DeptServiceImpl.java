@@ -21,7 +21,6 @@ public class DeptServiceImpl implements DeptService {
     @Resource
     private DeptRepository deptRepository;
     @Override
-    @OperInfo(type = OperationType.QUERY,desc = "通过部门名称查找部门")
     public SysDept getDeptByDeptName(String deptName) {
         return deptRepository.findByDeptName(deptName);
     }
@@ -51,5 +50,15 @@ public class DeptServiceImpl implements DeptService {
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void deleteById (String deptId) {
         deptRepository.delete (deptId);
+    }
+
+    @Override
+    public List<SysDept> findFirst() {
+        return deptRepository.findByParentId(null);
+    }
+
+    @Override
+    public List<SysDept> findByParent(String parentId) {
+        return deptRepository.findByParentId(parentId);
     }
 }
